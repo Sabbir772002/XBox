@@ -217,6 +217,7 @@ export default function RouteDetailsScreen({ route, navigation }: any) {
   const firstStopDistance = routeDetails.stops[0]?.distance || 0;
   const lastStopDistance = routeDetails.stops[routeDetails.stops.length - 1]?.distance || 0;
   const relativeTotalDistance = Math.abs(lastStopDistance - firstStopDistance);
+  const fare = Math.max(10, relativeTotalDistance * 2.5);
 
   const renderStop = (stop: RouteStop, index: number) => {
     const isFirst = index === 0;
@@ -507,7 +508,7 @@ export default function RouteDetailsScreen({ route, navigation }: any) {
             <Ionicons name="cash-outline" size={20} color="#066D6D" />
             <View style={styles.summaryTextContainer}>
               <Text style={styles.summaryLabel}>Estimated Fare</Text>
-              <Text style={styles.fareValue}>৳ {(relativeTotalDistance * 2.5).toFixed(2)}</Text>
+              <Text style={styles.fareValue}>৳ {fare.toFixed(2)}</Text>
               <Text style={styles.fareNote}>Base rate: ৳2.5/km</Text>
             </View>
           </View>

@@ -152,18 +152,20 @@ class DatabaseService {
         AND rs1.location_group_id != rs2.location_group_id
       ORDER BY distance ASC
     `;
-
     const results = await this.database.executeSql(query, [
       fromStopId, toStopId,
       toStopId, fromStopId
     ]);
 
     const routes: Route[] = [];
-    
+    const routeIdsSet = new Set<string>();
     for (let i = 0; i < results[0].rows.length; i++) {
       const row = results[0].rows.item(i);
+      if(routeIdsSet.has(row.routeId)) {
+        continue; // Skip duplicate routes
+      }
       const routeDetails = await this.getRouteDetails(row.routeId, fromStopId, toStopId);
-      
+
       if (routeDetails) {
         // Check if this is a reverse route by comparing first stop with user's source
         const firstStop = routeDetails.stops[0];
@@ -178,6 +180,7 @@ class DatabaseService {
         routeDetails.routeNameEng = row.routeNameEng;
         routeDetails.routeNameBn = row.routeNameBn;
         routes.push(routeDetails);
+        routeIdsSet.add(row.routeId);
       }
     }
 

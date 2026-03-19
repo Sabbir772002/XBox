@@ -238,22 +238,8 @@ export default function RouteSearchScreen({ navigation, route }: any) {
         {/* Header with Title and Action Buttons */}
         <View style={styles.headerTop}>
           <View>
-            <Text style={styles.headerTitle}>🚌 Bus Route Finder</Text>
+            <Text style={styles.headerTitle}>🚌 Mama Bhara Kto?</Text>
             <Text style={styles.headerSubtitle}>Find the best route between stops</Text>
-          </View>
-          <View style={styles.menuButtons}>
-            <TouchableOpacity 
-              style={styles.menuButton}
-              onPress={() => navigation.navigate('History')}
-            >
-              <Ionicons name="time-outline" size={24} color="#FFF" />
-            </TouchableOpacity>
-            <TouchableOpacity 
-              style={styles.menuButton}
-              onPress={() => navigation.navigate('Bookmark')}
-            >
-              <Ionicons name="bookmark-outline" size={24} color="#FFF" />
-            </TouchableOpacity>
           </View>
         </View>
         
