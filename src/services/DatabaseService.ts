@@ -158,7 +158,7 @@ class DatabaseService {
     ]);
 
     const routes: Route[] = [];
-    const routeIdsSet = new Set<string>();
+    let routeIdsSet = new Set<string>();
     for (let i = 0; i < results[0].rows.length; i++) {
       const row = results[0].rows.item(i);
       if(routeIdsSet.has(row.routeId)) {
