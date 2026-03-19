@@ -158,7 +158,7 @@ class DatabaseService {
     ]);
 
     const routes: Route[] = [];
-    let routeIdsSet = new Set<string>();
+    const routeIdsSet = new Set<string>();
     for (let i = 0; i < results[0].rows.length; i++) {
       const row = results[0].rows.item(i);
       if(routeIdsSet.has(row.routeId)) {
@@ -171,16 +171,14 @@ class DatabaseService {
         const firstStop = routeDetails.stops[0];
         const isReverse = firstStop && firstStop.stopId === toStopId;
         
-        // If reverse, flip the stops array to match user's search direction
-        if (isReverse) {
-          routeDetails.stops = [...routeDetails.stops].reverse();
+        // Only keep routes that match the search direction (not reverse)
+        if (!isReverse) {
+          routeDetails.isReverse = false;
+          routeDetails.routeNameEng = row.routeNameEng;
+          routeDetails.routeNameBn = row.routeNameBn;
+          routes.push(routeDetails);
+          routeIdsSet.add(row.routeId);
         }
-        
-        routeDetails.isReverse = isReverse;
-        routeDetails.routeNameEng = row.routeNameEng;
-        routeDetails.routeNameBn = row.routeNameBn;
-        routes.push(routeDetails);
-        routeIdsSet.add(row.routeId);
       }
     }
 
