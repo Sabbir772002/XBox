@@ -16,13 +16,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import StorageService, { BookmarkedRoute } from '../services/StorageService';
 import DatabaseService, { RouteStop } from '../services/DatabaseService';
+import { Colors } from '../theme/colors';
 
 export default function BookmarkScreen({ navigation }: any) {
   const [bookmarks, setBookmarks] = useState<BookmarkedRoute[]>([]);
   const [loading, setLoading] = useState(true);
-  const [expandedId, setExpandedId] = useState<string | null>(null);
-  const [routeDetails, setRouteDetails] = useState<{ [key: string]: RouteStop[] }>({});
-  const [loadingDetails, setLoadingDetails] = useState<{ [key: string]: boolean }>({});
 
   useFocusEffect(
     useCallback(() => {
@@ -70,45 +68,21 @@ export default function BookmarkScreen({ navigation }: any) {
   };
 
   const toggleExpand = async (item: BookmarkedRoute) => {
-    const newExpandedId = expandedId === item.id ? null : item.id;
-    setExpandedId(newExpandedId);
-
-    // Load route details if expanding and not already loaded
-    if (newExpandedId && !routeDetails[item.id]) {
-      setLoadingDetails({ ...loadingDetails, [item.id]: true });
-      try {
-        const details = await DatabaseService.getRouteDetails(
-          item.routeId,
-          item.fromStopId,
-          item.toStopId
-        );
-        if (details) {
-          setRouteDetails({ ...routeDetails, [item.id]: details.stops });
-        }
-      } catch (error) {
-        console.error('Error loading route details:', error);
-      } finally {
-        setLoadingDetails({ ...loadingDetails, [item.id]: false });
-      }
-    }
+    // Directly navigate to details
+    handleBookmarkClick(item);
   };
 
   const renderBookmarkItem = ({ item }: { item: BookmarkedRoute }) => {
-    const isExpanded = expandedId === item.id;
-    const stops = routeDetails[item.id] || [];
-    const isLoadingStops = loadingDetails[item.id];
-
     return (
       <View style={styles.card}>
-        {/* Main Card Header */}
         <TouchableOpacity
           style={styles.cardHeader}
-          onPress={() => toggleExpand(item)}
+          onPress={() => handleBookmarkClick(item)}
           activeOpacity={0.7}
         >
           <View style={styles.cardContent}>
             <View style={styles.iconContainer}>
-              <Ionicons name="bookmark" size={24} color="#C0191F" />
+              <Ionicons name="bookmark" size={24} color={Colors.primary} />
             </View>
             <View style={styles.textContainer}>
               <View style={styles.routeInfo}>
@@ -117,114 +91,36 @@ export default function BookmarkScreen({ navigation }: any) {
                 <Text style={styles.stopName} numberOfLines={1}>{item.toStopName}</Text>
               </View>
               <View style={styles.metaInfo}>
-                <Text style={styles.routeId}>Route {item.routeId}</Text>
+                <Text style={styles.routeId}>Bus {item.routeId}</Text>
                 <Text style={styles.separator}>•</Text>
                 <Text style={styles.distance}>{item.distance.toFixed(1)} km</Text>
                 <Text style={styles.separator}>•</Text>
                 <Text style={styles.fare}>৳{item.fare.toFixed(0)}</Text>
               </View>
-              {item.stopsCount && (
-                <Text style={styles.stopsCount}>{item.stopsCount} stops</Text>
-              )}
             </View>
-            <View style={styles.actionButtons}>
-              <TouchableOpacity
-                style={styles.expandButton}
-                onPress={() => toggleExpand(item)}
-              >
-                <Ionicons 
-                  name={isExpanded ? "chevron-up" : "chevron-down"} 
-                  size={24} 
-                  color="#C0191F" 
-                />
-              </TouchableOpacity>
-            </View>
+            <Ionicons name="chevron-forward" size={22} color={Colors.primary} />
           </View>
         </TouchableOpacity>
 
-        {/* Expanded Details */}
-        {isExpanded && (
-          <View style={styles.expandedContent}>
-            {isLoadingStops ? (
-              <View style={styles.loadingStops}>
-                <Text style={styles.loadingStopsText}>Loading route details...</Text>
-              </View>
-            ) : stops.length > 0 ? (
-              <View style={styles.stopsContainer}>
-                <View style={styles.stopsHeader}>
-                  <Ionicons name="map-outline" size={18} color="#C0191F" />
-                  <Text style={styles.stopsHeaderText}>Route Stops</Text>
-                </View>
-                <ScrollView 
-                  style={styles.stopsScrollView}
-                  nestedScrollEnabled={true}
-                  showsVerticalScrollIndicator={true}
-                >
-                  {stops.map((stop, index) => {
-                    const isFirst = index === 0;
-                    const isLast = index === stops.length - 1;
-                    const relativeDistance = Math.abs(stop.distance - stops[0].distance);
-                    
-                    return (
-                      <View key={`${stop.stopId}-${index}`} style={styles.stopRow}>
-                        <View style={styles.stopIndicatorContainer}>
-                          {!isFirst && <View style={styles.stopLine} />}
-                          <View style={[
-                            styles.stopDot,
-                            isFirst && styles.stopDotStart,
-                            isLast && styles.stopDotEnd,
-                            !isFirst && !isLast && styles.stopDotMiddle
-                          ]}>
-                            {isFirst && <Text style={styles.stopDotText}>🟢</Text>}
-                            {isLast && <Text style={styles.stopDotText}>🔴</Text>}
-                            {!isFirst && !isLast && <Text style={styles.stopDotText}>🟡</Text>}
-                          </View>
-                          {!isLast && <View style={styles.stopLine} />}
-                        </View>
-                        <View style={styles.stopInfo}>
-                          <Text style={[
-                            styles.stopNameText,
-                            (isFirst || isLast) && styles.stopNameBold
-                          ]}>
-                            {stop.stopageEn}
-                          </Text>
-                          {stop.stopageBn && (
-                            <Text style={styles.stopNameBn}>{stop.stopageBn}</Text>
-                          )}
-                          <Text style={styles.stopDistanceText}>
-                            {relativeDistance.toFixed(2)} km
-                          </Text>
-                        </View>
-                      </View>
-                    );
-                  })}
-                </ScrollView>
-
-                {/* Action Buttons */}
-                <View style={styles.actionButtonsRow}>
-                  <TouchableOpacity
-                    style={styles.detailsButton}
-                    onPress={() => handleBookmarkClick(item)}
-                  >
-                    <Ionicons name="information-circle-outline" size={20} color="#FFF" />
-                    <Text style={styles.detailsButtonText}>Full Details</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={styles.removeButtonExpanded}
-                    onPress={() => handleRemoveBookmark(item.routeId)}
-                  >
-                    <Ionicons name="trash-outline" size={20} color="#FFF" />
-                    <Text style={styles.removeButtonText}>Remove</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            ) : (
-              <View style={styles.noStopsContainer}>
-                <Text style={styles.noStopsText}>No route details available</Text>
-              </View>
-            )}
-          </View>
-        )}
+        {/* Action Buttons */}
+        <View style={styles.actionButtonsRow}>
+          <TouchableOpacity
+            style={styles.detailsButton}
+            onPress={() => handleBookmarkClick(item)}
+            activeOpacity={0.7}
+          >
+            <Ionicons name="information-circle-outline" size={18} color="#FFF" />
+            <Text style={styles.detailsButtonText}>View Details</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.removeButtonExpanded}
+            onPress={() => handleRemoveBookmark(item.routeId)}
+            activeOpacity={0.7}
+          >
+            <Ionicons name="trash-outline" size={18} color="#FFF" />
+            <Text style={styles.removeButtonText}>Remove</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     );
   };
@@ -232,18 +128,15 @@ export default function BookmarkScreen({ navigation }: any) {
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
       <LinearGradient
-        colors={['#8D1117', '#C0191F']}
+        colors={[Colors.gradientStart, Colors.gradientEnd]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.header}
       >
         <View style={styles.headerContent}>
-          <TouchableOpacity
-            style={styles.backButton}
-            onPress={() => navigation.goBack()}
-          >
-            <Ionicons name="arrow-back" size={24} color="#FFF" />
-          </TouchableOpacity>
+          <View style={styles.backButton}>
+            <Ionicons name="bookmark-outline" size={20} color={Colors.textLight} />
+          </View>
           <View style={styles.headerTextContainer}>
             <Text style={styles.headerTitle}>Bookmarks</Text>
             <Text style={styles.headerSubtitle}>{bookmarks.length} saved routes</Text>
@@ -280,7 +173,7 @@ export default function BookmarkScreen({ navigation }: any) {
 const styles = StyleSheet.create({
   safe: {
     flex: 1,
-    backgroundColor: '#F6EDF3',
+    backgroundColor: Colors.backgroundLight,
   },
   header: {
     paddingHorizontal: 16,
@@ -307,7 +200,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#FFFFFF22',
+    backgroundColor: Colors.whiteOverlay20,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -318,12 +211,12 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 24,
     fontWeight: '700',
-    color: '#FFF',
+    color: Colors.textLight,
     letterSpacing: 0.5,
   },
   headerSubtitle: {
     fontSize: 14,
-    color: '#FFFFFFCC',
+    color: Colors.whiteOverlay30,
     marginTop: 2,
   },
   body: {
@@ -333,7 +226,7 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   card: {
-    backgroundColor: '#FFF',
+    backgroundColor: Colors.surface,
     borderRadius: 16,
     marginBottom: 14,
     overflow: 'hidden',
@@ -350,7 +243,7 @@ const styles = StyleSheet.create({
     }),
   },
   cardHeader: {
-    backgroundColor: '#FFF',
+    backgroundColor: Colors.surface,
   },
   cardContent: {
     flexDirection: 'row',
@@ -361,7 +254,7 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 25,
-    backgroundColor: '#FFF5F5',
+    backgroundColor: Colors.hoverAccent,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 12,
@@ -378,7 +271,7 @@ const styles = StyleSheet.create({
   stopName: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#111',
+    color: Colors.textPrimary,
     maxWidth: '40%',
   },
   arrow: {
@@ -392,7 +285,7 @@ const styles = StyleSheet.create({
   },
   routeId: {
     fontSize: 13,
-    color: '#C0191F',
+    color: Colors.primary,
     fontWeight: '700',
   },
   separator: {
@@ -407,7 +300,7 @@ const styles = StyleSheet.create({
   },
   fare: {
     fontSize: 13,
-    color: '#066D6D',
+    color: Colors.primaryDark,
     fontWeight: '700',
   },
   stopsCount: {
@@ -428,7 +321,7 @@ const styles = StyleSheet.create({
     padding: 4,
   },
   expandedContent: {
-    backgroundColor: '#F8F9FA',
+    backgroundColor: Colors.hover,
     borderTopWidth: 1,
     borderTopColor: '#E8EAED',
     paddingTop: 12,
@@ -453,12 +346,12 @@ const styles = StyleSheet.create({
   stopsHeaderText: {
     fontSize: 15,
     fontWeight: '700',
-    color: '#C0191F',
+    color: Colors.primary,
     marginLeft: 8,
   },
   stopsScrollView: {
     maxHeight: 300,
-    backgroundColor: '#FFF',
+    backgroundColor: Colors.surface,
     borderRadius: 12,
     padding: 12,
     marginBottom: 12,
@@ -534,7 +427,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#066D6D',
+    backgroundColor: Colors.primaryDark,
     paddingVertical: 12,
     borderRadius: 10,
   },
@@ -576,7 +469,7 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#111',
+    color: Colors.textPrimary,
     marginTop: 16,
     marginBottom: 8,
   },

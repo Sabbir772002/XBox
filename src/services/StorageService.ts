@@ -124,7 +124,7 @@ class StorageService {
         return false; // Already bookmarked
       }
 
-      const fare = 2.5 * distance;
+      const fare = Math.max(10, 2.5 * distance);
 
       const newBookmark: BookmarkedRoute = {
         id: `${Date.now()}_${routeId}_${fromStopId}_${toStopId}`,

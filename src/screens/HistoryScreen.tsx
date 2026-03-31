@@ -12,6 +12,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import StorageService, { SearchHistory } from '../services/StorageService';
+import { Colors } from '../theme/colors';
 
 export default function HistoryScreen({ navigation }: any) {
   const [history, setHistory] = useState<SearchHistory[]>([]);
@@ -102,7 +103,7 @@ export default function HistoryScreen({ navigation }: any) {
     >
       <View style={styles.cardContent}>
         <View style={styles.iconContainer}>
-          <Ionicons name="time-outline" size={24} color="#C0191F" />
+          <Ionicons name="time-outline" size={24} color={Colors.primary} />
         </View>
         <View style={styles.textContainer}>
           <View style={styles.routeInfo}>
@@ -129,18 +130,15 @@ export default function HistoryScreen({ navigation }: any) {
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
       <LinearGradient
-        colors={['#8D1117', '#C0191F']}
+        colors={[Colors.gradientStart, Colors.gradientEnd]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.header}
       >
         <View style={styles.headerContent}>
-          <TouchableOpacity
-            style={styles.backButton}
-            onPress={() => navigation.goBack()}
-          >
-            <Ionicons name="arrow-back" size={24} color="#FFF" />
-          </TouchableOpacity>
+          <View style={styles.headerBadge}>
+            <Ionicons name="time-outline" size={18} color={Colors.textLight} />
+          </View>
           <View style={styles.headerTextContainer}>
             <Text style={styles.headerTitle}>Search History</Text>
             <Text style={styles.headerSubtitle}>{history.length} searches</Text>
@@ -185,7 +183,7 @@ export default function HistoryScreen({ navigation }: any) {
 const styles = StyleSheet.create({
   safe: {
     flex: 1,
-    backgroundColor: '#F6EDF3',
+    backgroundColor: Colors.backgroundLight,
   },
   header: {
     paddingHorizontal: 16,
@@ -197,11 +195,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  backButton: {
+  headerBadge: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#FFFFFF22',
+    backgroundColor: Colors.whiteOverlay20,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -212,21 +210,21 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 22,
     fontWeight: '700',
-    color: '#FFF',
+    color: Colors.textLight,
   },
   headerSubtitle: {
     fontSize: 14,
-    color: '#FFFFFFCC',
+    color: Colors.whiteOverlay30,
     marginTop: 2,
   },
   clearButton: {
     paddingVertical: 8,
     paddingHorizontal: 12,
-    backgroundColor: '#FFFFFF22',
+    backgroundColor: Colors.whiteOverlay20,
     borderRadius: 8,
   },
   clearButtonText: {
-    color: '#FFF',
+    color: Colors.textLight,
     fontSize: 14,
     fontWeight: '600',
   },
@@ -237,7 +235,7 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   card: {
-    backgroundColor: '#FFF',
+    backgroundColor: Colors.surface,
     borderRadius: 12,
     marginBottom: 12,
     elevation: 2,
@@ -255,7 +253,7 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: '#FFF5F5',
+    backgroundColor: Colors.hoverAccent,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 12,
@@ -271,7 +269,7 @@ const styles = StyleSheet.create({
   stopName: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#111',
+    color: Colors.textPrimary,
     flexShrink: 1,
   },
   arrow: {
@@ -291,14 +289,14 @@ const styles = StyleSheet.create({
   },
   routesFound: {
     fontSize: 13,
-    color: '#066D6D',
+    color: Colors.primaryDark,
     fontWeight: '500',
   },
   deleteButton: {
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: '#FFF5F5',
+    backgroundColor: Colors.hoverAccent,
     alignItems: 'center',
     justifyContent: 'center',
     marginLeft: 8,
@@ -312,7 +310,7 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#111',
+    color: Colors.textPrimary,
     marginTop: 16,
     marginBottom: 8,
   },
