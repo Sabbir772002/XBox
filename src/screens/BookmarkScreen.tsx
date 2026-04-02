@@ -41,9 +41,9 @@ export default function BookmarkScreen({ navigation }: any) {
 
   const handleBookmarkClick = (item: BookmarkedRoute) => {
     navigation.navigate('RouteDetails', {
-      routeId: item.routeId,
-      fromStopId: item.fromStopId,
-      toStopId: item.toStopId,
+      busId: item.busId,
+      busName: item.busName,
+      busBn: item.busBn,
       fromStopName: item.fromStopName,
       toStopName: item.toStopName,
     });

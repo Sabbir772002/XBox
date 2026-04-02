@@ -4440,6 +4440,30 @@
             ],
             "time": "",
             "service_type": ""
+        },
+        {
+            "english": "Metro Train",
+            "bangla": "মেট্রো ট্রেন",
+            "routes": [
+                "Uttara North (MT)",
+                "Uttara Center (MT)",
+                "Uttara South (MT)",
+                "Pallabi (MT)",
+                "Mirpur 10 (MT)",
+                "Mirpur 11 (MT)",
+                "Kazipara (MT)",
+                "Shewrapara (MT)",
+                "Agargaon (MT)",
+                "Bijoy Sarani (MT)",
+                "Farmgate (MT)",
+                "Kawran Bazar (MT)",
+                "Shahbagh (MT)",
+                "Dhaka University (MT)",
+                "Bangladesh Secretariat (MT)",
+                "Motijheel (MT)",
+                "Kamalapur (MT)"
+            ],
+            "service_type": ""
         }
     ]
 }

@@ -11,7 +11,7 @@ export const Colors = {
   secondaryDark: '#623d87',
   
   // Background colors with gradient support
-  background: '#667eea',
+  background: '#FFFFFF',
   backgroundLight: '#FFFFFF',
   backgroundDark: '#5568d3',
   backgroundGradient: ['#667eea', '#764ba2'], // For gradient backgrounds
@@ -28,6 +28,7 @@ export const Colors = {
   textTertiary: '#888888',
   textLight: '#FFFFFF',
   textMuted: '#999999',
+  text: '#333333', // Alias for textPrimary
   
   // Border colors
   border: '#E0E0E0',

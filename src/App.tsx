@@ -10,8 +10,14 @@ import DetailsScreen from './screens/DetailsScreen';
 import HistoryScreen from './screens/HistoryScreen';
 import BookmarkScreen from './screens/BookmarkScreen';
 import BusListScreen from './screens/BusListScreen';
+import SettingsScreen from './screens/SettingsScreen';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Colors } from './theme/colors';
+import { DarkColors } from './theme/darkColors';
 import DatabaseService from './services/DatabaseService';
+import NetworkService from './services/NetworkService';
+import DistanceService from './services/DistanceService';
+import { ThemeProvider, useTheme } from './theme/ThemeContext';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -33,6 +39,9 @@ function ErrorScreen({ error }: { error: string }) {
 }
 
 function MainTabs() {
+  const { isDark } = useTheme();
+  const themeColors = isDark ? DarkColors : Colors;
+
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -47,21 +56,23 @@ function MainTabs() {
             iconName = focused ? 'time' : 'time-outline';
           } else if (route.name === 'Bookmark') {
             iconName = focused ? 'bookmark' : 'bookmark-outline';
+          } else if (route.name === 'Settings') {
+            iconName = focused ? 'settings' : 'settings-outline';
           } else {
             iconName = 'ellipse';
           }
 
           return <Ionicons name={iconName} size={size} color={color} />;
         },
-        tabBarActiveTintColor: Colors.primary,
-        tabBarInactiveTintColor: Colors.textTertiary,
+        tabBarActiveTintColor: themeColors.primary,
+        tabBarInactiveTintColor: themeColors.textTertiary,
         tabBarStyle: {
           height: 60,
           paddingBottom: 8,
           paddingTop: 8,
-          backgroundColor: Colors.surface,
+          backgroundColor: themeColors.surface,
           borderTopWidth: 1,
-          borderTopColor: Colors.borderLight,
+          borderTopColor: themeColors.borderLight,
         },
         tabBarLabelStyle: {
           fontSize: 12,
@@ -90,19 +101,31 @@ function MainTabs() {
         component={BookmarkScreen}
         options={{ tabBarLabel: 'Bookmarks' }}
       />
+      <Tab.Screen 
+        name="Settings" 
+        component={SettingsScreen}
+        options={{ tabBarLabel: 'Settings' }}
+      />
     </Tab.Navigator>
   );
 }
 
-export default function App() {
+function AppContent() {
   const [initialized, setInitialized] = React.useState(false);
   const [initError, setInitError] = React.useState<string | null>(null);
+  const { isDark } = useTheme();
+  const themeColors = isDark ? DarkColors : Colors;
 
   React.useEffect(() => {
     const initializeApp = async () => {
       try {
         console.log('🔄 Initializing application...');
+        
+        // Initialize services in order
+        await NetworkService.initialize();
         await DatabaseService.initialize();
+        await DistanceService.initialize();
+        
         setInitialized(true);
         console.log('✅ Application initialized successfully');
       } catch (error) {
@@ -121,9 +144,9 @@ export default function App() {
 
   if (!initialized) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.background }}>
-        <ActivityIndicator size="large" color={Colors.primary} />
-        <Text style={{ marginTop: 10, color: Colors.textSecondary }}>Loading data...</Text>
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: themeColors.background }}>
+        <ActivityIndicator size="large" color={themeColors.primary} />
+        <Text style={{ marginTop: 10, color: themeColors.textSecondary }}>Loading data...</Text>
       </View>
     );
   }
@@ -155,5 +178,15 @@ export default function App() {
         <Stack.Screen name="Details" component={DetailsScreen} />
       </Stack.Navigator>
     </NavigationContainer>
+  );
+}
+
+export default function App() {
+  return (
+    <SafeAreaProvider>
+      <ThemeProvider>
+        <AppContent />
+      </ThemeProvider>
+    </SafeAreaProvider>
   );
 }

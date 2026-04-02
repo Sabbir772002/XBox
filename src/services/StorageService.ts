@@ -13,6 +13,9 @@ export interface SearchHistory {
 export interface BookmarkedRoute {
   id: string;
   routeId: string;
+  busId: number;
+  busName: string;
+  busBn: string;
   fromStopId: number;
   toStopId: number;
   fromStopName: string;
@@ -105,6 +108,9 @@ class StorageService {
 
   async addBookmark(
     routeId: string,
+    busId: number,
+    busName: string,
+    busBn: string,
     fromStopId: number,
     toStopId: number,
     fromStopName: string,
@@ -124,11 +130,14 @@ class StorageService {
         return false; // Already bookmarked
       }
 
-      const fare = Math.max(10, 2.5 * distance);
+      const fare = Math.max(10, 2.45 * distance);
 
       const newBookmark: BookmarkedRoute = {
         id: `${Date.now()}_${routeId}_${fromStopId}_${toStopId}`,
         routeId,
+        busId,
+        busName,
+        busBn,
         fromStopId,
         toStopId,
         fromStopName,

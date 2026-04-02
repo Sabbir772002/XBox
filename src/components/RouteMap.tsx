@@ -1,7 +1,9 @@
-import React, { useMemo } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React, { useMemo, useEffect, useState } from 'react';
+import { View, Text, StyleSheet, Alert } from 'react-native';
 import { WebView } from 'react-native-webview';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import { Colors, BorderRadius, FontSize } from '../theme/colors';
+import NetworkService from '../services/NetworkService';
 
 export interface MapCoordinate {
   lat: number;
@@ -24,6 +26,27 @@ function escapeHTML(value: string): string {
 }
 
 export default function RouteMap({ points, height = 250 }: RouteMapProps): React.JSX.Element {
+  const [isOnline, setIsOnline] = useState(true);
+
+  useEffect(() => {
+    // Check initial network status
+    setIsOnline(NetworkService.isConnected());
+
+    // Subscribe to network changes
+    const unsubscribe = NetworkService.onChange((online) => {
+      setIsOnline(online);
+      if (!online) {
+        Alert.alert(
+          '📡 No Internet',
+          'Map requires an internet connection to display. Please check your connection and try again.',
+          [{ text: 'OK' }]
+        );
+      }
+    });
+
+    return unsubscribe;
+  }, []);
+
   const html = useMemo(() => {
     const safePoints = points.map((point) => ({
       ...point,
@@ -85,6 +108,20 @@ export default function RouteMap({ points, height = 250 }: RouteMapProps): React
 </html>`;
   }, [points]);
 
+  // Show offline warning
+  if (!isOnline) {
+    return (
+      <View style={[styles.offlineContainer, { height }]}>
+        <View style={styles.offlineContent}>
+          <Ionicons name="wifi-off" size={48} color={Colors.warning} style={{ marginBottom: 12 }} />
+          <Text style={styles.offlineTitle}>No Internet Connection</Text>
+          <Text style={styles.offlineText}>Map requires an internet connection to display route and markers.</Text>
+          <Text style={styles.offlineTip}>Please check your connection and try again.</Text>
+        </View>
+      </View>
+    );
+  }
+
   if (points.length < 2) {
     return (
       <View style={[styles.emptyContainer, { height }]}>
@@ -130,5 +167,35 @@ const styles = StyleSheet.create({
     color: Colors.textSecondary,
     fontSize: FontSize.base,
     fontWeight: '600',
+  },
+  offlineContainer: {
+    borderRadius: BorderRadius.lg,
+    backgroundColor: 'rgba(255, 152, 0, 0.1)',
+    borderWidth: 1,
+    borderColor: Colors.warning,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 16,
+  },
+  offlineContent: {
+    alignItems: 'center',
+  },
+  offlineTitle: {
+    fontSize: FontSize.lg,
+    fontWeight: '700',
+    color: Colors.warning,
+    marginBottom: 8,
+  },
+  offlineText: {
+    fontSize: FontSize.sm,
+    color: Colors.textSecondary,
+    textAlign: 'center',
+    marginBottom: 6,
+  },
+  offlineTip: {
+    fontSize: FontSize.xs,
+    color: Colors.textTertiary,
+    textAlign: 'center',
+    fontStyle: 'italic',
   },
 });

@@ -16,10 +16,14 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useDynamicSafeArea } from '../hooks/useDynamicSafeArea';
 import DatabaseService, { BusStoppage } from '../services/DatabaseService';
 import StorageService from '../services/StorageService';
+import { useTheme } from '../theme/ThemeContext';
 import { Colors, Spacing, BorderRadius, FontSize } from '../theme/colors';
+import { DarkColors } from '../theme/darkColors';
 import RouteMap, { MapCoordinate } from '../components/RouteMap';
 
 export default function RouteDetailsScreen({ route, navigation }: any) {
+  const { isDark } = useTheme();
+  const themeColors = isDark ? DarkColors : Colors;
   const { busId, busName, busBn, fromStopName, toStopName, showFullRoute } = route.params;
   const [busStoppages, setBusStoppages] = useState<BusStoppage[]>([]);
   const [loading, setLoading] = useState(true);
@@ -98,6 +102,9 @@ export default function RouteDetailsScreen({ route, navigation }: any) {
     } else {
       const success = await StorageService.addBookmark(
         `bus_${busId}`,
+        busId,
+        busName,
+        busBn || '',
         1,
         1,
         fromStopName,
@@ -116,10 +123,10 @@ export default function RouteDetailsScreen({ route, navigation }: any) {
 
   if (loading) {
     return (
-      <SafeAreaView style={styles.safe} edges={['top']}>
+      <SafeAreaView style={[styles.safe, { backgroundColor: themeColors.background }]} edges={['top']}>
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#C0191F" />
-          <Text style={styles.loadingText}>Loading bus details...</Text>
+          <ActivityIndicator size="large" color={themeColors.primary} />
+          <Text style={[styles.loadingText, { color: themeColors.textSecondary }]}>Loading bus details...</Text>
         </View>
       </SafeAreaView>
     );
@@ -127,12 +134,12 @@ export default function RouteDetailsScreen({ route, navigation }: any) {
 
   if (!busName) {
     return (
-      <SafeAreaView style={styles.safe} edges={['top']}>
+      <SafeAreaView style={[styles.safe, { backgroundColor: themeColors.background }]} edges={['top']}>
         <View style={styles.errorContainer}>
-          <Ionicons name="alert-circle-outline" size={64} color="#C0191F" />
-          <Text style={styles.errorText}>Bus details not available</Text>
+          <Ionicons name="alert-circle-outline" size={64} color={themeColors.error} />
+          <Text style={[styles.errorText, { color: themeColors.textPrimary }]}>Bus details not available</Text>
           <TouchableOpacity
-            style={styles.backButton}
+            style={[styles.backButton, { backgroundColor: themeColors.primary }]}
             onPress={() => navigation.goBack()}
           >
             <Text style={styles.backButtonText}>Go Back</Text>
@@ -147,29 +154,29 @@ export default function RouteDetailsScreen({ route, navigation }: any) {
     const isLast = stoppage.isJourneyEnd;
     const isInRoute = stoppage.isInRoute;
 
-    let dotColor = Colors.textMuted;
-    let lineColor = Colors.borderLight;
+    let dotColor = themeColors.textMuted;
+    let lineColor = themeColors.borderLight;
     let badgeText = '';
-    let badgeBg = Colors.pill;
+    let badgeBg = themeColors.pill;
     let fontWeight: '400' | '600' | '700' = '400';
 
     if (isFirst) {
-      dotColor = Colors.success;
-      lineColor = Colors.success;
+      dotColor = themeColors.success;
+      lineColor = themeColors.success;
       badgeText = 'SOURCE';
-      badgeBg = Colors.success;
+      badgeBg = themeColors.success;
       fontWeight = '700';
     } else if (isLast) {
-      dotColor = Colors.error;
-      lineColor = Colors.error;
+      dotColor = themeColors.error;
+      lineColor = themeColors.error;
       badgeText = 'DEST';
-      badgeBg = Colors.error;
+      badgeBg = themeColors.error;
       fontWeight = '700';
     } else if (isInRoute) {
-      dotColor = Colors.primary;
-      lineColor = Colors.primary;
+      dotColor = themeColors.primary;
+      lineColor = themeColors.primary;
       badgeText = 'VIA';
-      badgeBg = Colors.primary;
+      badgeBg = themeColors.primary;
       fontWeight = '600';
     }
 
@@ -178,8 +185,8 @@ export default function RouteDetailsScreen({ route, navigation }: any) {
         <View style={styles.stopIndicatorContainer}>
           {index > 0 && <View style={[styles.lineTop, { backgroundColor: lineColor }]} />}
           <View style={[styles.stopDot, { backgroundColor: dotColor }]}>
-            {isFirst && <Ionicons name="play" size={12} color={Colors.textLight} />}
-            {isLast && <Ionicons name="stop" size={12} color={Colors.textLight} />}
+            {isFirst && <Ionicons name="play" size={12} color={themeColors.textLight} />}
+            {isLast && <Ionicons name="stop" size={12} color={themeColors.textLight} />}
           </View>
           {index < busStoppages.length - 1 && (
             <View style={[styles.lineBottom, { backgroundColor: lineColor }]} />
@@ -188,7 +195,7 @@ export default function RouteDetailsScreen({ route, navigation }: any) {
 
         <View style={styles.stopInfoContainer}>
           <View style={styles.stopLabelRow}>
-            <Text style={[styles.stopName, { fontWeight }]}>{stoppage.stopageEn}</Text>
+            <Text style={[styles.stopName, { fontWeight, color: themeColors.textPrimary }]}>{stoppage.stopageEn}</Text>
             {badgeText && (
               <View style={[styles.stopBadge, { backgroundColor: badgeBg }]}>
                 <Text style={styles.stopBadgeText}>{badgeText}</Text>
@@ -196,16 +203,16 @@ export default function RouteDetailsScreen({ route, navigation }: any) {
             )}
           </View>
           {stoppage.stopageBn && (
-            <Text style={[styles.stopNameBn, { fontWeight: '500' }]}>
+            <Text style={[styles.stopNameBn, { fontWeight: '500', color: themeColors.textSecondary }]}>
               {stoppage.stopageBn}
             </Text>
           )}
           <View style={styles.distanceRow}>
-            <Text style={styles.distanceText}>
+            <Text style={[styles.distanceText, { color: themeColors.textPrimary }]}>
               +{(stoppage.segmentDistanceKm ?? 0).toFixed(2)} km
             </Text>
             {typeof stoppage.journeyDistanceKm === 'number' && (
-              <Text style={styles.distanceTextMuted}>
+              <Text style={[styles.distanceTextMuted, { color: themeColors.textTertiary }]}>
                 trip {(stoppage.journeyDistanceKm ?? 0).toFixed(2)} km
               </Text>
             )}
@@ -216,9 +223,9 @@ export default function RouteDetailsScreen({ route, navigation }: any) {
   };
 
   return (
-    <SafeAreaView style={styles.safe} edges={['top']}>
+    <SafeAreaView style={[styles.safe, { backgroundColor: themeColors.background }]} edges={['top']}>
       <LinearGradient
-        colors={[Colors.gradientStart, Colors.gradientEnd]}
+        colors={[themeColors.gradientStart, themeColors.gradientEnd]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.header}
@@ -231,15 +238,15 @@ export default function RouteDetailsScreen({ route, navigation }: any) {
             <Ionicons name="arrow-back" size={24} color="#FFF" />
           </TouchableOpacity>
           <View style={styles.headerTextContainer}>
-            <Text style={styles.headerTitle} numberOfLines={1}>
+            <Text style={[styles.headerTitle, { color: themeColors.textLight }]} numberOfLines={1}>
               {busName}
             </Text>
             {busBn && (
-              <Text style={styles.headerRouteBn} numberOfLines={1}>
+              <Text style={[styles.headerRouteBn, { color: themeColors.textLight }]} numberOfLines={1}>
                 {busBn}
               </Text>
             )}
-            <Text style={styles.headerSubtitle}>
+            <Text style={[styles.headerSubtitle, { color: themeColors.whiteOverlay20 }]}>
               {busStoppages.length} stops
             </Text>
           </View>
@@ -257,84 +264,84 @@ export default function RouteDetailsScreen({ route, navigation }: any) {
       </LinearGradient>
 
       <ScrollView
-        style={styles.body}
+        style={[styles.body, { backgroundColor: themeColors.background }]}
         contentContainerStyle={{
           paddingBottom: safeArea.bottom + 16,
         }}
       >
-        <View style={styles.summaryCard}>
+        <View style={[styles.summaryCard, { backgroundColor: themeColors.surface }]}>
           <View style={styles.summaryRow}>
-            <Ionicons name="location-outline" size={20} color={Colors.primary} />
+            <Ionicons name="location-outline" size={20} color={themeColors.primary} />
             <View style={styles.summaryTextContainer}>
-              <Text style={styles.summaryLabel}>Starting Point</Text>
-              <Text style={styles.summaryValue}>{fromStopName}</Text>
+              <Text style={[styles.summaryLabel, { color: themeColors.textTertiary }]}>Starting Point</Text>
+              <Text style={[styles.summaryValue, { color: themeColors.textPrimary }]}>{fromStopName}</Text>
             </View>
           </View>
 
-          <View style={styles.summaryDivider} />
+          <View style={[styles.summaryDivider, { backgroundColor: themeColors.borderLight }]} />
 
           <View style={styles.summaryRow}>
-            <Ionicons name="flag-outline" size={20} color={Colors.error} />
+            <Ionicons name="flag-outline" size={20} color={themeColors.error} />
             <View style={styles.summaryTextContainer}>
-              <Text style={styles.summaryLabel}>Destination</Text>
-              <Text style={styles.summaryValue}>{toStopName}</Text>
+              <Text style={[styles.summaryLabel, { color: themeColors.textTertiary }]}>Destination</Text>
+              <Text style={[styles.summaryValue, { color: themeColors.textPrimary }]}>{toStopName}</Text>
             </View>
           </View>
 
-          <View style={styles.summaryDivider} />
+          <View style={[styles.summaryDivider, { backgroundColor: themeColors.borderLight }]} />
 
           <View style={styles.summaryRow}>
-            <Ionicons name="list" size={20} color={Colors.primary} />
+            <Ionicons name="list" size={20} color={themeColors.primary} />
             <View style={styles.summaryTextContainer}>
-              <Text style={styles.summaryLabel}>Total Stoppages</Text>
-              <Text style={styles.summaryValue}>{busStoppages.length}</Text>
+              <Text style={[styles.summaryLabel, { color: themeColors.textTertiary }]}>Total Stoppages</Text>
+              <Text style={[styles.summaryValue, { color: themeColors.textPrimary }]}>{busStoppages.length}</Text>
             </View>
           </View>
 
-          <View style={styles.summaryDivider} />
+          <View style={[styles.summaryDivider, { backgroundColor: themeColors.borderLight }]} />
 
           <View style={styles.summaryRow}>
-            <Ionicons name="walk-outline" size={20} color={Colors.info} />
+            <Ionicons name="walk-outline" size={20} color={themeColors.info} />
             <View style={styles.summaryTextContainer}>
-              <Text style={styles.summaryLabel}>Journey Distance</Text>
-              <Text style={styles.summaryValue}>{journeyDistanceKm.toFixed(2)} km</Text>
+              <Text style={[styles.summaryLabel, { color: themeColors.textTertiary }]}>Journey Distance</Text>
+              <Text style={[styles.summaryValue, { color: themeColors.textPrimary }]}>{journeyDistanceKm.toFixed(2)} km</Text>
             </View>
           </View>
 
-          <View style={styles.summaryDivider} />
+          <View style={[styles.summaryDivider, { backgroundColor: themeColors.borderLight }]} />
 
           <View style={styles.summaryRow}>
-            <Ionicons name="cash-outline" size={20} color={Colors.warning} />
+            <Ionicons name="cash-outline" size={20} color={themeColors.warning} />
             <View style={styles.summaryTextContainer}>
-              <Text style={styles.summaryLabel}>Estimated Fare</Text>
-              <Text style={styles.summaryValue}>৳ {estimatedFare.toFixed(2)}</Text>
+              <Text style={[styles.summaryLabel, { color: themeColors.textTertiary }]}>Estimated Fare</Text>
+              <Text style={[styles.summaryValue, { color: themeColors.textPrimary }]}>৳ {estimatedFare.toFixed(2)}</Text>
             </View>
           </View>
         </View>
 
-        <Text style={styles.sectionTitle}>Route Stoppages</Text>
+        <Text style={[styles.sectionTitle, { color: themeColors.textPrimary }]}>Route Stoppages</Text>
 
         {/* Collapsible Map Section */}
         <TouchableOpacity
-          style={styles.mapToggleButton}
+          style={[styles.mapToggleButton, { backgroundColor: themeColors.surface }]}
           onPress={() => setMapExpanded(!mapExpanded)}
           activeOpacity={0.7}
         >
           <View style={styles.mapToggleContent}>
             <View style={styles.mapToggleLeft}>
-              <Ionicons name="map" size={22} color={Colors.primary} />
-              <Text style={styles.mapToggleText}>Live Route Map (OSM)</Text>
+              <Ionicons name="map" size={22} color={themeColors.primary} />
+              <Text style={[styles.mapToggleText, { color: themeColors.textPrimary }]}>Live Route Map (OSM)</Text>
             </View>
             <Ionicons 
               name={mapExpanded ? "chevron-up" : "chevron-down"} 
               size={24} 
-              color={Colors.primary} 
+              color={themeColors.primary} 
             />
           </View>
         </TouchableOpacity>
 
         {mapExpanded && (
-          <View style={styles.mapCard}>
+          <View style={[styles.mapCard, { backgroundColor: themeColors.surface, borderColor: themeColors.borderLight }]}>
             <RouteMap points={mapPoints} height={260} />
           </View>
         )}
@@ -343,7 +350,7 @@ export default function RouteDetailsScreen({ route, navigation }: any) {
           {busStoppages.length > 0 ? (
             busStoppages.map((stoppage, index) => renderStoppage(stoppage, index))
           ) : (
-            <Text style={styles.noStoppagesText}>No stoppages available</Text>
+            <Text style={[styles.noStoppagesText, { color: themeColors.textSecondary }]}>No stoppages available</Text>
           )}
         </View>
       </ScrollView>

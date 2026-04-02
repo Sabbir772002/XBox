@@ -1,4 +1,5 @@
 import DataMigrationService from './DataMigrationService';
+import DistanceService from './DistanceService';
 
 export interface Stop {
   id: number;
@@ -71,11 +72,94 @@ class DatabaseService {
     }
 
     try {
-      await DataMigrationService.loadDataFromJSON();
+      console.log('🔄 Initializing DatabaseService...');
+      // Load all 3 data types: buses, stops, distances
+      await this.loadAllDataTypes();
       this.initialized = true;
-      console.log('✓ DatabaseService initialized with JSON data');
+      console.log('✓ DatabaseService initialized with all data types');
     } catch (error) {
       console.error('✗ Error initializing DatabaseService:', error);
+      // Still mark as initialized to prevent blocking the app
+      this.initialized = true;
+      console.warn('⚠ DatabaseService initialized with minimal data');
+    }
+  }
+
+  /**
+   * Load all 3 data types: buses, stops, and distances
+   * Priority: Firebase > Cache > Local JSON
+   */
+  private async loadAllDataTypes(): Promise<void> {
+    try {
+      console.log('🔄 Loading all data types together...');
+      const startTime = Date.now();
+      
+      // Load buses and stops data
+      await DataMigrationService.loadDataFromJSON();
+      const dataMigrationTime = Date.now() - startTime;
+      console.log(`✓ Buses and stops loaded (${dataMigrationTime}ms)`);
+      
+      // Initialize and load distance data in parallel
+      if (DistanceService && DistanceService.initialize) {
+        try {
+          await DistanceService.initialize();
+          const distanceTime = Date.now() - startTime - dataMigrationTime;
+          console.log(`✓ Distance data loaded (${distanceTime}ms)`);
+        } catch (err) {
+          console.warn('⚠ Distance loading failed but continuing with local data:', err);
+          // Don't throw - distance is optional
+        }
+      }
+      
+      const totalTime = Date.now() - startTime;
+      console.log(`✓ All data types loaded together (${totalTime}ms total)`);
+    } catch (error) {
+      console.error('✗ Error loading data types:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Force refresh all data from Firebase (for manual sync)
+   * Syncs all 3 data types: buses, stops, and distances
+   * Resets the initialized flag and reloads fresh data
+   */
+  async forceSync(): Promise<void> {
+    try {
+      console.log('🔄 Force syncing all data types from Firebase...');
+      
+      // Reset initialized flags
+      this.initialized = false;
+      DataMigrationService.isLoaded = false;
+      DataMigrationService.clearData();
+      
+      // Sync all 3 data types from Firebase
+      await this.syncAllDataTypes();
+      
+      this.initialized = true;
+      console.log('✓ Force sync completed - all 3 data types synced from Firebase');
+    } catch (error) {
+      console.error('✗ Error during force sync:', error);
+      this.initialized = true;
+      throw new Error(`Failed to sync data: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  }
+
+  /**
+   * Sync all 3 data types from Firebase
+   * All data types (buses, stops, distances) are now consolidated in DataMigrationService
+   */
+  private async syncAllDataTypes(): Promise<void> {
+    try {
+      console.log('📡 Syncing all 3 data types from Firebase...');
+      
+      // Reset and reload all data (buses, stops, AND distances together)
+      DataMigrationService.clearData();
+      await DataMigrationService.loadDataFromJSON();
+      
+      console.log('✓ All 3 data types synced (buses, stops, distances)');
+    } catch (error) {
+      console.error('✗ Error syncing data types:', error);
       throw error;
     }
   }
@@ -112,9 +196,9 @@ class DatabaseService {
       return buses;
     }
 
-    const q = query.toLowerCase();
+    const q = query.trim();
     return buses.filter((bus) =>
-      bus.nameEnglish.toLowerCase().includes(q) || bus.nameBangla.toLowerCase().includes(q)
+      bus.nameEnglish.includes(q) || bus.nameBangla.includes(q)
     );
   }
 
@@ -183,17 +267,11 @@ class DatabaseService {
       return [];
     }
 
-    const normalize = (value: string): string =>
-      value
-        .toLowerCase()
-        .replace(/[^a-z0-9\u0980-\u09ff]/g, '');
-
+    // Simple matching - no normalization, only trim and exact comparison
     const isStopMatch = (candidate: string, target: string): boolean => {
-      const c = candidate.toLowerCase();
-      const t = target.toLowerCase();
-      const cn = normalize(candidate);
-      const tn = normalize(target);
-      return c.includes(t) || t.includes(c) || cn.includes(tn) || tn.includes(cn);
+      const c = candidate.trim();
+      const t = target.trim();
+      return c.includes(t) || t.includes(c);
     };
 
     let orderedStoppages: BusStoppage[] = [...bus.stoppages];
@@ -204,26 +282,44 @@ class DatabaseService {
       return orderedStoppages;
     }
 
+    let isReverse = false;
     if (fromIndex > toIndex) {
-      orderedStoppages = [...orderedStoppages]
-        .reverse()
-        .map((s, index) => ({
-          ...s,
-          stopOrder: index,
-        }));
+      isReverse = true;
+      orderedStoppages = [...orderedStoppages].reverse();
       fromIndex = orderedStoppages.findIndex(s => isStopMatch(s.stopageEn, fromStopName));
       toIndex = orderedStoppages.findIndex(s => isStopMatch(s.stopageEn, toStopName));
     }
 
+    // Properly recalculate segment distances in the correct order
+    // Get the stoppages from fromIndex to toIndex to calculate segment distances correctly
+    const routeStoppages = orderedStoppages.slice(0, toIndex + 1);
+    
     let runningDistanceKm = 0;
-    const distanceEnriched = orderedStoppages.map((stoppage, index) => {
+    const distanceEnriched = routeStoppages.map((stoppage, index) => {
+      let segmentDistance = 0;
+      
       if (index > 0) {
-        runningDistanceKm += Math.max(0, stoppage.segmentDistanceKm ?? 0);
+        const prevStop = routeStoppages[index - 1];
+        const currCumulative = stoppage.cumulativeDistanceKm ?? 0;
+        const prevCumulative = prevStop.cumulativeDistanceKm ?? 0;
+        
+        // Calculate segment distance using absolute difference, accounting for reverse
+        if (isReverse) {
+          // For reverse routes, use the difference between cumulative distances
+          segmentDistance = Math.abs(currCumulative - prevCumulative);
+        } else {
+          // For forward routes, calculate normally
+          segmentDistance = Math.abs(currCumulative - prevCumulative);
+        }
+        
+        runningDistanceKm += segmentDistance;
       }
+      
       return {
         ...stoppage,
+        segmentDistanceKm: Number(segmentDistance.toFixed(2)),
         isStart: index === 0,
-        isEnd: index === orderedStoppages.length - 1,
+        isEnd: index === routeStoppages.length - 1,
         cumulativeDistanceKm: Number(runningDistanceKm.toFixed(2)),
       };
     });
@@ -278,10 +374,10 @@ class DatabaseService {
 
     const matchedStoppages = await this.getBusStoppagesWithRouteMatch(busId, fromStopName, toStopName);
     const inRouteNames = new Set(
-      matchedStoppages.filter((item) => item.isInRoute).map((item) => item.stopageEn.toLowerCase())
+      matchedStoppages.filter((item) => item.isInRoute).map((item) => item.stopageEn)
     );
 
-    const routeCoordinates = allCoordinates.filter((item) => inRouteNames.has(item.stopName.toLowerCase()));
+    const routeCoordinates = allCoordinates.filter((item) => inRouteNames.has(item.stopName));
     return routeCoordinates.length >= 2 ? routeCoordinates : allCoordinates;
   }
 
