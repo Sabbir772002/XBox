@@ -203,43 +203,25 @@ export class DataMigrationService {
 
   /**
    * Manual sync data from Firebase (call from UI to refresh)
-   * Returns promise so caller can await and trigger UI refresh
+   * Simply resets isLoaded flag and calls the proven loadDataFromJSON flow
    */
   static async manualSyncData(): Promise<boolean> {
     try {
       console.log('🔄 Manual sync started...');
-      if (!FirebaseService.isInitialized()) {
-        FirebaseService.initialize(FIREBASE_CONFIG);
-      }
       
-      const stopsData = await FirebaseService.fetchStops();
-      const busesData = await FirebaseService.fetchBuses();
-      const distancesData = await FirebaseService.fetchDistanceData(8000);
-
-      if (!stopsData || !busesData) {
-        console.warn('⚠ Firebase returned no data during manual sync');
-        return false;
-      }
-
-      // Clear and reload
+      // Clear loaded flag to force reload
+      this.isLoaded = false;
+      
+      // Clear in-memory maps
       this.busData = [];
       this.stopData.clear();
       this.stopsByName.clear();
       this.stopCoordinatesById.clear();
+      this.distanceData.clear();
       this.firebaseDistanceData.clear();
-
-      await this.processFirebaseStops(stopsData);
-      await this.processFirebaseBuses(busesData);
-
-      if (distancesData) {
-        Object.entries(distancesData).forEach(([key, value]: [string, any]) => {
-          this.addDistanceEntry(this.firebaseDistanceData, key, value);
-        });
-        console.log(`✓ Manual sync distances: ${this.firebaseDistanceData.size} routes`);
-      }
-
-      // Save to cache
-      await this.cacheData();
+      
+      // Use same proven initial load code
+      await this.loadDataFromJSON();
       
       console.log(`✓ Manual sync completed: ${this.busData.length} buses, ${this.stopData.size} stops`);
       return true;

@@ -92,8 +92,8 @@ export default function SettingsScreen({ navigation }: any) {
           console.error('Error saving sync time:', e);
         }
 
-        showNotification('✓ All data synced (buses, stops, distances)');
-        console.log('✓ Manual sync completed with distance updates');
+        showNotification('✓ Sync complete! Please reopen the app to view changes');
+        console.log('✓ Manual sync completed - user needs to reopen app');
       } else {
         showNotification('✗ Sync failed - could not fetch data from Firebase');
         console.warn('⚠ Manual sync returned false');
