@@ -84,6 +84,8 @@ export default function BusListScreen({ navigation }: any) {
     </TouchableOpacity>
   );
 
+
+
   const styles = useMemo(() => StyleSheet.create({
     safe: {
       flex: 1,

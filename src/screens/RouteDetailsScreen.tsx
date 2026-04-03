@@ -21,21 +21,55 @@ import { Colors, Spacing, BorderRadius, FontSize } from '../theme/colors';
 import { DarkColors } from '../theme/darkColors';
 import RouteMap, { MapCoordinate } from '../components/RouteMap';
 
+interface TransferRoute {
+  id: string;
+  firstBus: Bus;
+  secondBus: Bus;
+  transferStop: BusStoppage;
+  firstBusFromStop: string;
+  firstBusToStop: string;
+  secondBusFromStop: string;
+  secondBusToStop: string;
+  firstBusDistance: number;
+  secondBusDistance: number;
+  totalDistance: number;
+  estimatedFare?: number;
+}
+
+interface Bus {
+  id: number;
+  nameEnglish: string;
+  nameBangla?: string;
+  serviceType?: string;
+  totalStops: number;
+  stoppages?: BusStoppage[];
+  estimatedDistanceKm?: number;
+  estimatedFare?: number;
+}
+
 export default function RouteDetailsScreen({ route, navigation }: any) {
   const { isDark } = useTheme();
   const themeColors = isDark ? DarkColors : Colors;
-  const { busId, busName, busBn, fromStopName, toStopName, showFullRoute } = route.params;
+  const { busId, busName, busBn, fromStopName, toStopName, showFullRoute, transferRoute: passedTransferRoute } = route.params;
   const [busStoppages, setBusStoppages] = useState<BusStoppage[]>([]);
+  const [secondBusStoppages, setSecondBusStoppages] = useState<BusStoppage[]>([]);
   const [loading, setLoading] = useState(true);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [journeyDistanceKm, setJourneyDistanceKm] = useState(0);
   const [estimatedFare, setEstimatedFare] = useState(10);
   const [mapPoints, setMapPoints] = useState<MapCoordinate[]>([]);
   const [mapExpanded, setMapExpanded] = useState(false);
+  const [isTransfer, setIsTransfer] = useState(false);
   const safeArea = useDynamicSafeArea();
 
   useEffect(() => {
-    loadBusStoppages();
+    if (passedTransferRoute) {
+      setIsTransfer(true);
+      loadTransferBusStoppages();
+    } else {
+      setIsTransfer(false);
+      loadBusStoppages();
+    }
     checkBookmarkStatus();
   }, []);
 
@@ -74,6 +108,50 @@ export default function RouteDetailsScreen({ route, navigation }: any) {
       setMapPoints(coords);
     } catch (error) {
       console.error('Error loading bus stoppages:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadTransferBusStoppages = async () => {
+    try {
+      if (!passedTransferRoute) {
+        setLoading(false);
+        return;
+      }
+
+      const transferRoute = passedTransferRoute as TransferRoute;
+
+      // Load first bus stoppages
+      let firstStoppages: BusStoppage[] = [];
+      firstStoppages = await DatabaseService.getBusStoppagesWithRouteMatch(
+        transferRoute.firstBus.id,
+        transferRoute.firstBusFromStop,
+        transferRoute.transferStop.stopageEn
+      );
+      setBusStoppages(firstStoppages);
+
+      // Load second bus stoppages
+      let secondStoppages: BusStoppage[] = [];
+      secondStoppages = await DatabaseService.getBusStoppagesWithRouteMatch(
+        transferRoute.secondBus.id,
+        transferRoute.transferStop.stopageEn,
+        transferRoute.secondBusToStop
+      );
+      setSecondBusStoppages(secondStoppages);
+
+      // Calculate total journey distance and fare
+      const totalDistance = transferRoute.totalDistance;
+      setJourneyDistanceKm(totalDistance);
+      setEstimatedFare(
+        transferRoute.estimatedFare ??
+          Number(Math.max(10, totalDistance * 2.5).toFixed(2))
+      );
+
+      // Note: Map coordinates handling for transfer routes might need extension
+      // For now, we'll skip the map for transfer routes or calculate combined coordinates
+    } catch (error) {
+      console.error('Error loading transfer bus stoppages:', error);
     } finally {
       setLoading(false);
     }
@@ -238,17 +316,36 @@ export default function RouteDetailsScreen({ route, navigation }: any) {
             <Ionicons name="arrow-back" size={24} color="#FFF" />
           </TouchableOpacity>
           <View style={styles.headerTextContainer}>
-            <Text style={[styles.headerTitle, { color: themeColors.textLight }]} numberOfLines={1}>
-              {busName}
-            </Text>
-            {busBn && (
-              <Text style={[styles.headerRouteBn, { color: themeColors.textLight }]} numberOfLines={1}>
-                {busBn}
-              </Text>
+            {isTransfer && passedTransferRoute ? (
+              <>
+                <View style={styles.transferHeaderRow}>
+                  <Text style={[styles.headerTitle, { color: themeColors.textLight }]} numberOfLines={1}>
+                    {passedTransferRoute.firstBus.nameEnglish}
+                  </Text>
+                  <Ionicons name="arrow-forward" size={18} color="#FFF" style={{ marginHorizontal: Spacing.sm }} />
+                  <Text style={[styles.headerTitle, { color: themeColors.textLight }]} numberOfLines={1}>
+                    {passedTransferRoute.secondBus.nameEnglish}
+                  </Text>
+                </View>
+                <Text style={[styles.headerSubtitle, { color: themeColors.whiteOverlay20 }]}>
+                  Transfer at {passedTransferRoute.transferStop.stopageEn}
+                </Text>
+              </>
+            ) : (
+              <>
+                <Text style={[styles.headerTitle, { color: themeColors.textLight }]} numberOfLines={1}>
+                  {busName}
+                </Text>
+                {busBn && (
+                  <Text style={[styles.headerRouteBn, { color: themeColors.textLight }]} numberOfLines={1}>
+                    {busBn}
+                  </Text>
+                )}
+                <Text style={[styles.headerSubtitle, { color: themeColors.whiteOverlay20 }]}>
+                  {busStoppages.length} stops
+                </Text>
+              </>
             )}
-            <Text style={[styles.headerSubtitle, { color: themeColors.whiteOverlay20 }]}>
-              {busStoppages.length} stops
-            </Text>
           </View>
           <TouchableOpacity
             style={styles.bookmarkButton}
@@ -270,56 +367,114 @@ export default function RouteDetailsScreen({ route, navigation }: any) {
         }}
       >
         <View style={[styles.summaryCard, { backgroundColor: themeColors.surface }]}>
-          <View style={styles.summaryRow}>
-            <Ionicons name="location-outline" size={20} color={themeColors.primary} />
-            <View style={styles.summaryTextContainer}>
-              <Text style={[styles.summaryLabel, { color: themeColors.textTertiary }]}>Starting Point</Text>
-              <Text style={[styles.summaryValue, { color: themeColors.textPrimary }]}>{fromStopName}</Text>
-            </View>
-          </View>
+          {isTransfer && passedTransferRoute ? (
+            <>
+              <View style={styles.summaryRow}>
+                <Ionicons name="location-outline" size={20} color={themeColors.primary} />
+                <View style={styles.summaryTextContainer}>
+                  <Text style={[styles.summaryLabel, { color: themeColors.textTertiary }]}>Starting Point</Text>
+                  <Text style={[styles.summaryValue, { color: themeColors.textPrimary }]}>{passedTransferRoute.firstBusFromStop}</Text>
+                </View>
+              </View>
 
-          <View style={[styles.summaryDivider, { backgroundColor: themeColors.borderLight }]} />
+              <View style={[styles.summaryDivider, { backgroundColor: themeColors.borderLight }]} />
 
-          <View style={styles.summaryRow}>
-            <Ionicons name="flag-outline" size={20} color={themeColors.error} />
-            <View style={styles.summaryTextContainer}>
-              <Text style={[styles.summaryLabel, { color: themeColors.textTertiary }]}>Destination</Text>
-              <Text style={[styles.summaryValue, { color: themeColors.textPrimary }]}>{toStopName}</Text>
-            </View>
-          </View>
+              <View style={styles.summaryRow}>
+                <View style={[styles.transferPointBadge, { backgroundColor: themeColors.warning }]}>
+                  <Ionicons name="swap-horizontal" size={16} color="#FFF" />
+                </View>
+                <View style={styles.summaryTextContainer}>
+                  <Text style={[styles.summaryLabel, { color: themeColors.textTertiary }]}>Transfer Point</Text>
+                  <Text style={[styles.summaryValue, { color: themeColors.textPrimary }]}>{passedTransferRoute.transferStop.stopageEn}</Text>
+                </View>
+              </View>
 
-          <View style={[styles.summaryDivider, { backgroundColor: themeColors.borderLight }]} />
+              <View style={[styles.summaryDivider, { backgroundColor: themeColors.borderLight }]} />
 
-          <View style={styles.summaryRow}>
-            <Ionicons name="list" size={20} color={themeColors.primary} />
-            <View style={styles.summaryTextContainer}>
-              <Text style={[styles.summaryLabel, { color: themeColors.textTertiary }]}>Total Stoppages</Text>
-              <Text style={[styles.summaryValue, { color: themeColors.textPrimary }]}>{busStoppages.length}</Text>
-            </View>
-          </View>
+              <View style={styles.summaryRow}>
+                <Ionicons name="flag-outline" size={20} color={themeColors.error} />
+                <View style={styles.summaryTextContainer}>
+                  <Text style={[styles.summaryLabel, { color: themeColors.textTertiary }]}>Destination</Text>
+                  <Text style={[styles.summaryValue, { color: themeColors.textPrimary }]}>{passedTransferRoute.secondBusToStop}</Text>
+                </View>
+              </View>
 
-          <View style={[styles.summaryDivider, { backgroundColor: themeColors.borderLight }]} />
+              <View style={[styles.summaryDivider, { backgroundColor: themeColors.borderLight }]} />
 
-          <View style={styles.summaryRow}>
-            <Ionicons name="walk-outline" size={20} color={themeColors.info} />
-            <View style={styles.summaryTextContainer}>
-              <Text style={[styles.summaryLabel, { color: themeColors.textTertiary }]}>Journey Distance</Text>
-              <Text style={[styles.summaryValue, { color: themeColors.textPrimary }]}>{journeyDistanceKm.toFixed(2)} km</Text>
-            </View>
-          </View>
+              <View style={styles.summaryRow}>
+                <Ionicons name="walk-outline" size={20} color={themeColors.info} />
+                <View style={styles.summaryTextContainer}>
+                  <Text style={[styles.summaryLabel, { color: themeColors.textTertiary }]}>Total Distance</Text>
+                  <Text style={[styles.summaryValue, { color: themeColors.textPrimary }]}>{journeyDistanceKm.toFixed(2)} km</Text>
+                </View>
+              </View>
 
-          <View style={[styles.summaryDivider, { backgroundColor: themeColors.borderLight }]} />
+              <View style={[styles.summaryDivider, { backgroundColor: themeColors.borderLight }]} />
 
-          <View style={styles.summaryRow}>
-            <Ionicons name="cash-outline" size={20} color={themeColors.warning} />
-            <View style={styles.summaryTextContainer}>
-              <Text style={[styles.summaryLabel, { color: themeColors.textTertiary }]}>Estimated Fare</Text>
-              <Text style={[styles.summaryValue, { color: themeColors.textPrimary }]}>৳ {estimatedFare.toFixed(2)}</Text>
-            </View>
-          </View>
+              <View style={styles.summaryRow}>
+                <Ionicons name="cash-outline" size={20} color={themeColors.warning} />
+                <View style={styles.summaryTextContainer}>
+                  <Text style={[styles.summaryLabel, { color: themeColors.textTertiary }]}>Estimated Fare</Text>
+                  <Text style={[styles.summaryValue, { color: themeColors.textPrimary }]}>৳ {estimatedFare.toFixed(2)}</Text>
+                </View>
+              </View>
+            </>
+          ) : (
+            <>
+              <View style={styles.summaryRow}>
+                <Ionicons name="location-outline" size={20} color={themeColors.primary} />
+                <View style={styles.summaryTextContainer}>
+                  <Text style={[styles.summaryLabel, { color: themeColors.textTertiary }]}>Starting Point</Text>
+                  <Text style={[styles.summaryValue, { color: themeColors.textPrimary }]}>{fromStopName}</Text>
+                </View>
+              </View>
+
+              <View style={[styles.summaryDivider, { backgroundColor: themeColors.borderLight }]} />
+
+              <View style={styles.summaryRow}>
+                <Ionicons name="flag-outline" size={20} color={themeColors.error} />
+                <View style={styles.summaryTextContainer}>
+                  <Text style={[styles.summaryLabel, { color: themeColors.textTertiary }]}>Destination</Text>
+                  <Text style={[styles.summaryValue, { color: themeColors.textPrimary }]}>{toStopName}</Text>
+                </View>
+              </View>
+
+              <View style={[styles.summaryDivider, { backgroundColor: themeColors.borderLight }]} />
+
+              <View style={styles.summaryRow}>
+                <Ionicons name="list" size={20} color={themeColors.primary} />
+                <View style={styles.summaryTextContainer}>
+                  <Text style={[styles.summaryLabel, { color: themeColors.textTertiary }]}>Total Stoppages</Text>
+                  <Text style={[styles.summaryValue, { color: themeColors.textPrimary }]}>{busStoppages.length}</Text>
+                </View>
+              </View>
+
+              <View style={[styles.summaryDivider, { backgroundColor: themeColors.borderLight }]} />
+
+              <View style={styles.summaryRow}>
+                <Ionicons name="walk-outline" size={20} color={themeColors.info} />
+                <View style={styles.summaryTextContainer}>
+                  <Text style={[styles.summaryLabel, { color: themeColors.textTertiary }]}>Journey Distance</Text>
+                  <Text style={[styles.summaryValue, { color: themeColors.textPrimary }]}>{journeyDistanceKm.toFixed(2)} km</Text>
+                </View>
+              </View>
+
+              <View style={[styles.summaryDivider, { backgroundColor: themeColors.borderLight }]} />
+
+              <View style={styles.summaryRow}>
+                <Ionicons name="cash-outline" size={20} color={themeColors.warning} />
+                <View style={styles.summaryTextContainer}>
+                  <Text style={[styles.summaryLabel, { color: themeColors.textTertiary }]}>Estimated Fare</Text>
+                  <Text style={[styles.summaryValue, { color: themeColors.textPrimary }]}>৳ {estimatedFare.toFixed(2)}</Text>
+                </View>
+              </View>
+            </>
+          )}
         </View>
 
-        <Text style={[styles.sectionTitle, { color: themeColors.textPrimary }]}>Route Stoppages</Text>
+        <Text style={[styles.sectionTitle, { color: themeColors.textPrimary }]}>
+          {isTransfer ? 'Journey Route' : 'Route Stoppages'}
+        </Text>
 
         {/* Collapsible Map Section */}
         <TouchableOpacity
@@ -347,10 +502,66 @@ export default function RouteDetailsScreen({ route, navigation }: any) {
         )}
 
         <View style={styles.stopsListContainer}>
-          {busStoppages.length > 0 ? (
-            busStoppages.map((stoppage, index) => renderStoppage(stoppage, index))
+          {isTransfer && passedTransferRoute ? (
+            <>
+              {/* First Bus Section */}
+              <View style={[styles.busLegSection, { borderColor: themeColors.primary }]}>
+                <View style={[styles.busLegHeader, { backgroundColor: themeColors.primary }]}>
+                  <Ionicons name="bus" size={18} color="#FFF" />
+                  <Text style={[styles.busLegTitle, { color: '#FFF' }]}>
+                    {passedTransferRoute.firstBus.nameEnglish}
+                  </Text>
+                </View>
+                <View style={styles.busLegContent}>
+                  {busStoppages.length > 0 ? (
+                    busStoppages.map((stoppage, index) => renderStoppage(stoppage, index))
+                  ) : (
+                    <Text style={[styles.noStoppagesText, { color: themeColors.textSecondary }]}>
+                      No stoppages available
+                    </Text>
+                  )}
+                </View>
+              </View>
+
+              {/* Transfer Point Indicator */}
+              <View style={[styles.transferPointIndicator, { backgroundColor: themeColors.warning }]}>
+                <View style={styles.transferPointContent}>
+                  <Ionicons name="swap-horizontal" size={20} color="#FFF" />
+                  <Text style={styles.transferPointText}>
+                    Change at {passedTransferRoute.transferStop.stopageEn}
+                  </Text>
+                </View>
+              </View>
+
+              {/* Second Bus Section */}
+              <View style={[styles.busLegSection, { borderColor: themeColors.info }]}>
+                <View style={[styles.busLegHeader, { backgroundColor: themeColors.info }]}>
+                  <Ionicons name="bus" size={18} color="#FFF" />
+                  <Text style={[styles.busLegTitle, { color: '#FFF' }]}>
+                    {passedTransferRoute.secondBus.nameEnglish}
+                  </Text>
+                </View>
+                <View style={styles.busLegContent}>
+                  {secondBusStoppages.length > 0 ? (
+                    secondBusStoppages.map((stoppage, index) => renderStoppage(stoppage, index))
+                  ) : (
+                    <Text style={[styles.noStoppagesText, { color: themeColors.textSecondary }]}>
+                      No stoppages available
+                    </Text>
+                  )}
+                </View>
+              </View>
+            </>
           ) : (
-            <Text style={[styles.noStoppagesText, { color: themeColors.textSecondary }]}>No stoppages available</Text>
+            <>
+              {busStoppages.length > 0 ? (
+                busStoppages.map((stoppage, index) => renderStoppage(stoppage, index))
+              ) : (
+                <Text style={[styles.noStoppagesText, { color: themeColors.textSecondary }]}>
+                  No stoppages available
+                </Text>
+              )}
+            </>
           )}
         </View>
       </ScrollView>
@@ -620,5 +831,71 @@ const styles = StyleSheet.create({
     fontSize: FontSize.base,
     fontWeight: '700',
     color: Colors.primary,
+  },
+  transferHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: Spacing.xs,
+  },
+  transferPointBadge: {
+    width: 36,
+    height: 36,
+    borderRadius: BorderRadius.round,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: Colors.warning,
+  },
+  busLegSection: {
+    marginHorizontal: Spacing.lg,
+    marginBottom: Spacing.lg,
+    borderLeftWidth: 4,
+    borderLeftColor: Colors.primary,
+    borderRadius: BorderRadius.lg,
+    backgroundColor: Colors.surface,
+    overflow: 'hidden',
+    shadowColor: Colors.shadowPrimary,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  busLegHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.md,
+    backgroundColor: Colors.primary,
+    gap: Spacing.md,
+  },
+  busLegTitle: {
+    fontSize: FontSize.base,
+    fontWeight: '700',
+    color: Colors.textLight,
+  },
+  busLegContent: {
+    paddingHorizontal: Spacing.lg,
+    paddingTop: Spacing.lg,
+    paddingBottom: Spacing.lg,
+  },
+  transferPointIndicator: {
+    marginHorizontal: Spacing.lg,
+    marginVertical: Spacing.lg,
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.md,
+    backgroundColor: Colors.warning,
+    borderRadius: BorderRadius.lg,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  transferPointContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.md,
+  },
+  transferPointText: {
+    fontSize: FontSize.base,
+    fontWeight: '700',
+    color: Colors.textLight,
   },
 });

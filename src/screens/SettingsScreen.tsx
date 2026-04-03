@@ -11,6 +11,7 @@ import {
   Platform,
   ToastAndroid,
 } from 'react-native';
+import RNRestart from 'react-native-restart';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import LinearGradient from 'react-native-linear-gradient';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -92,7 +93,23 @@ export default function SettingsScreen({ navigation }: any) {
           console.error('Error saving sync time:', e);
         }
 
-        showNotification('✓ Sync complete! Please reopen the app to view changes');
+        Alert.alert('Sync Complete', 'Please reopen the app to view changes', [
+          {
+            text: 'Cancel',
+            onPress: () => {
+              // Just dismiss the alert
+            },
+            style: 'cancel',
+          },
+          {
+            text: 'OK',
+            onPress: () => {
+              // Restart the app
+              RNRestart.restart();
+            },
+            style: 'default',
+          },
+        ]);
         console.log('✓ Manual sync completed - user needs to reopen app');
       } else {
         showNotification('✗ Sync failed - could not fetch data from Firebase');

@@ -15,11 +15,13 @@ import LinearGradient from 'react-native-linear-gradient';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useDynamicSafeArea } from '../hooks/useDynamicSafeArea';
-import DatabaseService, { Stop, Bus } from '../services/DatabaseService';
+import DatabaseService, { Stop, Bus, TransferRoute } from '../services/DatabaseService';
 import StorageService from '../services/StorageService';
 import { useTheme } from '../theme/ThemeContext';
 import { Colors, Spacing, BorderRadius, FontSize } from '../theme/colors';
 import { DarkColors } from '../theme/darkColors';
+import { CollapsibleSection } from '../components/CollapsibleSection';
+import { TransferBusCard } from '../components/TransferBusCard';
 
 export default function RouteSearchScreen({ navigation, route }: any) {
   const { isDark } = useTheme();
@@ -29,11 +31,22 @@ export default function RouteSearchScreen({ navigation, route }: any) {
   const [fromStopName, setFromStopName] = useState<string | null>(null);
   const [toStopName, setToStopName] = useState<string | null>(null);
   const [showData, setShowData] = React.useState(false);
-  const [buses, setBuses] = useState<Bus[]>([]);
+  const [allBuses, setAllBuses] = useState<Bus[]>([]); // All buses loaded
+  const [buses, setBuses] = useState<Bus[]>([]); // Displayed buses (paginated)
+  const [displayedBusesCount, setDisplayedBusesCount] = useState(50); // Initial display count
+  const [transferRoutes, setTransferRoutes] = useState<TransferRoute[]>([]);
+  const [allTransferRoutes, setAllTransferRoutes] = useState<TransferRoute[]>([]); // Store all for filtering
+  const [displayedTransfersCount, setDisplayedTransfersCount] = useState(50); // Transfer pagination
   const [loading, setLoading] = useState(false);
+  const [transferLoading, setTransferLoading] = useState(false);
+  const [transfersLoaded, setTransfersLoaded] = useState(false); // Lazy load flag
   const [allStops, setAllStops] = useState<Stop[]>([]);
   const [fromSuggestions, setFromSuggestions] = useState<Stop[]>([]);
   const [toSuggestions, setToSuggestions] = useState<Stop[]>([]);
+  const [uniqueTransferPoints, setUniqueTransferPoints] = useState<Array<{ id: number; name: string; nameBn: string }>>([]);
+  const [selectedTransferPointIds, setSelectedTransferPointIds] = useState<number[]>([]); // All by default
+  const [searchDate, setSearchDate] = useState<string | null>(null);
+  const [searchTime, setSearchTime] = useState<string | null>(null);
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const safeArea = useDynamicSafeArea();
 
@@ -69,10 +82,11 @@ export default function RouteSearchScreen({ navigation, route }: any) {
     setFrom(text);
     setFromStopName(text);
     if (text.length > 0) {
+      const lowerText = text.toLowerCase();
       const filtered = allStops.filter(
         stop =>
-          (stop.stopageEn && stop.stopageEn.toLowerCase().includes(text.toLowerCase())) ||
-          (stop.stopageBn && stop.stopageBn.includes(text))
+          (stop.stopageEn && stop.stopageEn.toLowerCase().includes(lowerText)) ||
+          (stop.stopageBn && stop.stopageBn.toLowerCase().includes(lowerText))
       );
       setFromSuggestions(filtered.slice(0, 10));
     } else {
@@ -84,10 +98,11 @@ export default function RouteSearchScreen({ navigation, route }: any) {
     setTo(text);
     setToStopName(text);
     if (text.length > 0) {
+      const lowerText = text.toLowerCase();
       const filtered = allStops.filter(
         stop =>
-          (stop.stopageEn && stop.stopageEn.toLowerCase().includes(text.toLowerCase())) ||
-          (stop.stopageBn && stop.stopageBn.includes(text))
+          (stop.stopageEn && stop.stopageEn.toLowerCase().includes(lowerText)) ||
+          (stop.stopageBn && stop.stopageBn.toLowerCase().includes(lowerText))
       );
       setToSuggestions(filtered.slice(0, 10));
     } else {
@@ -110,6 +125,18 @@ export default function RouteSearchScreen({ navigation, route }: any) {
   const searchBusesWithParams = async (fStopName: string, tStopName: string) => {
     setLoading(true);
     setShowData(true);
+    setTransfersLoaded(false); // Reset lazy load flag
+    setAllTransferRoutes([]); // Clear previous transfers
+    setTransferRoutes([]);
+    setUniqueTransferPoints([]);
+    setSelectedTransferPointIds([]);
+
+    // Set search date and time
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('en-BD', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+    const timeStr = now.toLocaleTimeString('en-BD', { hour: '2-digit', minute: '2-digit', hour12: true });
+    setSearchDate(dateStr);
+    setSearchTime(timeStr);
 
     // Fade in animation
     Animated.timing(fadeAnim, {
@@ -119,9 +146,8 @@ export default function RouteSearchScreen({ navigation, route }: any) {
     }).start();
 
     try {
-      // Search for buses that have both stops in their route
+      // Search for direct buses only (lazy load transfers)
       const foundBuses = await DatabaseService.getBusesBetweenStops(fStopName, tStopName);
-      
       setBuses(foundBuses);
       
       // Save to history
@@ -134,6 +160,87 @@ export default function RouteSearchScreen({ navigation, route }: any) {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Lazy load transfers when user clicks to expand
+  const loadTransfers = async (fStopName: string, tStopName: string) => {
+    if (transfersLoaded) return; // Already loaded
+    
+    setTransferLoading(true);
+    try {
+      const foundTransfers = await DatabaseService.getBusesWithOneTransfer(fStopName, tStopName);
+      setAllTransferRoutes(foundTransfers);
+      
+      // Display first 50 transfers
+      const displayedTransfers = foundTransfers.slice(0, 50);
+      setTransferRoutes(displayedTransfers);
+      
+      // Get unique transfer points
+      const uniquePoints = await DatabaseService.getUniqueTransferPoints(foundTransfers);
+      setUniqueTransferPoints(uniquePoints);
+      setSelectedTransferPointIds(uniquePoints.map(p => p.id)); // Select all by default
+      
+      setTransfersLoaded(true);
+      console.log('Loaded transfers:', foundTransfers.length);
+    } catch (error) {
+      console.error('Error loading transfers:', error);
+      setAllTransferRoutes([]);
+      setTransferRoutes([]);
+    } finally {
+      setTransferLoading(false);
+    }
+  };
+
+  // Filter transfers by selected transfer points
+  const handleTransferPointFilterChange = (pointId: number) => {
+    let newSelected = [...selectedTransferPointIds];
+    
+    if (newSelected.includes(pointId)) {
+      newSelected = newSelected.filter(id => id !== pointId);
+    } else {
+      newSelected.push(pointId);
+    }
+    
+    setSelectedTransferPointIds(newSelected);
+    
+    // Update displayed routes based on filter with current display count
+    const filtered = DatabaseService.filterTransferRoutesByPoint(allTransferRoutes, newSelected);
+    const displayedTransfers = filtered.slice(0, displayedTransfersCount);
+    setTransferRoutes(displayedTransfers);
+  };
+
+  // Load more buses (add 50 more)
+  const loadMoreBuses = () => {
+    const newCount = displayedBusesCount + 50;
+    setDisplayedBusesCount(newCount);
+    const moreBuses = allBuses.slice(0, newCount);
+    setBuses(moreBuses);
+  };
+
+  // Load all remaining buses
+  const loadAllBuses = () => {
+    setDisplayedBusesCount(allBuses.length);
+    setBuses(allBuses);
+  };
+
+  // Load more transfers (add 50 more)
+  const loadMoreTransfers = () => {
+    const newCount = displayedTransfersCount + 50;
+    setDisplayedTransfersCount(newCount);
+    
+    // Apply current filter to new count
+    const filtered = DatabaseService.filterTransferRoutesByPoint(allTransferRoutes, selectedTransferPointIds);
+    const moreTransfers = filtered.slice(0, newCount);
+    setTransferRoutes(moreTransfers);
+  };
+
+  // Load all remaining transfers
+  const loadAllTransfers = () => {
+    setDisplayedTransfersCount(allTransferRoutes.length);
+    
+    // Apply current filter to all
+    const filtered = DatabaseService.filterTransferRoutesByPoint(allTransferRoutes, selectedTransferPointIds);
+    setTransferRoutes(filtered);
   };
 
   const searchBuses = async () => {
@@ -315,26 +422,214 @@ export default function RouteSearchScreen({ navigation, route }: any) {
             <Text style={[styles.loadingText, { color: themeColors.textSecondary }]}>Finding buses...</Text>
           </View>
         ) : showData ? (
-          buses.length > 0 ? (
-            <>
-              <View style={[styles.resultsHeader, { borderBottomColor: themeColors.primary }]}>
-                <Text style={[styles.resultsTitle, { color: themeColors.textPrimary }]}>Available Buses</Text>
-                <Text style={[styles.resultsCount, { color: themeColors.textSecondary }]}>{buses.length} bus{buses.length > 1 ? 'es' : ''} found</Text>
-              </View>
-              <FlatList
-                data={buses}
-                keyExtractor={(item) => `bus_${item.id}`}
-                renderItem={renderBusItem}
-                contentContainerStyle={{ paddingBottom: 12 }}
-                showsVerticalScrollIndicator={false}
-              />
-            </>
+          buses.length > 0 || transferRoutes.length > 0 ? (
+            <ScrollView 
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={{ paddingBottom: Spacing.lg }}
+            >
+              {/* Direct Buses Section */}
+              {buses.length > 0 && (
+                <CollapsibleSection
+                  title={`Direct Bus (${buses.length} of ${allBuses.length})`}
+                  count={buses.length}
+                  defaultExpanded={true}
+                  icon="bus"
+                >
+                  <FlatList
+                    data={buses}
+                    keyExtractor={(item) => `bus_${item.id}`}
+                    renderItem={renderBusItem}
+                    scrollEnabled={false}
+                    showsVerticalScrollIndicator={false}
+                  />
+                  
+                  {/* Pagination Controls for Buses */}
+                  {buses.length < allBuses.length && (
+                    <View style={styles.paginationContainer}>
+                      <TouchableOpacity
+                        style={[styles.paginationButton, { backgroundColor: themeColors.primary }]}
+                        onPress={loadMoreBuses}
+                        activeOpacity={0.7}
+                      >
+                        <Ionicons name="arrow-down" size={16} color="#FFF" />
+                        <Text style={[styles.paginationButtonText, { color: '#FFF' }]}>
+                          Load 50 More
+                        </Text>
+                      </TouchableOpacity>
+                      
+                      <TouchableOpacity
+                        style={[styles.paginationButton, { backgroundColor: themeColors.badge }]}
+                        onPress={loadAllBuses}
+                        activeOpacity={0.7}
+                      >
+                        <Ionicons name="download" size={16} color="#FFF" />
+                        <Text style={[styles.paginationButtonText, { color: '#FFF' }]}>
+                          Load All
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                  )}
+                </CollapsibleSection>
+              )}
+
+              {/* Transfer Buses Section - Lazy Load */}
+              {!transfersLoaded && fromStopName && toStopName && (
+                <TouchableOpacity
+                  style={[styles.lazyLoadButton, { backgroundColor: themeColors.primary }]}
+                  onPress={() => loadTransfers(fromStopName, toStopName)}
+                  activeOpacity={0.7}
+                >
+                  <Ionicons name="swap-horizontal" size={20} color="#FFF" />
+                  <Text style={[styles.lazyLoadButtonText, { color: '#FFF' }]}>
+                    {transferLoading ? 'Loading transfers...' : 'Show Buses with 1 Change'}
+                  </Text>
+                  {transferLoading && <ActivityIndicator color="#FFF" style={{ marginLeft: 10 }} />}
+                </TouchableOpacity>
+              )}
+
+              {/* Filter Section for Transfer Points */}
+              {transfersLoaded && uniqueTransferPoints.length > 0 && (
+                <View style={[styles.filterSection, { backgroundColor: themeColors.surface }]}>
+                  <Text style={[styles.filterTitle, { color: themeColors.textPrimary }]}>
+                    Filter by Transfer Point
+                  </Text>
+                  <ScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    style={styles.filterContainer}
+                  >
+                    {uniqueTransferPoints.map((point) => (
+                      <TouchableOpacity
+                        key={point.id}
+                        style={[
+                          styles.filterChip,
+                          {
+                            backgroundColor: selectedTransferPointIds.includes(point.id)
+                              ? themeColors.primary
+                              : themeColors.borderLight,
+                          },
+                        ]}
+                        onPress={() => handleTransferPointFilterChange(point.id)}
+                      >
+                        <Text
+                          style={[
+                            styles.filterChipText,
+                            {
+                              color: selectedTransferPointIds.includes(point.id)
+                                ? '#FFF'
+                                : themeColors.textSecondary,
+                            },
+                          ]}
+                          numberOfLines={1}
+                        >
+                          {point.name}
+                        </Text>
+                      </TouchableOpacity>
+                    ))}
+                  </ScrollView>
+                </View>
+              )}
+
+              {/* Transfer Buses List */}
+              {transfersLoaded && transferRoutes.length > 0 && (
+                <CollapsibleSection
+                  title={`Buses with 1 Change (${transferRoutes.length} of ${allTransferRoutes.length})`}
+                  count={transferRoutes.length}
+                  defaultExpanded={buses.length === 0}
+                  icon="swap-horizontal"
+                >
+                  <FlatList
+                    data={transferRoutes}
+                    keyExtractor={(item) => item.id}
+                    renderItem={({ item }) => (
+                      <TransferBusCard
+                        transfer={item}
+                        onPress={(transfer) => {
+                          // Navigate to route details for the first bus in the transfer
+                          // This gives the user information about the first leg of the journey
+                          navigation.navigate('RouteDetails', {
+                            busId: transfer.firstBus.id,
+                            busName: transfer.firstBus.nameEnglish,
+                            busBn: transfer.firstBus.nameBangla,
+                            fromStopName: transfer.firstBusFromStop,
+                            toStopName: transfer.firstBusToStop,
+                            transferRoute: transfer, // Pass the full transfer for reference
+                          });
+                        }}
+                      />
+                    )}
+                    scrollEnabled={false}
+                    showsVerticalScrollIndicator={false}
+                  />
+                  
+                  {/* Pagination Controls for Transfers */}
+                  {transferRoutes.length < allTransferRoutes.length && (
+                    <View style={styles.paginationContainer}>
+                      <TouchableOpacity
+                        style={[styles.paginationButton, { backgroundColor: themeColors.primary }]}
+                        onPress={loadMoreTransfers}
+                        activeOpacity={0.7}
+                      >
+                        <Ionicons name="arrow-down" size={16} color="#FFF" />
+                        <Text style={[styles.paginationButtonText, { color: '#FFF' }]}>
+                          Load 50 More
+                        </Text>
+                      </TouchableOpacity>
+                      
+                      <TouchableOpacity
+                        style={[styles.paginationButton, { backgroundColor: themeColors.badge }]}
+                        onPress={loadAllTransfers}
+                        activeOpacity={0.7}
+                      >
+                        <Ionicons name="download" size={16} color="#FFF" />
+                        <Text style={[styles.paginationButtonText, { color: '#FFF' }]}>
+                          Load All
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                  )}
+                </CollapsibleSection>
+              )}
+
+              {/* No transfers message */}
+              {transfersLoaded && transferRoutes.length === 0 && (
+                <View style={[styles.noTransfersContainer, { backgroundColor: themeColors.surface }]}>
+                  <Ionicons name="alert-circle-outline" size={48} color={themeColors.textSecondary} />
+                  <Text style={[styles.noTransfersText, { color: themeColors.textSecondary }]}>
+                    No transfer options available
+                  </Text>
+                </View>
+              )}
+            </ScrollView>
           ) : (
             <View style={styles.noResultsContainer}>
               <Ionicons name="sad-outline" size={64} color={themeColors.textMuted} />
               <Text style={[styles.noRoutesTitle, { color: themeColors.textPrimary }]}>No Buses Found</Text>
+              
+              {/* Route Details */}
+              <View style={[styles.noRoutesText, { marginTop: Spacing.md, marginBottom: Spacing.md }]}>
+                <View style={styles.routeStops}>
+                  <Text style={[styles.route, { color: themeColors.textSecondary }]}>
+                    {fromStopName} → {toStopName}
+                  </Text>
+                </View>
+                
+                {/* Search Date and Time */}
+                {(searchDate || searchTime) && (
+                  <View style={styles.dateTimeRow}>
+                    <Ionicons name="calendar-outline" size={16} color={themeColors.textMuted} />
+                    <Text style={[styles.routeEmptyText, { color: themeColors.textMuted }]}>
+                      {searchDate}
+                    </Text>
+                    <Text style={[styles.routeEmptyText, { color: themeColors.textMuted, marginLeft: Spacing.sm }]}>
+                      {searchTime}
+                    </Text>
+                  </View>
+                )}
+              </View>
+
               <Text style={[styles.noRoutesText, { color: themeColors.textSecondary }]}>
-                No direct buses found between these stops.{'\n'}Try different locations.
+                No direct buses or transfer options found.{'\n'}Try different locations or times.
               </Text>
             </View>
           )
@@ -650,4 +945,107 @@ const styles = StyleSheet.create({
     textAlign: 'left',
     lineHeight: 28,
   },
+  routeEmptyText: {
+    fontSize: FontSize.base,
+    color: Colors.textSecondary,
+    marginBottom: Spacing.md,
+  },
+  dateTimeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+    marginBottom: Spacing.xs,
+  },
+  lazyLoadButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginHorizontal: Spacing.lg,
+    marginTop: Spacing.md,
+    paddingVertical: Spacing.md,
+    backgroundColor: Colors.primary,
+    borderRadius: BorderRadius.sm,
+    gap: Spacing.sm,
+    shadowColor: Colors.shadowPrimary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 5,
+  },
+  lazyLoadButtonText: {
+    fontSize: FontSize.base,
+    fontWeight: '600',
+    color: '#FFF',
+  },
+  filterSection: {
+    marginHorizontal: Spacing.lg,
+    marginTop: Spacing.md,
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.md,
+    borderRadius: BorderRadius.sm,
+    backgroundColor: Colors.surface,
+  },
+  filterTitle: {
+    fontSize: FontSize.sm,
+    fontWeight: '600',
+    color: Colors.textPrimary,
+    marginBottom: Spacing.md,
+  },
+  filterContainer: {
+    flexDirection: 'row',
+    gap: Spacing.sm,
+  },
+  filterChip: {
+    paddingVertical: Spacing.xs,
+    paddingHorizontal: Spacing.sm,
+    borderRadius: BorderRadius.round,
+    backgroundColor: Colors.borderLight,
+  },
+  filterChipText: {
+    fontSize: FontSize.xs,
+    fontWeight: '500',
+    color: Colors.textSecondary,
+  },
+  noTransfersContainer: {
+    alignItems: 'center',
+    marginHorizontal: Spacing.lg,
+    marginTop: Spacing.lg,
+    paddingVertical: Spacing.xl,
+    borderRadius: BorderRadius.md,
+    backgroundColor: Colors.surface,
+  },
+  noTransfersText: {
+    fontSize: FontSize.base,
+    fontWeight: '500',
+    color: Colors.textSecondary,
+    marginTop: Spacing.md,
+  },
+  paginationContainer: {
+    flexDirection: 'row',
+    gap: Spacing.md,
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.sm,
+    justifyContent: 'center',
+  },
+  paginationButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.md,
+    borderRadius: BorderRadius.sm,
+    gap: Spacing.sm,
+    shadowColor: Colors.shadowPrimary,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  paginationButtonText: {
+    fontSize: FontSize.sm,
+    fontWeight: '600',
+    color: '#FFF',
+  },
 });
+
