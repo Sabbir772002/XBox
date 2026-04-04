@@ -57,7 +57,7 @@ react {
 /**
  * Set this to true to Run Proguard on Release builds to minify the Java bytecode.
  */
-def enableProguardInReleaseBuilds = false
+def enableProguardInReleaseBuilds = true
 
 /**
  * The preferred build flavor of JavaScriptCore (JSC)
@@ -79,14 +79,19 @@ android {
 
     namespace "com.myapp"
     defaultConfig {
-        applicationId "com.busroute.mad"
+        applicationId "com.myapp.busroute"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 8
-        versionName "1.7"
+        versionCode 15
+        versionName "1.8"
         
         // Vector icons configuration
         vectorDrawables.useSupportLibrary = true
+        
+        // Support 16 KB memory page sizes (required by Google Play)
+        ndk {
+            abiFilters 'arm64-v8a', 'armeabi-v7a', 'x86', 'x86_64'
+        }
     }
     signingConfigs {
         debug {
@@ -109,6 +114,16 @@ android {
             }
         }
     }
+    
+    // Enable 16 KB memory page size support
+    packagingOptions {
+        jniLibs {
+            useLegacyPackaging = false
+        }
+    }
+    
+    // Explicitly enable 16 KB page size support
+    experimentalProperties["android.experimental.enable16KBPageSize"] = true
     buildTypes {
         debug {
             debuggable true
@@ -143,14 +158,18 @@ android {
     splits {
         abi {
             reset()
-            enable true
-            universalApk true  // This creates an APK that works on all devices
+            enable false  // Disable for App Bundle builds
+            universalApk true
             include "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
         }
     }
     
     packagingOptions {
         // Exclude duplicate native libraries and resources
+        exclude 'lib/arm64-v8a/librnscreens.so'
+        exclude 'lib/armeabi-v7a/librnscreens.so'
+        exclude 'lib/x86/librnscreens.so'
+        exclude 'lib/x86_64/librnscreens.so'
         pickFirst 'lib/x86/libc++_shared.so'
         pickFirst 'lib/x86_64/libc++_shared.so'
         pickFirst 'lib/armeabi-v7a/libc++_shared.so'

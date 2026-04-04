@@ -77,6 +77,8 @@ export interface TransferRoute {
   firstBusDistance: number;
   secondBusDistance: number;
   totalDistance: number;
+  firstBusFare: number;
+  secondBusFare: number;
   estimatedFare?: number;
   firstBusFromStop: string;
   firstBusToStop: string;
@@ -365,6 +367,8 @@ class DatabaseService {
                       firstBusDistance: Number(firstBusDistance.toFixed(2)),
                       secondBusDistance: Number(secondBusDistance.toFixed(2)),
                       totalDistance: Number(totalDistance.toFixed(2)),
+                      firstBusFare: Number(firstBusFare.toFixed(2)),
+                      secondBusFare: Number(secondBusFare.toFixed(2)),
                       estimatedFare: totalFare,
                       firstBusFromStop: fromStopName,
                       firstBusToStop: transferStoppage.stopageEn,
@@ -455,6 +459,8 @@ class DatabaseService {
                       firstBusDistance: Number(firstBusDistance.toFixed(2)),
                       secondBusDistance: Number(secondBusDistance.toFixed(2)),
                       totalDistance: Number(totalDistance.toFixed(2)),
+                      firstBusFare: Number(firstBusFare.toFixed(2)),
+                      secondBusFare: Number(secondBusFare.toFixed(2)),
                       estimatedFare: Number(totalFare.toFixed(2)),
                       firstBusFromStop: fromStopName,
                       firstBusToStop: transferStoppage.stopageEn,
@@ -494,9 +500,11 @@ class DatabaseService {
     // Convert map to array, sort by distance and limit results
     const transferRoutes = Array.from(busPairMap.values())
       .sort((a, b) => {
-        // Primary sort: by fare (ascending)
-        if (a.estimatedFare !== b.estimatedFare) {
-          return a.estimatedFare - b.estimatedFare;
+        // Primary sort: by total fare (individual fares summation, ascending)
+        const aFareSum = a.firstBusFare + a.secondBusFare;
+        const bFareSum = b.firstBusFare + b.secondBusFare;
+        if (aFareSum !== bFareSum) {
+          return aFareSum - bFareSum;
         }
         // Secondary sort: by distance (ascending)
         return a.totalDistance - b.totalDistance;

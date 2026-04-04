@@ -55,7 +55,6 @@ export class DataMigrationService {
   private static normalizeStopName(value: string): string {
     return value.trim();
   }
-
   private static getDistanceKeyVariants(rawKey: string): string[] {
     const compact = rawKey.replace(/\s*-\s*/g, '-').trim();
     const idx = compact.indexOf('-');

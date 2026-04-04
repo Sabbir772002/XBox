@@ -11,7 +11,6 @@ import { Colors, Spacing, BorderRadius, FontSize } from '../theme/colors';
 import { DarkColors } from '../theme/darkColors';
 import { useTheme } from '../theme/ThemeContext';
 import { TransferRoute } from '../services/DatabaseService';
-
 interface TransferBusCardProps {
   transfer: TransferRoute;
   onPress?: (transfer: TransferRoute) => void;
@@ -70,6 +69,12 @@ export const TransferBusCard: React.FC<TransferBusCardProps> = ({ transfer, onPr
                 {transfer.firstBusDistance.toFixed(2)} km
               </Text>
             </View>
+            <View style={[styles.statPill, { backgroundColor: themeColors.background }]}>
+              <Ionicons name="cash-outline" size={12} color={themeColors.warning} />
+              <Text style={[styles.statText, { color: themeColors.textSecondary }]}>
+                ৳ {Math.round(transfer.firstBusFare)}
+              </Text>
+            </View>
           </View>
         </View>
       </View>
@@ -85,6 +90,28 @@ export const TransferBusCard: React.FC<TransferBusCardProps> = ({ transfer, onPr
           Change at {transfer.transferStop.stopageEn}
         </Text>
       </View>
+
+      {/* Total Journey Summary */}
+      {/* <View style={[styles.journeysSummary, { backgroundColor: themeColors.background }]}>
+        <View style={styles.summaryBadge}>
+          <Text style={[styles.summaryLabel, { color: themeColors.textSecondary }]}>Total Journey</Text>
+          <View style={styles.summaryValues}>
+            <View style={styles.summaryValue}>
+              <Ionicons name="walk-outline" size={14} color={themeColors.primary} />
+              <Text style={[styles.summaryValueText, { color: themeColors.textPrimary }]}>
+                {transfer.totalDistance.toFixed(2)} km
+              </Text>
+            </View>
+            <View style={styles.summaryDivider} />
+            <View style={styles.summaryValue}>
+              <Ionicons name="cash-outline" size={14} color={themeColors.warning} />
+              <Text style={[styles.summaryValueText, { color: themeColors.textPrimary, fontWeight: '700' }]}>
+                ৳ {Math.round(transfer.firstBusFare + transfer.secondBusFare)}
+              </Text>
+            </View>
+          </View>
+        </View>
+      </View> */}
 
       {/* Second Bus Segment */}
       <View style={styles.segmentContainer}>
@@ -124,6 +151,12 @@ export const TransferBusCard: React.FC<TransferBusCardProps> = ({ transfer, onPr
                 {transfer.secondBusDistance.toFixed(2)} km
               </Text>
             </View>
+            <View style={[styles.statPill, { backgroundColor: themeColors.background }]}>
+              <Ionicons name="cash-outline" size={12} color={themeColors.warning} />
+              <Text style={[styles.statText, { color: themeColors.textSecondary }]}>
+                ৳ {Math.round(transfer.secondBusFare)}
+              </Text>
+            </View>
           </View>
         </View>
       </View>
@@ -139,7 +172,7 @@ export const TransferBusCard: React.FC<TransferBusCardProps> = ({ transfer, onPr
         <View style={styles.summaryItem}>
           <Ionicons name="cash-outline" size={16} color={themeColors.warning} />
           <Text style={[styles.summaryText, { color: themeColors.textSecondary }]}>
-            ৳ {Math.round(transfer.estimatedFare ?? 0)}
+            ৳ {Math.round(transfer.firstBusFare + transfer.secondBusFare)}
           </Text>
         </View>
         <View style={styles.summaryItem}>
@@ -254,6 +287,42 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: Colors.warning,
     textAlign: 'center',
+  },
+  journeysSummary: {
+    backgroundColor: Colors.background,
+    borderRadius: BorderRadius.md,
+    padding: Spacing.md,
+    marginVertical: Spacing.md,
+  },
+  summaryBadge: {
+    alignItems: 'center',
+  },
+  summaryLabel: {
+    fontSize: FontSize.sm,
+    fontWeight: '600',
+    color: Colors.textSecondary,
+    marginBottom: Spacing.sm,
+  },
+  summaryValues: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.md,
+  },
+  summaryValue: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  summaryValueText: {
+    fontSize: FontSize.base,
+    fontWeight: '700',
+    color: Colors.textPrimary,
+  },
+  summaryDivider: {
+    width: 1,
+    height: 20,
+    backgroundColor: Colors.borderLight,
   },
   footer: {
     flexDirection: 'row',
