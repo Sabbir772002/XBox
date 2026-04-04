@@ -82,7 +82,7 @@ android {
         applicationId "com.myapp.busroute"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 15
+        versionCode 17
         versionName "1.8"
         
         // Vector icons configuration
