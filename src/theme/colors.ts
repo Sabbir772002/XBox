@@ -1,90 +1,107 @@
-// Theme colors for the Mad Bus App - Updated with DATA folder design patterns
+// Premium Theme System for Bus Bhara App
+// Modern glassmorphic design with vibrant gradients
+
 export const Colors = {
-  // Primary colors (purple-blue from DATA folder design)
-  primary: '#667eea',
-  primaryDark: '#5568d3',
-  primaryLight: '#7e8ef0',
-  
-  // Secondary colors (darker purple)
-  secondary: '#764ba2',
-  secondaryLight: '#8a5fb8',
-  secondaryDark: '#623d87',
-  
-  // Background colors with gradient support
-  background: '#FFFFFF',
-  backgroundLight: '#FFFFFF',
-  backgroundDark: '#5568d3',
-  backgroundGradient: ['#667eea', '#764ba2'], // For gradient backgrounds
-  
-  // Card and surface colors
+  // Primary palette — rich indigo-violet
+  primary: '#6366F1',
+  primaryDark: '#4F46E5',
+  primaryLight: '#818CF8',
+  primaryMuted: 'rgba(99, 102, 241, 0.12)',
+
+  // Secondary palette — warm amber accents
+  secondary: '#F59E0B',
+  secondaryLight: '#FBBF24',
+  secondaryDark: '#D97706',
+
+  // Accent — teal for highlights
+  accent: '#14B8A6',
+  accentLight: '#2DD4BF',
+
+  // Background hierarchy
+  background: '#F8FAFC',
+  backgroundLight: '#F1F5F9',
+  backgroundDark: '#4F46E5',
+  backgroundGradient: ['#6366F1', '#8B5CF6'],
+
+  // Surface hierarchy (cards, modals)
   surface: '#FFFFFF',
   surfaceElevated: '#FFFFFF',
-  cardBackground: '#f5f7fa',
-  cardBackgroundAlt: '#c3cfe2',
-  
-  // Text colors
-  textPrimary: '#333333',
-  textSecondary: '#666666',
-  textTertiary: '#888888',
+  surfaceSecondary: '#F1F5F9',
+  cardBackground: '#FFFFFF',
+  cardBackgroundAlt: '#F8FAFC',
+
+  // Text hierarchy
+  textPrimary: '#0F172A',
+  textSecondary: '#475569',
+  textTertiary: '#94A3B8',
   textLight: '#FFFFFF',
-  textMuted: '#999999',
-  text: '#333333', // Alias for textPrimary
-  
-  // Border colors
-  border: '#E0E0E0',
-  borderLight: '#F0F0F0',
-  borderAccent: '#667eea', // Primary border for left accents
-  
-  // Status colors
-  success: '#4CAF50',
-  warning: '#FF9800',
-  error: '#D32F2F',
-  info: '#2196F3',
-  
-  // Overlay colors
-  overlay: 'rgba(0, 0, 0, 0.5)',
-  overlayLight: 'rgba(0, 0, 0, 0.3)',
-  
-  // Input colors
-  inputBackground: '#f8f9fa',
+  textMuted: '#CBD5E1',
+  text: '#0F172A',
+
+  // Border system
+  border: '#E2E8F0',
+  borderLight: '#F1F5F9',
+  borderAccent: '#6366F1',
+
+  // Status colors — refined
+  success: '#10B981',
+  successLight: 'rgba(16, 185, 129, 0.12)',
+  warning: '#F59E0B',
+  warningLight: 'rgba(245, 158, 11, 0.12)',
+  error: '#EF4444',
+  errorLight: 'rgba(239, 68, 68, 0.12)',
+  info: '#3B82F6',
+  infoLight: 'rgba(59, 130, 246, 0.12)',
+
+  // Overlay
+  overlay: 'rgba(15, 23, 42, 0.6)',
+  overlayLight: 'rgba(15, 23, 42, 0.3)',
+
+  // Input
+  inputBackground: '#F8FAFC',
   inputBackgroundFocus: '#FFFFFF',
-  inputBorder: '#E0E0E0',
-  inputBorderFocus: '#667eea',
-  inputPlaceholder: '#B7BEC7',
-  inputIcon: '#9AA0A6',
-  
-  // Gradient colors (matches DATA folder design)
-  gradientStart: '#667eea',
-  gradientEnd: '#764ba2',
-  gradientCardStart: '#f5f7fa',
-  gradientCardEnd: '#c3cfe2',
-  
-  // Shadow colors
-  shadow: '#000000',
-  shadowPrimary: 'rgba(102, 126, 234, 0.3)',
-  shadowCard: 'rgba(102, 126, 234, 0.2)',
-  
-  // Badge and pill colors
-  badge: '#667eea',
+  inputBorder: '#E2E8F0',
+  inputBorderFocus: '#6366F1',
+  inputPlaceholder: '#94A3B8',
+  inputIcon: '#94A3B8',
+
+  // Gradient (header)
+  gradientStart: '#6366F1',
+  gradientEnd: '#8B5CF6',
+  gradientCardStart: '#F8FAFC',
+  gradientCardEnd: '#EEF2FF',
+
+  // Shadow
+  shadow: '#0F172A',
+  shadowPrimary: 'rgba(99, 102, 241, 0.25)',
+  shadowCard: 'rgba(15, 23, 42, 0.08)',
+
+  // Badge & pill
+  badge: '#6366F1',
   badgeText: '#FFFFFF',
-  pill: '#e9ecef',
-  pillAccent: '#667eea',
-  
-  // Hover and active states
-  hover: '#f8f9fa',
-  hoverAccent: '#e8eef7',
-  active: '#667eea',
+  pill: '#EEF2FF',
+  pillAccent: '#6366F1',
+
+  // Interactive
+  hover: '#F8FAFC',
+  hoverAccent: '#EEF2FF',
+  active: '#6366F1',
   activeText: '#FFFFFF',
-  
+
   // Transparent overlays
-  whiteOverlay10: '#FFFFFF1A',
-  whiteOverlay20: '#FFFFFF33',
-  whiteOverlay30: '#FFFFFF4D',
-  blackOverlay10: '#0000001A',
-  blackOverlay20: '#00000033',
+  whiteOverlay10: 'rgba(255, 255, 255, 0.1)',
+  whiteOverlay20: 'rgba(255, 255, 255, 0.2)',
+  whiteOverlay30: 'rgba(255, 255, 255, 0.3)',
+  blackOverlay10: 'rgba(0, 0, 0, 0.06)',
+  blackOverlay20: 'rgba(0, 0, 0, 0.12)',
+
+  // Route type colors
+  routeDirect: '#10B981',
+  routeTransfer1: '#F59E0B',
+  routeTransfer2: '#EF4444',
 };
 
-// Spacing system
+// Spacing system — 4px grid
 export const Spacing = {
   xs: 4,
   sm: 8,
@@ -96,8 +113,9 @@ export const Spacing = {
   mega: 40,
 };
 
-// Border radius system
+// Border radius
 export const BorderRadius = {
+  xs: 6,
   sm: 8,
   md: 12,
   lg: 16,
@@ -130,36 +148,43 @@ export const FontWeight = {
   extrabold: '800' as '800',
 };
 
-// Shadow styles
+// Shadow presets
 export const Shadow = {
   small: {
     shadowColor: Colors.shadow,
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
+    shadowOpacity: 0.04,
+    shadowRadius: 3,
     elevation: 1,
   },
   medium: {
     shadowColor: Colors.shadow,
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
+    shadowOpacity: 0.06,
+    shadowRadius: 6,
     elevation: 3,
   },
   large: {
     shadowColor: Colors.shadow,
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.12,
-    shadowRadius: 8,
-    elevation: 5,
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
+    elevation: 6,
+  },
+  glow: {
+    shadowColor: Colors.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    elevation: 8,
   },
 };
 
 // Animation durations (ms)
 export const AnimationDuration = {
-  fast: 200,
-  normal: 300,
-  slow: 500,
+  fast: 150,
+  normal: 250,
+  slow: 400,
 };
 
 export default {

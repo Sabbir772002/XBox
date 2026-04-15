@@ -1,6 +1,7 @@
 import { Bus, Stop } from './DatabaseService';
 import FirebaseService from './FirebaseService';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import TransitNetworkService, { RawFirebaseData } from './TransitNetworkService';
 
 // Firebase config
 const FIREBASE_CONFIG = {
@@ -19,6 +20,7 @@ const CACHE_KEY_BUSES = '@cached_buses';
 const CACHE_KEY_STOPS = '@cached_stops';
 const CACHE_KEY_DISTANCES = '@cached_distances';
 const CACHE_KEY_TIMESTAMP = '@cache_timestamp';
+const CACHE_KEY_RAW_FIREBASE = '@cached_raw_firebase';
 
 // Bus data structure from final_buss.json
 interface BusData {
@@ -50,10 +52,18 @@ export class DataMigrationService {
   static distanceData: Map<string, number> = new Map();
   static firebaseDistanceData: Map<string, number> = new Map();
   
+  // Raw Firebase data for TransitNetwork algorithm
+  static rawFirebaseData: RawFirebaseData | null = null;
+  
   static isLoaded = false;
 
   private static normalizeStopName(value: string): string {
-    return value.trim();
+    if (!value) return '';
+    return value
+      .toLowerCase()
+      .replace(/[^a-z0-9\u0980-\u09FF\s]/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
   }
   private static getDistanceKeyVariants(rawKey: string): string[] {
     const compact = rawKey.replace(/\s*-\s*/g, '-').trim();
@@ -154,6 +164,9 @@ export class DataMigrationService {
         console.log(`✓ Data loaded from cache (${duration}ms) - Using previous data`);
         console.log(`📊 Cache data: ${this.busData.length} buses, ${this.stopData.size} stops`);
         
+        // Ensure engine is initialized even from cache
+        this.initializeTransitNetwork();
+        
         // Trigger Firebase update in background (don't wait)
         this.updateFromFirebaseBackground();
         return;
@@ -191,11 +204,16 @@ export class DataMigrationService {
       this.isLoaded = true;
       const duration = Date.now() - startTime;
       console.log(`✓ Data loading complete (${duration}ms): ${this.busData.length} buses, ${this.stopData.size} stops`);
+
+      // Initialize TransitNetwork with raw Firebase data
+      this.initializeTransitNetwork();
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : String(error);
       console.error('✗ Critical error loading data:', errorMsg);
       // Still mark as loaded to prevent infinite retry loops
       this.isLoaded = true;
+      // Try to initialize TransitNetwork anyway if we have any data
+      this.initializeTransitNetwork();
       throw new Error(`Failed to load data: ${errorMsg}`);
     }
   }
@@ -218,6 +236,8 @@ export class DataMigrationService {
       this.stopCoordinatesById.clear();
       this.distanceData.clear();
       this.firebaseDistanceData.clear();
+      this.rawFirebaseData = null;
+      TransitNetworkService.reset();
       
       // Use same proven initial load code
       await this.loadDataFromJSON();
@@ -228,6 +248,70 @@ export class DataMigrationService {
       const errorMsg = error instanceof Error ? error.message : String(error);
       console.error('✗ Manual sync failed:', errorMsg);
       return false;
+    }
+  }
+
+  /**
+   * Initialize TransitNetwork with raw Firebase data.
+   * Called after data loading completes from any source.
+   */
+  private static initializeTransitNetwork(): void {
+    if (!this.rawFirebaseData) {
+      console.warn('⚠ No raw Firebase data available for TransitNetwork');
+      return;
+    }
+
+    try {
+      TransitNetworkService.reinitialize(this.rawFirebaseData);
+      console.log('✓ TransitNetwork initialized with raw Firebase data');
+    } catch (error) {
+      console.error('✗ TransitNetwork initialization failed:', error);
+    }
+  }
+
+  /**
+   * Build rawFirebaseData from already-loaded in-memory data.
+   * Used when loading from bundled JSON files.
+   */
+  private static buildRawFirebaseData(): void {
+    try {
+      // Build Bus Data array from busData
+      const rawBuses: any[] = this.busData.map((bus) => ({
+        english: bus.nameEnglish,
+        bangla: bus.nameBangla,
+        routes: bus.stoppages?.map((s) => s.stopageEn) || [],
+        service_type: bus.serviceType || 'Regular',
+      }));
+
+      // Build Stop Data array from stopData
+      const rawStops: any[] = [];
+      this.stopData.forEach((stop) => {
+        const coords = this.stopCoordinatesById.get(stop.id);
+        rawStops.push({
+          id: stop.id,
+          names: [stop.stopageEn],
+          coordinates: coords ? [[coords[0], coords[1]]] : [],
+        });
+      });
+
+      // Build Dist Data from ALL distance sources (meters)
+      const distMap: { [key: string]: number } = {};
+      this.distanceData.forEach((distKm, key) => {
+        distMap[key] = distKm * 1000; // Convert km back to meters for algorithm
+      });
+      this.firebaseDistanceData.forEach((distKm, key) => {
+        distMap[key] = distKm * 1000;
+      });
+
+      this.rawFirebaseData = {
+        'Bus Data': rawBuses,
+        'Stop Data': rawStops,
+        'Dist Data': [distMap],
+      };
+
+      console.log(`✓ Built raw Firebase data: ${rawBuses.length} buses, ${rawStops.length} stops, ${Object.keys(distMap).length} distances`);
+    } catch (error) {
+      console.error('✗ Failed to build raw Firebase data:', error);
     }
   }
 
@@ -313,7 +397,18 @@ export class DataMigrationService {
       // Process buses
       await this.processFirebaseBuses(busesData);
 
-      // Cache the data for offline access
+      // Build raw Firebase data for TransitNetwork
+      // Convert Firebase object format to arrays expected by algorithm
+      const rawBuses: any[] = Object.values(busesData);
+      const rawStops: any[] = Object.values(stopsData);
+      const rawDists: any[] = distancesData ? (Array.isArray(distancesData) ? distancesData : [distancesData]) : [];
+      this.rawFirebaseData = {
+        'Bus Data': rawBuses,
+        'Stop Data': rawStops,
+        'Dist Data': rawDists,
+      };
+
+      // Cache the data for offline access (including raw data)
       await this.cacheData();
 
       console.log('✓ All data successfully loaded from Firebase');
@@ -335,6 +430,7 @@ export class DataMigrationService {
       const cachedBuses = await AsyncStorage.getItem(CACHE_KEY_BUSES);
       const cachedStops = await AsyncStorage.getItem(CACHE_KEY_STOPS);
       const cachedDistances = await AsyncStorage.getItem(CACHE_KEY_DISTANCES);
+      const cachedRawFirebase = await AsyncStorage.getItem(CACHE_KEY_RAW_FIREBASE);
 
       if (!cachedBuses || !cachedStops) {
         console.warn('⚠ No cached data found');
@@ -354,6 +450,15 @@ export class DataMigrationService {
           this.addDistanceEntry(this.distanceData, key, distance, true); // true = already in km
         });
         console.log(`✓ Loaded ${this.distanceData.size} cached distance routes`);
+      }
+
+      // Load raw Firebase data for TransitNetwork
+      if (cachedRawFirebase) {
+        this.rawFirebaseData = JSON.parse(cachedRawFirebase);
+        console.log('✓ Loaded cached raw Firebase data for TransitNetwork');
+      } else {
+        // Build from loaded data if no raw cache exists
+        this.buildRawFirebaseData();
       }
 
       console.log('✓ All data successfully loaded from cache');
@@ -380,6 +485,9 @@ export class DataMigrationService {
 
       // Load bus data
       await this.loadBusData();
+
+      // Build raw Firebase data for TransitNetwork from loaded JSON data
+      this.buildRawFirebaseData();
 
       // Cache for future use
       await this.cacheData();
@@ -573,6 +681,11 @@ export class DataMigrationService {
       await AsyncStorage.setItem(CACHE_KEY_STOPS, JSON.stringify(stopsMap));
       await AsyncStorage.setItem(CACHE_KEY_DISTANCES, JSON.stringify(distancesMap));
       await AsyncStorage.setItem(CACHE_KEY_TIMESTAMP, new Date().toISOString());
+
+      // Cache raw Firebase data for TransitNetwork
+      if (this.rawFirebaseData) {
+        await AsyncStorage.setItem(CACHE_KEY_RAW_FIREBASE, JSON.stringify(this.rawFirebaseData));
+      }
 
       console.log(`✓ Cache saved: ${Object.keys(busesMap).length} buses, ${Object.keys(stopsMap).length} stops, ${Object.keys(distancesMap).length} distances`);
     } catch (error) {
@@ -859,8 +972,10 @@ export class DataMigrationService {
     this.stopCoordinatesById.clear();
     this.distanceData.clear();
     this.firebaseDistanceData.clear();
+    this.rawFirebaseData = null;
+    TransitNetworkService.reset();
     this.isLoaded = false;
-    console.log('✓ All data cleared (buses, stops, distances)');
+    console.log('✓ All data cleared (buses, stops, distances, TransitNetwork)');
   }
 }
 

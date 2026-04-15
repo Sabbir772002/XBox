@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useMemo } from 'react';
+import React, { useCallback, useState } from 'react';
 import {
   View,
   Text,
@@ -6,19 +6,17 @@ import {
   FlatList,
   TouchableOpacity,
   Alert,
-  Animated,
+  ActivityIndicator,
   Platform,
-  ScrollView,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import StorageService, { BookmarkedRoute } from '../services/StorageService';
-import DatabaseService, { RouteStop } from '../services/DatabaseService';
-import { Colors } from '../theme/colors';
-import { DarkColors } from '../theme/darkColors';
 import { useTheme } from '../theme/ThemeContext';
+import { Colors, Spacing, BorderRadius, FontSize } from '../theme/colors';
+import { DarkColors } from '../theme/darkColors';
 
 export default function BookmarkScreen({ navigation }: any) {
   const [bookmarks, setBookmarks] = useState<BookmarkedRoute[]>([]);
@@ -29,7 +27,7 @@ export default function BookmarkScreen({ navigation }: any) {
   useFocusEffect(
     useCallback(() => {
       loadBookmarks();
-    }, [])
+    }, []),
   );
 
   const loadBookmarks = async () => {
@@ -54,357 +52,127 @@ export default function BookmarkScreen({ navigation }: any) {
   };
 
   const handleRemoveBookmark = async (routeId: string) => {
-    Alert.alert(
-      'Remove Bookmark',
-      'Are you sure you want to remove this bookmark?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Remove',
-          style: 'destructive',
-          onPress: async () => {
-            await StorageService.removeBookmark(routeId);
-            loadBookmarks();
-          },
+    Alert.alert('Remove Bookmark', 'Remove this saved route?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Remove',
+        style: 'destructive',
+        onPress: async () => {
+          await StorageService.removeBookmark(routeId);
+          loadBookmarks();
         },
-      ]
-    );
+      },
+    ]);
   };
 
-  const toggleExpand = async (item: BookmarkedRoute) => {
-    handleBookmarkClick(item);
-  };
-
-  const renderBookmarkItem = ({ item }: { item: BookmarkedRoute }) => {
-    return (
-      <View style={styles.card}>
+  const renderBookmarkItem = ({ item }: { item: BookmarkedRoute }) => (
+    <TouchableOpacity
+      style={[
+        styles.card,
+        {
+          backgroundColor: themeColors.surface,
+          borderColor: isDark ? themeColors.border : 'transparent',
+          borderWidth: isDark ? 1 : 0,
+        },
+      ]}
+      onPress={() => handleBookmarkClick(item)}
+      activeOpacity={0.7}
+    >
+      <View style={styles.cardTop}>
+        <View style={[styles.cardIcon, { backgroundColor: themeColors.primaryMuted }]}>
+          <Ionicons name="bookmark" size={18} color={themeColors.primary} />
+        </View>
+        <View style={styles.cardContent}>
+          <Text style={[styles.busName, { color: themeColors.textPrimary }]} numberOfLines={1}>
+            {item.busName}
+          </Text>
+          {item.busBn ? (
+            <Text style={[styles.busBn, { color: themeColors.textTertiary }]} numberOfLines={1}>
+              {item.busBn}
+            </Text>
+          ) : null}
+        </View>
         <TouchableOpacity
-          style={styles.cardHeader}
-          onPress={() => handleBookmarkClick(item)}
-          activeOpacity={0.7}
+          style={[styles.removeBtn, { backgroundColor: themeColors.errorLight || 'rgba(239,68,68,0.12)' }]}
+          onPress={() => handleRemoveBookmark(item.routeId)}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
-          <View style={styles.cardContent}>
-            <View style={styles.iconContainer}>
-              <Ionicons name="bookmark" size={24} color={themeColors.primary} />
-            </View>
-            <View style={styles.textContainer}>
-              <View style={styles.routeInfo}>
-                <Text style={styles.stopName} numberOfLines={1}>{item.fromStopName}</Text>
-                <Ionicons name="arrow-forward" size={16} color="#888" style={styles.arrow} />
-                <Text style={styles.stopName} numberOfLines={1}>{item.toStopName}</Text>
-              </View>
-              <View style={styles.metaInfo}>
-                <Text style={styles.routeId}>Bus {item.routeId}</Text>
-                <Text style={styles.separator}>•</Text>
-                <Text style={styles.distance}>{item.distance.toFixed(1)} km</Text>
-                <Text style={styles.separator}>•</Text>
-                <Text style={styles.fare}>৳{item.fare.toFixed(0)}</Text>
-              </View>
-            </View>
-            <Ionicons name="chevron-forward" size={22} color={themeColors.primary} />
-          </View>
+          <Ionicons name="trash-outline" size={15} color={themeColors.error} />
         </TouchableOpacity>
+      </View>
 
-        <View style={styles.actionButtonsRow}>
-          <TouchableOpacity
-            style={styles.detailsButton}
-            onPress={() => handleBookmarkClick(item)}
-            activeOpacity={0.7}
-          >
-            <Ionicons name="information-circle-outline" size={18} color="#FFF" />
-            <Text style={styles.detailsButtonText}>View Details</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.removeButtonExpanded}
-            onPress={() => handleRemoveBookmark(item.routeId)}
-            activeOpacity={0.7}
-          >
-            <Ionicons name="trash-outline" size={18} color="#FFF" />
-            <Text style={styles.removeButtonText}>Remove</Text>
-          </TouchableOpacity>
+      <View style={[styles.routeRow, { borderTopColor: themeColors.borderLight }]}>
+        <View style={styles.routePoint}>
+          <View style={[styles.routeDot, { backgroundColor: themeColors.success }]} />
+          <Text style={[styles.routeStopName, { color: themeColors.textSecondary }]} numberOfLines={1}>
+            {item.fromStopName}
+          </Text>
+        </View>
+        <Ionicons name="arrow-forward" size={14} color={themeColors.textMuted} />
+        <View style={styles.routePoint}>
+          <View style={[styles.routeDot, { backgroundColor: themeColors.error }]} />
+          <Text style={[styles.routeStopName, { color: themeColors.textSecondary }]} numberOfLines={1}>
+            {item.toStopName}
+          </Text>
         </View>
       </View>
-    );
-  };
 
-  const styles = useMemo(() => StyleSheet.create({
-    safe: {
-      flex: 1,
-      backgroundColor: themeColors.background,
-    },
-    header: {
-      paddingHorizontal: 16,
-      paddingVertical: 16,
-      borderBottomLeftRadius: 22,
-      borderBottomRightRadius: 22,
-      ...Platform.select({
-        android: { elevation: 4 },
-        ios: {
-          shadowColor: '#000',
-          shadowOpacity: 0.2,
-          shadowRadius: 6,
-          shadowOffset: { width: 0, height: 3 },
-        },
-      }),
-    },
-    headerContent: { flexDirection: 'row', alignItems: 'center' },
-    backButton: {
-      width: 40,
-      height: 40,
-      borderRadius: 20,
-      backgroundColor: themeColors.whiteOverlay20,
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    headerTextContainer: { flex: 1, marginLeft: 12 },
-    headerTitle: {
-      fontSize: 24,
-      fontWeight: '700',
-      color: themeColors.textLight,
-      letterSpacing: 0.5,
-    },
-    headerSubtitle: {
-      fontSize: 14,
-      color: themeColors.whiteOverlay30,
-      marginTop: 2,
-    },
-    body: { flex: 1 },
-    listContent: { padding: 16 },
-    card: {
-      backgroundColor: themeColors.surface,
-      borderRadius: 16,
-      marginBottom: 14,
-      overflow: 'hidden',
-      ...Platform.select({
-        android: { elevation: 3 },
-        ios: {
-          shadowColor: '#000',
-          shadowOpacity: 0.08,
-          shadowRadius: 8,
-          shadowOffset: { width: 0, height: 3 },
-        },
-      }),
-    },
-    cardHeader: { backgroundColor: themeColors.surface },
-    cardContent: { flexDirection: 'row', alignItems: 'center', padding: 16 },
-    iconContainer: {
-      width: 50,
-      height: 50,
-      borderRadius: 25,
-      backgroundColor: themeColors.hoverAccent,
-      alignItems: 'center',
-      justifyContent: 'center',
-      marginRight: 12,
-    },
-    textContainer: { flex: 1 },
-    routeInfo: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      marginBottom: 6,
-      flexWrap: 'wrap',
-    },
-    stopName: {
-      fontSize: 15,
-      fontWeight: '600',
-      color: themeColors.textPrimary,
-      maxWidth: '40%',
-    },
-    arrow: { marginHorizontal: 8 },
-    metaInfo: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      marginBottom: 4,
-      flexWrap: 'wrap',
-    },
-    routeId: {
-      fontSize: 13,
-      color: themeColors.primary,
-      fontWeight: '700',
-    },
-    separator: {
-      marginHorizontal: 8,
-      color: isDark ? '#555' : '#CCC',
-      fontSize: 12,
-    },
-    distance: {
-      fontSize: 13,
-      color: isDark ? '#999' : '#666',
-      fontWeight: '500',
-    },
-    fare: {
-      fontSize: 13,
-      color: themeColors.primaryDark,
-      fontWeight: '700',
-    },
-    stopsCount: {
-      fontSize: 12,
-      color: isDark ? '#666' : '#999',
-      marginTop: 2,
-    },
-    actionButtons: {
-      flexDirection: 'column',
-      alignItems: 'center',
-      marginLeft: 8,
-    },
-    expandButton: { padding: 4 },
-    removeButton: { marginLeft: 8, padding: 4 },
-    expandedContent: {
-      backgroundColor: themeColors.hover,
-      borderTopWidth: 1,
-      borderTopColor: isDark ? '#333' : '#E8EAED',
-      paddingTop: 12,
-    },
-    loadingStops: { padding: 20, alignItems: 'center' },
-    loadingStopsText: {
-      fontSize: 14,
-      color: isDark ? '#999' : '#666',
-    },
-    stopsContainer: { paddingHorizontal: 16, paddingBottom: 12 },
-    stopsHeader: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      marginBottom: 12,
-    },
-    stopsHeaderText: {
-      fontSize: 15,
-      fontWeight: '700',
-      color: themeColors.primary,
-      marginLeft: 8,
-    },
-    stopsScrollView: {
-      maxHeight: 300,
-      backgroundColor: themeColors.surface,
-      borderRadius: 12,
-      padding: 12,
-      marginBottom: 12,
-    },
-    stopRow: { flexDirection: 'row', marginBottom: 16 },
-    stopIndicatorContainer: { alignItems: 'center', width: 30, marginRight: 12 },
-    stopLine: {
-      width: 3,
-      flex: 1,
-      backgroundColor: isDark ? '#444' : '#DDD',
-    },
-    stopDot: {
-      width: 28,
-      height: 28,
-      borderRadius: 14,
-      backgroundColor: themeColors.surface,
-      alignItems: 'center',
-      justifyContent: 'center',
-      borderWidth: 2,
-      borderColor: isDark ? '#444' : '#DDD',
-    },
-    stopDotStart: { backgroundColor: '#E8F5E9', borderColor: '#4CAF50' },
-    stopDotEnd: { backgroundColor: '#FFEBEE', borderColor: '#F44336' },
-    stopDotMiddle: { backgroundColor: '#FFF8E1', borderColor: '#FFC107' },
-    stopDotText: { fontSize: 14 },
-    stopInfo: { flex: 1, justifyContent: 'center' },
-    stopNameText: {
-      fontSize: 14,
-      color: themeColors.textPrimary,
-      marginBottom: 2,
-    },
-    stopNameBold: {
-      fontWeight: '700',
-      fontSize: 15,
-      color: themeColors.textPrimary,
-    },
-    stopNameBn: {
-      fontSize: 12,
-      color: isDark ? '#999' : '#666',
-      marginBottom: 2,
-    },
-    stopDistanceText: {
-      fontSize: 11,
-      color: isDark ? '#666' : '#999',
-    },
-    actionButtonsRow: { flexDirection: 'row', gap: 10 },
-    detailsButton: {
-      flex: 1,
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'center',
-      backgroundColor: themeColors.primaryDark,
-      paddingVertical: 12,
-      borderRadius: 10,
-    },
-    detailsButtonText: {
-      fontSize: 14,
-      fontWeight: '600',
-      color: '#FFF',
-      marginLeft: 6,
-    },
-    removeButtonExpanded: {
-      flex: 1,
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'center',
-      backgroundColor: '#FF4444',
-      paddingVertical: 12,
-      borderRadius: 10,
-    },
-    removeButtonText: {
-      fontSize: 14,
-      fontWeight: '600',
-      color: '#FFF',
-      marginLeft: 6,
-    },
-    noStopsContainer: { padding: 20, alignItems: 'center' },
-    noStopsText: {
-      fontSize: 14,
-      color: isDark ? '#666' : '#999',
-    },
-    emptyContainer: {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      paddingHorizontal: 40,
-    },
-    emptyTitle: {
-      fontSize: 20,
-      fontWeight: '700',
-      color: themeColors.textPrimary,
-      marginTop: 16,
-      marginBottom: 8,
-    },
-    emptyText: {
-      fontSize: 15,
-      color: isDark ? '#999' : '#666',
-      textAlign: 'center',
-    },
-  }), [themeColors, isDark]);
+      <View style={styles.statsRow}>
+        <View style={[styles.statChip, { backgroundColor: themeColors.pill }]}>
+          <Ionicons name="navigate-outline" size={12} color={themeColors.primary} />
+          <Text style={[styles.statText, { color: themeColors.primary }]}>
+            {item.distance.toFixed(1)} km
+          </Text>
+        </View>
+        <View style={[styles.statChip, { backgroundColor: themeColors.pill }]}>
+          <Ionicons name="cash-outline" size={12} color={themeColors.primary} />
+          <Text style={[styles.statText, { color: themeColors.primary }]}>
+            ৳ {item.fare.toFixed(0)}
+          </Text>
+        </View>
+        <View style={[styles.statChip, { backgroundColor: themeColors.pill }]}>
+          <Ionicons name="ellipsis-horizontal" size={12} color={themeColors.primary} />
+          <Text style={[styles.statText, { color: themeColors.primary }]}>
+            {item.stopsCount || 0} stops
+          </Text>
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
 
   return (
-    <SafeAreaView style={styles.safe} edges={['top']}>
+    <SafeAreaView
+      style={[styles.safe, { backgroundColor: themeColors.background }]}
+      edges={['top']}
+    >
       <LinearGradient
-        colors={[isDark ? DarkColors.gradientStart : Colors.gradientStart, isDark ? DarkColors.gradientEnd : Colors.gradientEnd]}
+        colors={[themeColors.gradientStart, themeColors.gradientEnd]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.header}
       >
-        <View style={styles.headerContent}>
-          <View style={styles.backButton}>
-            <Ionicons name="bookmark-outline" size={20} color={themeColors.textLight} />
-          </View>
-          <View style={styles.headerTextContainer}>
-            <Text style={styles.headerTitle}>Bookmarks</Text>
-            <Text style={styles.headerSubtitle}>{bookmarks.length} saved routes</Text>
-          </View>
-        </View>
+        <Text style={styles.headerTitle}>Bookmarks</Text>
+        <Text style={styles.headerSubtitle}>{bookmarks.length} saved routes</Text>
       </LinearGradient>
 
       <View style={styles.body}>
         {loading ? (
           <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>Loading...</Text>
+            <ActivityIndicator size="large" color={themeColors.primary} />
+            <Text style={[styles.emptyText, { color: themeColors.textSecondary }]}>
+              Loading...
+            </Text>
           </View>
         ) : bookmarks.length === 0 ? (
           <View style={styles.emptyContainer}>
-            <Ionicons name="bookmark-outline" size={64} color="#CCC" />
-            <Text style={styles.emptyTitle}>No Bookmarks</Text>
-            <Text style={styles.emptyText}>
-              Bookmark your favorite routes for quick access
+            <View style={[styles.emptyIcon, { backgroundColor: themeColors.primaryMuted }]}>
+              <Ionicons name="bookmark-outline" size={36} color={themeColors.primary} />
+            </View>
+            <Text style={[styles.emptyTitle, { color: themeColors.textPrimary }]}>
+              No Bookmarks
+            </Text>
+            <Text style={[styles.emptyText, { color: themeColors.textSecondary }]}>
+              Save your favorite routes{'\n'}for quick access
             </Text>
           </View>
         ) : (
@@ -412,6 +180,7 @@ export default function BookmarkScreen({ navigation }: any) {
             data={bookmarks}
             keyExtractor={(item) => item.id}
             renderItem={renderBookmarkItem}
+            showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.listContent}
           />
         )}
@@ -419,3 +188,153 @@ export default function BookmarkScreen({ navigation }: any) {
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  safe: {
+    flex: 1,
+  },
+  header: {
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.lg,
+    borderBottomLeftRadius: BorderRadius.xxl,
+    borderBottomRightRadius: BorderRadius.xxl,
+    ...Platform.select({
+      android: { elevation: 8 },
+      ios: {
+        shadowColor: '#4F46E5',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.25,
+        shadowRadius: 12,
+      },
+    }),
+  },
+  headerTitle: {
+    fontSize: FontSize.xxl,
+    fontWeight: '800',
+    color: '#FFF',
+  },
+  headerSubtitle: {
+    fontSize: FontSize.md,
+    color: 'rgba(255,255,255,0.65)',
+    marginTop: 4,
+    fontWeight: '500',
+  },
+  body: {
+    flex: 1,
+  },
+  listContent: {
+    padding: Spacing.lg,
+    paddingTop: Spacing.md,
+  },
+  card: {
+    borderRadius: BorderRadius.lg,
+    padding: Spacing.lg,
+    marginBottom: Spacing.md,
+    ...Platform.select({
+      android: { elevation: 2 },
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.06,
+        shadowRadius: 8,
+      },
+    }),
+  },
+  cardTop: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: Spacing.sm,
+  },
+  cardIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: Spacing.md,
+  },
+  cardContent: {
+    flex: 1,
+  },
+  busName: {
+    fontSize: FontSize.base,
+    fontWeight: '700',
+  },
+  busBn: {
+    fontSize: FontSize.sm,
+    marginTop: 1,
+  },
+  removeBtn: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: Spacing.sm,
+  },
+  routeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingTop: Spacing.sm,
+    marginTop: Spacing.sm,
+    borderTopWidth: 1,
+    gap: Spacing.sm,
+  },
+  routePoint: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  routeDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+  },
+  routeStopName: {
+    fontSize: FontSize.sm,
+    flex: 1,
+  },
+  statsRow: {
+    flexDirection: 'row',
+    gap: Spacing.sm,
+    marginTop: Spacing.md,
+  },
+  statChip: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 6,
+    borderRadius: BorderRadius.md,
+    gap: 4,
+  },
+  statText: {
+    fontSize: FontSize.xs,
+    fontWeight: '700',
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: Spacing.mega,
+  },
+  emptyIcon: {
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: Spacing.md,
+  },
+  emptyTitle: {
+    fontSize: FontSize.xl,
+    fontWeight: '700',
+  },
+  emptyText: {
+    fontSize: FontSize.base,
+    marginTop: Spacing.sm,
+    textAlign: 'center',
+    lineHeight: 22,
+  },
+});

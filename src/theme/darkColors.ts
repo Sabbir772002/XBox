@@ -1,85 +1,102 @@
-// Dark theme colors for the BUSD App
+// Premium Dark Theme for Bus Bhara App
+// Deep navy with indigo accents
+
 export const DarkColors = {
-  // Primary colors (adapted for dark theme)
-  primary: '#7e8ef0',
-  primaryDark: '#667eea',
-  primaryLight: '#9ba8f7',
-  
-  // Secondary colors
-  secondary: '#9b7bc5',
-  secondaryLight: '#a88fd6',
-  secondaryDark: '#764ba2',
-  
-  // Background colors
-  background: '#1a1a1a',
-  backgroundLight: '#2d2d2d',
-  backgroundDark: '#0f0f0f',
-  backgroundGradient: ['#1a1a1a', '#2d2d2d'],
-  
-  // Card and surface colors
-  surface: '#2d2d2d',
-  surfaceElevated: '#3a3a3a',
-  cardBackground: '#252525',
-  cardBackgroundAlt: '#393939',
-  
-  // Text colors
-  textPrimary: '#ffffff',
-  textSecondary: '#e0e0e0',
-  textTertiary: '#b3b3b3',
-  textLight: '#ffffff',
-  textMuted: '#888888',
-  text: '#ffffff', // Alias for textPrimary
-  
-  // Border colors
-  border: '#404040',
-  borderLight: '#2d2d2d',
-  borderAccent: '#7e8ef0',
-  
-  // Status colors
-  success: '#66bb6a',
-  warning: '#ffa726',
-  error: '#ef5350',
-  info: '#42a5f5',
-  
-  // Overlay colors
+  // Primary palette
+  primary: '#818CF8',
+  primaryDark: '#6366F1',
+  primaryLight: '#A5B4FC',
+  primaryMuted: 'rgba(129, 140, 248, 0.15)',
+
+  // Secondary
+  secondary: '#FBBF24',
+  secondaryLight: '#FCD34D',
+  secondaryDark: '#F59E0B',
+
+  // Accent
+  accent: '#2DD4BF',
+  accentLight: '#5EEAD4',
+
+  // Background hierarchy
+  background: '#0F172A',
+  backgroundLight: '#1E293B',
+  backgroundDark: '#020617',
+  backgroundGradient: ['#312E81', '#581C87'],
+
+  // Surface hierarchy
+  surface: '#1E293B',
+  surfaceElevated: '#334155',
+  surfaceSecondary: '#1E293B',
+  cardBackground: '#1E293B',
+  cardBackgroundAlt: '#334155',
+
+  // Text
+  textPrimary: '#F1F5F9',
+  textSecondary: '#94A3B8',
+  textTertiary: '#64748B',
+  textLight: '#FFFFFF',
+  textMuted: '#475569',
+  text: '#F1F5F9',
+
+  // Border
+  border: '#334155',
+  borderLight: '#1E293B',
+  borderAccent: '#818CF8',
+
+  // Status
+  success: '#34D399',
+  successLight: 'rgba(52, 211, 153, 0.15)',
+  warning: '#FBBF24',
+  warningLight: 'rgba(251, 191, 36, 0.15)',
+  error: '#F87171',
+  errorLight: 'rgba(248, 113, 113, 0.15)',
+  info: '#60A5FA',
+  infoLight: 'rgba(96, 165, 250, 0.15)',
+
+  // Overlay
   overlay: 'rgba(0, 0, 0, 0.7)',
-  overlayLight: 'rgba(0, 0, 0, 0.5)',
-  
-  // Input colors
-  inputBackground: '#252525',
-  inputBackgroundFocus: '#3a3a3a',
-  inputBorder: '#404040',
-  inputBorderFocus: '#7e8ef0',
-  inputPlaceholder: '#999999',
-  inputIcon: '#b3b3b3',
-  
-  // Gradient colors
-  gradientStart: '#667eea',
-  gradientEnd: '#764ba2',
-  gradientCardStart: '#2d2d2d',
-  gradientCardEnd: '#404040',
-  
-  // Shadow colors
+  overlayLight: 'rgba(0, 0, 0, 0.4)',
+
+  // Input
+  inputBackground: '#1E293B',
+  inputBackgroundFocus: '#334155',
+  inputBorder: '#334155',
+  inputBorderFocus: '#818CF8',
+  inputPlaceholder: '#64748B',
+  inputIcon: '#64748B',
+
+  // Gradient
+  gradientStart: '#312E81',
+  gradientEnd: '#581C87',
+  gradientCardStart: '#1E293B',
+  gradientCardEnd: '#334155',
+
+  // Shadow
   shadow: '#000000',
-  shadowPrimary: 'rgba(126, 142, 240, 0.2)',
-  shadowCard: 'rgba(126, 142, 240, 0.1)',
-  
-  // Badge and pill colors
-  badge: '#7e8ef0',
-  badgeText: '#ffffff',
-  pill: '#404040',
-  pillAccent: '#7e8ef0',
-  
-  // Hover and active states
-  hover: '#3a3a3a',
-  hoverAccent: '#404040',
-  active: '#7e8ef0',
-  activeText: '#ffffff',
-  
+  shadowPrimary: 'rgba(129, 140, 248, 0.2)',
+  shadowCard: 'rgba(0, 0, 0, 0.3)',
+
+  // Badge & pill
+  badge: '#818CF8',
+  badgeText: '#FFFFFF',
+  pill: 'rgba(129, 140, 248, 0.15)',
+  pillAccent: '#818CF8',
+
+  // Interactive
+  hover: '#334155',
+  hoverAccent: 'rgba(129, 140, 248, 0.1)',
+  active: '#818CF8',
+  activeText: '#FFFFFF',
+
   // Transparent overlays
-  whiteOverlay10: '#FFFFFF1A',
-  whiteOverlay20: '#FFFFFF33',
-  whiteOverlay30: '#FFFFFF4D',
-  blackOverlay10: '#0000001A',
-  blackOverlay20: '#00000033',
+  whiteOverlay10: 'rgba(255, 255, 255, 0.06)',
+  whiteOverlay20: 'rgba(255, 255, 255, 0.12)',
+  whiteOverlay30: 'rgba(255, 255, 255, 0.18)',
+  blackOverlay10: 'rgba(0, 0, 0, 0.2)',
+  blackOverlay20: 'rgba(0, 0, 0, 0.35)',
+
+  // Route type colors
+  routeDirect: '#34D399',
+  routeTransfer1: '#FBBF24',
+  routeTransfer2: '#F87171',
 };

@@ -20,8 +20,9 @@ import { useFocusEffect } from '@react-navigation/native';
 import DatabaseService from '../services/DatabaseService';
 import DataMigrationService from '../services/DataMigrationService';
 import NetworkService from '../services/NetworkService';
+import TransitNetworkService from '../services/TransitNetworkService';
 import { useTheme } from '../theme/ThemeContext';
-import { Colors } from '../theme/colors';
+import { Colors, Spacing, BorderRadius, FontSize } from '../theme/colors';
 import { DarkColors } from '../theme/darkColors';
 
 export default function SettingsScreen({ navigation }: any) {
@@ -29,29 +30,19 @@ export default function SettingsScreen({ navigation }: any) {
   const [isSyncing, setIsSyncing] = useState(false);
   const [lastSyncTime, setLastSyncTime] = useState<string | null>(null);
   const [isOnline, setIsOnline] = useState(true);
-
-  // Use appropriate colors based on theme
   const themeColors = isDark ? DarkColors : Colors;
 
   useFocusEffect(
     useCallback(() => {
       loadLastSyncTime();
-    }, [])
+    }, []),
   );
 
-  // Subscribe to network status changes
   useEffect(() => {
-    // Set initial online status
     setIsOnline(NetworkService.isConnected());
-
-    // Subscribe to changes
     const unsubscribe = NetworkService.onChange((online) => {
       setIsOnline(online);
-      if (!online) {
-        console.log('📡 Device went offline - disabling sync');
-      }
     });
-
     return unsubscribe;
   }, []);
 
@@ -68,25 +59,17 @@ export default function SettingsScreen({ navigation }: any) {
   };
 
   const handleManualSync = async () => {
-    // Check internet connection first
     if (!NetworkService.isConnected()) {
-      showNotification('📡 No internet connection - cannot sync');
-      console.warn('⚠ Sync attempted without internet');
+      showNotification('📡 No internet connection');
       return;
     }
 
     setIsSyncing(true);
     try {
-      // Use new manual sync method that properly updates distances
       const success = await DataMigrationService.manualSyncData();
-
       if (success) {
-        // Update sync time
         const now = Date.now();
-        const timestamp = new Date(now).toLocaleString();
-        setLastSyncTime(timestamp);
-
-        // Save sync time to storage
+        setLastSyncTime(new Date(now).toLocaleString());
         try {
           await AsyncStorage.setItem('@last_sync_time', now.toString());
         } catch (e) {
@@ -94,31 +77,19 @@ export default function SettingsScreen({ navigation }: any) {
         }
 
         Alert.alert('Sync Complete', 'Please reopen the app to view changes', [
+          { text: 'Cancel', style: 'cancel' },
           {
-            text: 'Cancel',
-            onPress: () => {
-              // Just dismiss the alert
-            },
-            style: 'cancel',
-          },
-          {
-            text: 'OK',
-            onPress: () => {
-              // Restart the app
-              RNRestart.restart();
-            },
+            text: 'Restart',
+            onPress: () => RNRestart.restart(),
             style: 'default',
           },
         ]);
-        console.log('✓ Manual sync completed - user needs to reopen app');
       } else {
-        showNotification('✗ Sync failed - could not fetch data from Firebase');
-        console.warn('⚠ Manual sync returned false');
+        showNotification('Sync failed — could not fetch data');
       }
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : 'Sync failed';
-      showNotification('✗ Sync failed: ' + errorMsg);
-      console.error('Error during manual sync:', error);
+      showNotification(`Sync failed: ${errorMsg}`);
     } finally {
       setIsSyncing(false);
     }
@@ -135,32 +106,32 @@ export default function SettingsScreen({ navigation }: any) {
   const handleClearCache = () => {
     Alert.alert(
       'Clear Cache',
-      'Are you sure you want to clear all cached data? This will not delete your bookmarks or history.',
+      'This will clear cached route data. Your bookmarks and history will be preserved.',
       [
         { text: 'Cancel', style: 'cancel' },
         {
           text: 'Clear',
           style: 'destructive',
           onPress: () => {
-            // Clear cache logic here
+            TransitNetworkService.clearCache();
             showNotification('Cache cleared');
           },
         },
-      ]
+      ],
     );
   };
 
   const handleToggleTheme = () => {
     const newMode = isDark ? 'Light' : 'Dark';
     toggleTheme();
-    showNotification(`✓ Switched to ${newMode} Mode`);
+    showNotification(`Switched to ${newMode} Mode`);
   };
 
   const handleAbout = () => {
     Alert.alert(
-      'About Bus Bhara - Dhaka Local Bus Fare',
-      'Bus Bhara is a free and offline app designed to provide accurate fare information for local buses in Dhaka. We aim to help commuters save money and navigate the complex bus system with ease.\n\nVersion: 1.8.0\n\n© 2025 Bus Bhara Team',
-      [{ text: 'OK' }]
+      'About Bus Bhara',
+      'Bus Bhara helps commuters navigate Dhaka\'s bus network with accurate fare information.\n\nVersion: 2.0.0\nPowered by TransitNetwork Algorithm\n\n© 2025 Bus Bhara Team',
+      [{ text: 'OK' }],
     );
   };
 
@@ -168,184 +139,199 @@ export default function SettingsScreen({ navigation }: any) {
     Alert.alert(
       'Privacy Policy',
       'Your data is stored locally on your device. We do not collect or share any personal information.',
-      [{ text: 'OK' }]
+      [{ text: 'OK' }],
     );
   };
 
+  const SettingItem = ({
+    icon,
+    label,
+    description,
+    onPress,
+    rightElement,
+    disabled,
+  }: {
+    icon: string;
+    label: string;
+    description?: string;
+    onPress?: () => void;
+    rightElement?: React.ReactNode;
+    disabled?: boolean;
+  }) => (
+    <TouchableOpacity
+      style={[styles.settingItem, { borderBottomColor: themeColors.borderLight }]}
+      onPress={onPress}
+      disabled={!onPress || disabled}
+      activeOpacity={0.7}
+    >
+      <View style={[styles.settingIcon, { backgroundColor: themeColors.primaryMuted }]}>
+        <Ionicons name={icon as any} size={18} color={themeColors.primary} />
+      </View>
+      <View style={styles.settingContent}>
+        <Text style={[styles.settingLabel, { color: themeColors.textPrimary }]}>{label}</Text>
+        {description && (
+          <Text style={[styles.settingDescription, { color: themeColors.textTertiary }]}>
+            {description}
+          </Text>
+        )}
+      </View>
+      {rightElement || (
+        onPress && <Ionicons name="chevron-forward" size={18} color={themeColors.textTertiary} />
+      )}
+    </TouchableOpacity>
+  );
+
   return (
-    <SafeAreaView style={[styles.safe, { backgroundColor: themeColors.background }]} edges={['top']}>
+    <SafeAreaView
+      style={[styles.safe, { backgroundColor: themeColors.background }]}
+      edges={['top']}
+    >
       <LinearGradient
         colors={[themeColors.gradientStart, themeColors.gradientEnd]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.header}
       >
-        <View style={styles.headerContent}>
-          <View style={styles.headerTextContainer}>
-            <Text style={[styles.headerTitle, { color: themeColors.textLight }]}>Settings</Text>
-            <Text style={[styles.headerSubtitle, { color: themeColors.whiteOverlay20 }]}>Manage your preferences</Text>
-          </View>
-        </View>
+        <Text style={styles.headerTitle}>Settings</Text>
+        <Text style={styles.headerSubtitle}>Manage your preferences</Text>
       </LinearGradient>
 
       <ScrollView
-        style={[styles.content, { backgroundColor: themeColors.background }]}
+        style={styles.content}
         contentContainerStyle={styles.contentContainer}
+        showsVerticalScrollIndicator={false}
       >
-        {/* Theme Section */}
+        {/* Appearance */}
         <View style={[styles.section, { backgroundColor: themeColors.surface }]}>
-          <View style={[styles.sectionHeader, { borderBottomColor: themeColors.border }]}>
-            <View style={styles.sectionIconContainer}>
-              <Ionicons
-                name={isDark ? 'moon' : 'sunny'}
-                size={20}
-                color={themeColors.primary}
-              />
-            </View>
-            <Text style={[styles.sectionTitle, { color: themeColors.textPrimary }]}>Theme</Text>
-          </View>
-
-          <View style={[styles.settingItem, { borderBottomColor: themeColors.border }]}>
-            <View style={styles.settingLeft}>
-              <Text style={[styles.settingLabel, { color: themeColors.textPrimary }]}>
-                {isDark ? 'Dark Mode' : 'Light Mode'}
-              </Text>
-              <Text style={[styles.settingDescription, { color: themeColors.textTertiary }]}>
-                Current: {mode}
-              </Text>
-            </View>
-            <Switch
-              value={isDark}
-              onValueChange={handleToggleTheme}
-              trackColor={{ false: themeColors.border, true: themeColors.primary }}
-              thumbColor={isDark ? themeColors.primary : '#f4f3f4'}
-            />
-          </View>
-        </View>
-
-        {/* Data Management Section */}
-        <View style={[styles.section, { backgroundColor: themeColors.surface }]}>
-          <View style={[styles.sectionHeader, { borderBottomColor: themeColors.border }]}>
-            <View style={styles.sectionIconContainer}>
-              <Ionicons name="refresh" size={20} color={themeColors.primary} />
-            </View>
-            <Text style={[styles.sectionTitle, { color: themeColors.textPrimary }]}>Data Management</Text>
-          </View>
-
-          {/* Network Status Indicator */}
-          <View
-            style={[
-              styles.networkStatusBadge,
-              {
-                backgroundColor: isOnline
-                  ? isDark
-                    ? 'rgba(76, 175, 80, 0.1)'
-                    : 'rgba(76, 175, 80, 0.08)'
-                  : isDark
-                  ? 'rgba(244, 67, 54, 0.1)'
-                  : 'rgba(244, 67, 54, 0.08)',
-              },
-            ]}
-          >
-            <Ionicons
-              name={isOnline ? 'wifi' : 'wifi-outline'}
-              size={14}
-              color={isOnline ? '#4CAF50' : '#F44336'}
-              style={{ marginRight: 8 }}
-            />
-            <Text
-              style={[
-                styles.networkStatusText,
-                {
-                  color: isOnline ? '#4CAF50' : '#F44336',
-                },
-              ]}
-            >
-              {isOnline ? 'Online - Ready to sync' : 'Offline - Using cached data'}
+          <View style={[styles.sectionHeader, { borderBottomColor: themeColors.borderLight }]}>
+            <Text style={[styles.sectionTitle, { color: themeColors.textPrimary }]}>
+              Appearance
             </Text>
           </View>
 
-          <TouchableOpacity
-            style={[styles.settingItem, { borderBottomColor: themeColors.border }]}
-            onPress={handleManualSync}
-            disabled={isSyncing || !isOnline}
-            activeOpacity={0.7}
-          >
-            <View style={styles.settingLeft}>
-              <Text style={[styles.settingLabel, { color: themeColors.textPrimary }]}>
-                Sync with Database
-              </Text>
-              <Text style={[styles.settingDescription, { color: themeColors.textTertiary }]}>
-                {lastSyncTime ? `Last synced: ${lastSyncTime}` : 'Never synced'}
-              </Text>
-            </View>
-            {isSyncing ? (
-              <ActivityIndicator color={themeColors.primary} />
-            ) : (
-              <Ionicons name="chevron-forward" size={20} color={themeColors.textTertiary} />
-            )}
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.settingItem}
-            onPress={handleClearCache}
-            activeOpacity={0.7}
-          >
-            <View style={styles.settingLeft}>
-              <Text style={[styles.settingLabel, { color: themeColors.textPrimary }]}>
-                Clear Cache
-              </Text>
-              <Text style={[styles.settingDescription, { color: themeColors.textTertiary }]}>
-                Remove temporary data
-              </Text>
-            </View>
-            <Ionicons name="chevron-forward" size={20} color={themeColors.textTertiary} />
-          </TouchableOpacity>
+          <SettingItem
+            icon={isDark ? 'moon' : 'sunny'}
+            label={isDark ? 'Dark Mode' : 'Light Mode'}
+            description={`Theme: ${mode}`}
+            rightElement={
+              <Switch
+                value={isDark}
+                onValueChange={handleToggleTheme}
+                trackColor={{ false: themeColors.border, true: themeColors.primary }}
+                thumbColor={isDark ? themeColors.primaryLight : '#f4f3f4'}
+              />
+            }
+          />
         </View>
 
-        {/* About Section */}
+        {/* Data */}
         <View style={[styles.section, { backgroundColor: themeColors.surface }]}>
-          <View style={[styles.sectionHeader, { borderBottomColor: themeColors.border }]}>
-            <View style={styles.sectionIconContainer}>
-              <Ionicons name="information-circle" size={20} color={themeColors.primary} />
-            </View>
+          <View style={[styles.sectionHeader, { borderBottomColor: themeColors.borderLight }]}>
+            <Text style={[styles.sectionTitle, { color: themeColors.textPrimary }]}>
+              Data Management
+            </Text>
+          </View>
+
+          {/* Network status */}
+          <View
+            style={[
+              styles.networkBadge,
+              {
+                backgroundColor: isOnline
+                  ? (themeColors.successLight || 'rgba(16,185,129,0.12)')
+                  : (themeColors.errorLight || 'rgba(239,68,68,0.12)'),
+              },
+            ]}
+          >
+            <View
+              style={[
+                styles.networkDot,
+                { backgroundColor: isOnline ? themeColors.success : themeColors.error },
+              ]}
+            />
+            <Text
+              style={[
+                styles.networkText,
+                { color: isOnline ? themeColors.success : themeColors.error },
+              ]}
+            >
+              {isOnline ? 'Online — Ready to sync' : 'Offline — Using cached data'}
+            </Text>
+          </View>
+
+          <SettingItem
+            icon="sync"
+            label="Sync with Database"
+            description={lastSyncTime ? `Last: ${lastSyncTime}` : 'Never synced'}
+            onPress={handleManualSync}
+            disabled={isSyncing || !isOnline}
+            rightElement={
+              isSyncing ? (
+                <ActivityIndicator color={themeColors.primary} />
+              ) : (
+                <Ionicons name="chevron-forward" size={18} color={themeColors.textTertiary} />
+              )
+            }
+          />
+
+          <SettingItem
+            icon="trash-outline"
+            label="Clear Cache"
+            description="Remove temporary route data"
+            onPress={handleClearCache}
+          />
+        </View>
+
+        {/* About */}
+        <View style={[styles.section, { backgroundColor: themeColors.surface }]}>
+          <View style={[styles.sectionHeader, { borderBottomColor: themeColors.borderLight }]}>
             <Text style={[styles.sectionTitle, { color: themeColors.textPrimary }]}>About</Text>
           </View>
 
-          <TouchableOpacity
-            style={[styles.settingItem, { borderBottomColor: themeColors.border }]}
+          <SettingItem
+            icon="information-circle"
+            label="About Bus Bhara"
+            description="Version 2.0.0"
             onPress={handleAbout}
-            activeOpacity={0.7}
-          >
-            <View style={styles.settingLeft}>
-              <Text style={[styles.settingLabel, { color: themeColors.textPrimary }]}>
-                About BUS Bhara
-              </Text>
-              <Text style={[styles.settingDescription, { color: themeColors.textTertiary }]}>
-                Version 1.8.0
-              </Text>
-            </View>
-            <Ionicons name="chevron-forward" size={20} color={themeColors.textTertiary} />
-          </TouchableOpacity>
+          />
 
-          <TouchableOpacity
-            style={styles.settingItem}
+          <SettingItem
+            icon="shield-checkmark"
+            label="Privacy Policy"
+            description="Your data protection"
             onPress={handlePrivacy}
-            activeOpacity={0.7}
-          >
-            <View style={styles.settingLeft}>
-              <Text style={[styles.settingLabel, { color: themeColors.textPrimary }]}>
-                Privacy Policy
-              </Text>
-              <Text style={[styles.settingDescription, { color: themeColors.textTertiary }]}>
-                Your data protection
-              </Text>
-            </View>
-            <Ionicons name="chevron-forward" size={20} color={themeColors.textTertiary} />
-          </TouchableOpacity>
+          />
         </View>
 
-        <View style={{ height: 30 }} />
+        {/* Stats */}
+        <View style={[styles.section, { backgroundColor: themeColors.surface }]}>
+          <View style={[styles.sectionHeader, { borderBottomColor: themeColors.borderLight }]}>
+            <Text style={[styles.sectionTitle, { color: themeColors.textPrimary }]}>
+              Engine Status
+            </Text>
+          </View>
+
+          <View style={styles.engineStatus}>
+            <View style={styles.engineRow}>
+              <View
+                style={[
+                  styles.engineDot,
+                  {
+                    backgroundColor: TransitNetworkService.isInitialized()
+                      ? themeColors.success
+                      : themeColors.error,
+                  },
+                ]}
+              />
+              <Text style={[styles.engineText, { color: themeColors.textPrimary }]}>
+                TransitNetwork:{' '}
+                {TransitNetworkService.isInitialized() ? 'Active' : 'Not initialized'}
+              </Text>
+            </View>
+          </View>
+        </View>
+
+        <View style={{ height: 40 }} />
       </ScrollView>
     </SafeAreaView>
   );
@@ -356,124 +342,125 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    paddingHorizontal: 16,
-    paddingVertical: 16,
-    borderBottomLeftRadius: 22,
-    borderBottomRightRadius: 22,
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.lg,
+    borderBottomLeftRadius: BorderRadius.xxl,
+    borderBottomRightRadius: BorderRadius.xxl,
     ...Platform.select({
-      android: {
-        elevation: 4,
-      },
+      android: { elevation: 8 },
       ios: {
-        shadowColor: '#000',
-        shadowOpacity: 0.2,
-        shadowRadius: 6,
-        shadowOffset: { width: 0, height: 3 },
+        shadowColor: '#4F46E5',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.25,
+        shadowRadius: 12,
       },
     }),
   },
-  headerContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  backButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 12,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-  },
-  headerTextContainer: {
-    flex: 1,
-  },
   headerTitle: {
-    fontSize: 24,
-    fontWeight: '700',
-    marginBottom: 4,
+    fontSize: FontSize.xxl,
+    fontWeight: '800',
+    color: '#FFF',
   },
   headerSubtitle: {
-    fontSize: 14,
-    fontWeight: '400',
+    fontSize: FontSize.md,
+    color: 'rgba(255,255,255,0.65)',
+    marginTop: 4,
+    fontWeight: '500',
   },
   content: {
     flex: 1,
   },
   contentContainer: {
-    paddingHorizontal: 16,
-    paddingTop: 16,
-    paddingBottom: 20,
+    paddingHorizontal: Spacing.lg,
+    paddingTop: Spacing.lg,
   },
   section: {
-    borderRadius: 12,
-    marginBottom: 16,
+    borderRadius: BorderRadius.lg,
+    marginBottom: Spacing.md,
     overflow: 'hidden',
     ...Platform.select({
-      android: {
-        elevation: 2,
-      },
+      android: { elevation: 1 },
       ios: {
         shadowColor: '#000',
-        shadowOpacity: 0.1,
-        shadowRadius: 3,
         shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.04,
+        shadowRadius: 3,
       },
     }),
   },
   sectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.md,
     borderBottomWidth: 1,
   },
-  sectionIconContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 12,
-    backgroundColor: 'rgba(102, 126, 234, 0.1)',
-  },
   sectionTitle: {
-    fontSize: 16,
+    fontSize: FontSize.md,
     fontWeight: '700',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
   settingItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    borderBottomWidth: 1,
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.md,
+    borderBottomWidth: 0.5,
   },
-  settingLeft: {
+  settingIcon: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: Spacing.md,
+  },
+  settingContent: {
     flex: 1,
-    marginRight: 12,
+    marginRight: Spacing.md,
   },
   settingLabel: {
-    fontSize: 15,
+    fontSize: FontSize.base,
     fontWeight: '600',
-    marginBottom: 4,
   },
   settingDescription: {
-    fontSize: 13,
-    fontWeight: '400',
+    fontSize: FontSize.sm,
+    marginTop: 2,
   },
-  networkStatusBadge: {
+  networkBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    marginHorizontal: 12,
-    marginVertical: 8,
-    borderRadius: 12,
+    marginHorizontal: Spacing.lg,
+    marginVertical: Spacing.sm,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+    borderRadius: BorderRadius.md,
+    gap: Spacing.sm,
   },
-  networkStatusText: {
-    fontSize: 13,
+  networkDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+  },
+  networkText: {
+    fontSize: FontSize.sm,
     fontWeight: '600',
-    flex: 1,
+  },
+  engineStatus: {
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.md,
+  },
+  engineRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+  },
+  engineDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+  },
+  engineText: {
+    fontSize: FontSize.md,
+    fontWeight: '500',
   },
 });

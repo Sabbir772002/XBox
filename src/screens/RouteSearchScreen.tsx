@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
@@ -10,60 +10,63 @@ import {
   ScrollView,
   Animated,
   Platform,
+  Dimensions,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useDynamicSafeArea } from '../hooks/useDynamicSafeArea';
-import DatabaseService, { Stop, Bus, TransferRoute } from '../services/DatabaseService';
+import DatabaseService, { Stop } from '../services/DatabaseService';
+import TransitNetworkService, { DetailedRoute } from '../services/TransitNetworkService';
 import StorageService from '../services/StorageService';
 import { useTheme } from '../theme/ThemeContext';
 import { Colors, Spacing, BorderRadius, FontSize } from '../theme/colors';
 import { DarkColors } from '../theme/darkColors';
-import { CollapsibleSection } from '../components/CollapsibleSection';
-import { TransferBusCard } from '../components/TransferBusCard';
+
+// Transfer mode mapping
+const TRANSFER_MODES = [
+  { key: 'best', label: 'Best', mode: -1, icon: 'trophy-outline' },
+  { key: 'direct', label: 'Direct', mode: 0, icon: 'bus-outline' },
+  { key: '1t', label: '1T', mode: 1, icon: 'swap-horizontal-outline' },
+  { key: '2t', label: '2T', mode: 2, icon: 'git-merge-outline' },
+];
 
 export default function RouteSearchScreen({ navigation, route }: any) {
   const { isDark } = useTheme();
   const themeColors = isDark ? DarkColors : Colors;
-  const [from, setFrom] = React.useState('');
-  const [to, setTo] = React.useState('');
+  const [from, setFrom] = useState('');
+  const [to, setTo] = useState('');
+  const [viaStop, setViaStop] = useState('');
   const [fromStopName, setFromStopName] = useState<string | null>(null);
   const [toStopName, setToStopName] = useState<string | null>(null);
-  const [showData, setShowData] = React.useState(false);
-  const [allBuses, setAllBuses] = useState<Bus[]>([]); // All buses loaded
-  const [buses, setBuses] = useState<Bus[]>([]); // Displayed buses (paginated)
-  const [displayedBusesCount, setDisplayedBusesCount] = useState(50); // Initial display count
-  const [transferRoutes, setTransferRoutes] = useState<TransferRoute[]>([]);
-  const [allTransferRoutes, setAllTransferRoutes] = useState<TransferRoute[]>([]); // Store all for filtering
-  const [displayedTransfersCount, setDisplayedTransfersCount] = useState(50); // Transfer pagination
+  const [showData, setShowData] = useState(false);
+  const [results, setResults] = useState<DetailedRoute[]>([]);
+  const [displayedCount, setDisplayedCount] = useState(20);
   const [loading, setLoading] = useState(false);
-  const [transferLoading, setTransferLoading] = useState(false);
-  const [transfersLoaded, setTransfersLoaded] = useState(false); // Lazy load flag
   const [allStops, setAllStops] = useState<Stop[]>([]);
   const [fromSuggestions, setFromSuggestions] = useState<Stop[]>([]);
   const [toSuggestions, setToSuggestions] = useState<Stop[]>([]);
-  const [uniqueTransferPoints, setUniqueTransferPoints] = useState<Array<{ id: number; name: string; nameBn: string }>>([]);
-  const [selectedTransferPointIds, setSelectedTransferPointIds] = useState<number[]>([]); // All by default
+  const [viaSuggestions, setViaSuggestions] = useState<Stop[]>([]);
+  const [selectedMode, setSelectedMode] = useState<number>(-1); // -1 = Best
   const [searchDate, setSearchDate] = useState<string | null>(null);
   const [searchTime, setSearchTime] = useState<string | null>(null);
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const safeArea = useDynamicSafeArea();
 
+  const showViaStop = selectedMode === 1 || selectedMode === 2;
+
   useEffect(() => {
     loadStops();
-    
-    // Handle navigation params (from history click)
+
     if (route?.params) {
-      const { fromStopName: paramFromStopName, toStopName: paramToStopName } = route.params;
-      if (paramFromStopName && paramToStopName) {
-        setFrom(paramFromStopName);
-        setTo(paramToStopName);
-        setFromStopName(paramFromStopName);
-        setToStopName(paramToStopName);
-        // Trigger search after a short delay to ensure state is set
+      const { fromStopName: paramFrom, toStopName: paramTo } = route.params;
+      if (paramFrom && paramTo) {
+        setFrom(paramFrom);
+        setTo(paramTo);
+        setFromStopName(paramFrom);
+        setToStopName(paramTo);
         setTimeout(() => {
-          searchBusesWithParams(paramFromStopName, paramToStopName);
+          searchRoutes(paramFrom, paramTo, '', selectedMode);
         }, 100);
       }
     }
@@ -78,36 +81,54 @@ export default function RouteSearchScreen({ navigation, route }: any) {
     }
   };
 
+  const filterStops = (text: string): Stop[] => {
+    if (text.length === 0) return [];
+    const lowerText = text.toLowerCase();
+    return allStops
+      .filter(
+        (stop) =>
+          (stop.stopageEn && stop.stopageEn.toLowerCase().includes(lowerText)) ||
+          (stop.stopageBn && stop.stopageBn.toLowerCase().includes(lowerText)),
+      )
+      .slice(0, 8);
+  };
+
+  const findExactStop = (text: string): Stop | null => {
+    if (!text.trim()) return null;
+    
+    const normalizeInternal = (s: string) => 
+      s.toLowerCase()
+       .replace(/[^a-z0-9\u0980-\u09FF\s]/g, ' ')
+       .replace(/\s+/g, ' ')
+       .trim();
+
+    const normalizedInput = normalizeInternal(text);
+    
+    return allStops.find(
+      (s) =>
+        normalizeInternal(s.stopageEn) === normalizedInput ||
+        (s.stopageBn && normalizeInternal(s.stopageBn) === normalizedInput),
+    ) || null;
+  };
+
   const handleFromSearch = (text: string) => {
     setFrom(text);
-    setFromStopName(text);
-    if (text.length > 0) {
-      const lowerText = text.toLowerCase();
-      const filtered = allStops.filter(
-        stop =>
-          (stop.stopageEn && stop.stopageEn.toLowerCase().includes(lowerText)) ||
-          (stop.stopageBn && stop.stopageBn.toLowerCase().includes(lowerText))
-      );
-      setFromSuggestions(filtered.slice(0, 10));
-    } else {
-      setFromSuggestions([]);
-    }
+    setFromSuggestions(filterStops(text));
+    // Only set confirmed stop name if exact match
+    const exact = findExactStop(text);
+    setFromStopName(exact ? exact.stopageEn : null);
   };
 
   const handleToSearch = (text: string) => {
     setTo(text);
-    setToStopName(text);
-    if (text.length > 0) {
-      const lowerText = text.toLowerCase();
-      const filtered = allStops.filter(
-        stop =>
-          (stop.stopageEn && stop.stopageEn.toLowerCase().includes(lowerText)) ||
-          (stop.stopageBn && stop.stopageBn.toLowerCase().includes(lowerText))
-      );
-      setToSuggestions(filtered.slice(0, 10));
-    } else {
-      setToSuggestions([]);
-    }
+    setToSuggestions(filterStops(text));
+    const exact = findExactStop(text);
+    setToStopName(exact ? exact.stopageEn : null);
+  };
+
+  const handleViaSearch = (text: string) => {
+    setViaStop(text);
+    setViaSuggestions(filterStops(text));
   };
 
   const selectFromStop = (stop: Stop) => {
@@ -122,182 +143,219 @@ export default function RouteSearchScreen({ navigation, route }: any) {
     setToSuggestions([]);
   };
 
-  const searchBusesWithParams = async (fStopName: string, tStopName: string) => {
+  const selectViaStop = (stop: Stop) => {
+    setViaStop(stop.stopageEn);
+    setViaSuggestions([]);
+  };
+
+  const swapStops = () => {
+    const tempFrom = from;
+    const tempFromName = fromStopName;
+    setFrom(to);
+    setFromStopName(toStopName);
+    setTo(tempFrom);
+    setToStopName(tempFromName);
+  };
+
+  const searchRoutes = async (
+    fStop: string,
+    tStop: string,
+    via: string = '',
+    mode: number = -1,
+  ) => {
     setLoading(true);
     setShowData(true);
-    setTransfersLoaded(false); // Reset lazy load flag
-    setAllTransferRoutes([]); // Clear previous transfers
-    setTransferRoutes([]);
-    setUniqueTransferPoints([]);
-    setSelectedTransferPointIds([]);
+    setDisplayedCount(20);
 
-    // Set search date and time
     const now = new Date();
-    const dateStr = now.toLocaleDateString('en-BD', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
-    const timeStr = now.toLocaleTimeString('en-BD', { hour: '2-digit', minute: '2-digit', hour12: true });
-    setSearchDate(dateStr);
-    setSearchTime(timeStr);
+    setSearchDate(
+      now.toLocaleDateString('en-BD', {
+        weekday: 'short',
+        month: 'short',
+        day: 'numeric',
+      }),
+    );
+    setSearchTime(
+      now.toLocaleTimeString('en-BD', { hour: '2-digit', minute: '2-digit', hour12: true }),
+    );
 
-    // Fade in animation
     Animated.timing(fadeAnim, {
       toValue: 1,
-      duration: 300,
+      duration: 250,
       useNativeDriver: true,
     }).start();
 
     try {
-      // Search for direct buses only (lazy load transfers)
-      const foundBuses = await DatabaseService.getBusesBetweenStops(fStopName, tStopName);
-      setBuses(foundBuses);
-      
+      if (!TransitNetworkService.isInitialized()) {
+        console.warn('TransitNetwork not initialized, falling back');
+        setResults([]);
+        return;
+      }
+
+      const foundRoutes = TransitNetworkService.findRoutes(fStop, tStop, via, mode);
+      setResults(foundRoutes);
+
       // Save to history
-      if (fStopName && tStopName) {
-        await StorageService.addSearchHistory(1, 1, fStopName, tStopName, foundBuses.length);
+      if (fStop && tStop) {
+        await StorageService.addSearchHistory(1, 1, fStop, tStop, foundRoutes.length);
       }
     } catch (error) {
-      console.error('Error searching buses:', error);
-      setBuses([]);
+      console.error('Error searching routes:', error);
+      setResults([]);
     } finally {
       setLoading(false);
     }
   };
 
-  // Lazy load transfers when user clicks to expand
-  const loadTransfers = async (fStopName: string, tStopName: string) => {
-    if (transfersLoaded) return; // Already loaded
-    
-    setTransferLoading(true);
-    try {
-      const foundTransfers = await DatabaseService.getBusesWithOneTransfer(fStopName, tStopName);
-      setAllTransferRoutes(foundTransfers);
-      
-      // Display first 50 transfers
-      const displayedTransfers = foundTransfers.slice(0, 50);
-      setTransferRoutes(displayedTransfers);
-      
-      // Get unique transfer points
-      const uniquePoints = await DatabaseService.getUniqueTransferPoints(foundTransfers);
-      setUniqueTransferPoints(uniquePoints);
-      setSelectedTransferPointIds(uniquePoints.map(p => p.id)); // Select all by default
-      
-      setTransfersLoaded(true);
-      console.log('Loaded transfers:', foundTransfers.length);
-    } catch (error) {
-      console.error('Error loading transfers:', error);
-      setAllTransferRoutes([]);
-      setTransferRoutes([]);
-    } finally {
-      setTransferLoading(false);
+  const handleSearch = () => {
+    if (!fromStopName || !toStopName) return;
+    searchRoutes(fromStopName, toStopName, showViaStop ? viaStop : '', selectedMode);
+  };
+
+  const handleModeChange = (mode: number) => {
+    setSelectedMode(mode);
+    // Clear via if switching away from transfer modes
+    if (mode !== 1 && mode !== 2) {
+      setViaStop('');
+    }
+    // Re-search if we already have results
+    if (fromStopName && toStopName && showData) {
+      searchRoutes(fromStopName, toStopName, mode === 1 || mode === 2 ? viaStop : '', mode);
     }
   };
 
-  // Filter transfers by selected transfer points
-  const handleTransferPointFilterChange = (pointId: number) => {
-    let newSelected = [...selectedTransferPointIds];
-    
-    if (newSelected.includes(pointId)) {
-      newSelected = newSelected.filter(id => id !== pointId);
-    } else {
-      newSelected.push(pointId);
-    }
-    
-    setSelectedTransferPointIds(newSelected);
-    
-    // Update displayed routes based on filter with current display count
-    const filtered = DatabaseService.filterTransferRoutesByPoint(allTransferRoutes, newSelected);
-    const displayedTransfers = filtered.slice(0, displayedTransfersCount);
-    setTransferRoutes(displayedTransfers);
+  const loadMore = () => {
+    setDisplayedCount((prev) => Math.min(prev + 20, results.length));
   };
 
-  // Load more buses (add 50 more)
-  const loadMoreBuses = () => {
-    const newCount = displayedBusesCount + 50;
-    setDisplayedBusesCount(newCount);
-    const moreBuses = allBuses.slice(0, newCount);
-    setBuses(moreBuses);
+  const displayedResults = useMemo(() => results.slice(0, displayedCount), [results, displayedCount]);
+
+  const getRouteTypeColor = (type: string) => {
+    if (type === 'Direct') return themeColors.routeDirect;
+    if (type === '1 Transfer') return themeColors.routeTransfer1;
+    return themeColors.routeTransfer2;
   };
 
-  // Load all remaining buses
-  const loadAllBuses = () => {
-    setDisplayedBusesCount(allBuses.length);
-    setBuses(allBuses);
+  const getRouteTypeIcon = (type: string) => {
+    if (type === 'Direct') return 'bus';
+    if (type === '1 Transfer') return 'swap-horizontal';
+    return 'git-merge';
   };
 
-  // Load more transfers (add 50 more)
-  const loadMoreTransfers = () => {
-    const newCount = displayedTransfersCount + 50;
-    setDisplayedTransfersCount(newCount);
-    
-    // Apply current filter to new count
-    const filtered = DatabaseService.filterTransferRoutesByPoint(allTransferRoutes, selectedTransferPointIds);
-    const moreTransfers = filtered.slice(0, newCount);
-    setTransferRoutes(moreTransfers);
-  };
+  const renderRouteCard = ({ item, index }: { item: DetailedRoute; index: number }) => {
+    const typeColor = getRouteTypeColor(item.type);
 
-  // Load all remaining transfers
-  const loadAllTransfers = () => {
-    setDisplayedTransfersCount(allTransferRoutes.length);
-    
-    // Apply current filter to all
-    const filtered = DatabaseService.filterTransferRoutesByPoint(allTransferRoutes, selectedTransferPointIds);
-    setTransferRoutes(filtered);
-  };
-
-  const searchBuses = async () => {
-    if (!fromStopName || !toStopName) {
-      return;
-    }
-    await searchBusesWithParams(fromStopName, toStopName);
-  };
-
-  const renderBusItem = ({ item }: { item: Bus }) => {
     return (
       <TouchableOpacity
-        style={[styles.card, { backgroundColor: themeColors.surface, borderLeftColor: themeColors.primary }]}
+        style={[
+          styles.routeCard,
+          {
+            backgroundColor: themeColors.surface,
+            borderColor: isDark ? themeColors.border : 'transparent',
+            borderWidth: isDark ? 1 : 0,
+          },
+        ]}
         onPress={() =>
           navigation.navigate('RouteDetails', {
-            busId: item.id,
-            busName: item.nameEnglish,
-            busBn: item.nameBangla,
+            algorithmRoute: item,
             fromStopName: fromStopName,
             toStopName: toStopName,
           })
         }
         activeOpacity={0.7}
       >
-        <View style={styles.cardContent}>
-          <View style={[styles.busIconContainer, { backgroundColor: themeColors.badge }]}>
-            <Ionicons name="bus" size={32} color="#FFFFFF" />
+        {/* Top Row: Type badge + Fare */}
+        <View style={styles.routeCardHeader}>
+          <View style={[styles.typeBadge, { backgroundColor: typeColor + '18' }]}>
+            <Ionicons name={getRouteTypeIcon(item.type)} size={14} color={typeColor} />
+            <Text style={[styles.typeBadgeText, { color: typeColor }]}>{item.type}</Text>
           </View>
-          <View style={{ flex: 1, marginLeft: 12 }}>
-            <Text style={[styles.busName, { color: themeColors.textPrimary }]}>{item.nameEnglish}</Text>
-            {item.nameBangla && <Text style={[styles.busNameBn, { color: themeColors.textSecondary }]}>{item.nameBangla}</Text>}
-            {item.serviceType && <Text style={[styles.serviceType, { color: themeColors.textTertiary }]}>{item.serviceType}</Text>}
-            <View style={styles.routeStops}>
-              <Text style={[styles.route, { color: themeColors.textSecondary }]} numberOfLines={1}>
-                {fromStopName}
-              </Text>
-              <Ionicons name="arrow-forward" size={14} color={themeColors.primary} style={{ marginHorizontal: 6 }} />
-              <Text style={[styles.route, { color: themeColors.textSecondary }]} numberOfLines={1}>
-                {toStopName}
-              </Text>
-            </View>
-            <View style={styles.routeStats}>
-              <View style={[styles.statPill, { backgroundColor: themeColors.background }]}>
-                <Ionicons name="location-outline" size={12} color={themeColors.primary} />
-                <Text style={[styles.statText, { color: themeColors.textSecondary }]}>{item.totalStops} stops</Text>
-              </View>
-              <View style={[styles.statPill, { backgroundColor: themeColors.background }]}>
-                <Ionicons name="walk-outline" size={12} color={themeColors.info} />
-                <Text style={[styles.statText, { color: themeColors.textSecondary }]}>{(item.estimatedDistanceKm ?? 0).toFixed(2)} km</Text>
-              </View>
-              <View style={[styles.statPill, { backgroundColor: themeColors.background }]}>
-                <Ionicons name="cash-outline" size={12} color={themeColors.warning} />
-                <Text style={[styles.statText, { color: themeColors.textSecondary }]}>৳ {(item.estimatedFare ?? 10).toFixed(0)}</Text>
-              </View>
-            </View>
+          <View style={[styles.fareBadge, { backgroundColor: themeColors.primaryMuted }]}>
+            <Text style={[styles.fareText, { color: themeColors.primary }]}>
+              ৳ {item.total_cost_tk}
+            </Text>
           </View>
-          <Ionicons name="chevron-forward" size={22} color={themeColors.primary} />
+        </View>
+
+        {/* Bus Legs */}
+        <View style={styles.legsContainer}>
+          {item.legs.map((leg, legIdx) => (
+            <View key={legIdx}>
+              <View style={styles.legRow}>
+                <View style={[styles.legDot, { backgroundColor: typeColor }]} />
+                <View style={styles.legInfo}>
+                  <Text
+                    style={[styles.legBusName, { color: themeColors.textPrimary }]}
+                    numberOfLines={1}
+                  >
+                    {leg.busName}
+                  </Text>
+                  <View style={styles.legStops}>
+                    <Text
+                      style={[styles.legStopText, { color: themeColors.textSecondary }]}
+                      numberOfLines={1}
+                    >
+                      {leg.from}
+                    </Text>
+                    <Ionicons
+                      name="arrow-forward"
+                      size={12}
+                      color={themeColors.textTertiary}
+                      style={{ marginHorizontal: 4 }}
+                    />
+                    <Text
+                      style={[styles.legStopText, { color: themeColors.textSecondary }]}
+                      numberOfLines={1}
+                    >
+                      {leg.to}
+                    </Text>
+                  </View>
+                </View>
+                <View style={styles.legMeta}>
+                  <Text style={[styles.legDist, { color: themeColors.textTertiary }]}>
+                    {leg.dist.toFixed(1)} km
+                  </Text>
+                  <Text style={[styles.legFare, { color: themeColors.textSecondary }]}>
+                    ৳ {Math.ceil(leg.cost)}
+                  </Text>
+                </View>
+              </View>
+              {legIdx < item.legs.length - 1 && (
+                <View style={styles.transferIndicator}>
+                  <View style={[styles.transferLine, { backgroundColor: themeColors.warning }]} />
+                  <View
+                    style={[styles.transferBadge, { backgroundColor: themeColors.warningLight }]}
+                  >
+                    <Ionicons name="swap-horizontal" size={12} color={themeColors.warning} />
+                    <Text style={[styles.transferText, { color: themeColors.warning }]}>
+                      {item.transfer_points[legIdx] || 'Transfer'}
+                    </Text>
+                  </View>
+                  <View style={[styles.transferLine, { backgroundColor: themeColors.warning }]} />
+                </View>
+              )}
+            </View>
+          ))}
+        </View>
+
+        {/* Bottom Row: Distance + Arrow */}
+        <View style={styles.routeCardFooter}>
+          <View style={styles.footerStats}>
+            <Ionicons name="navigate-outline" size={13} color={themeColors.textTertiary} />
+            <Text style={[styles.footerStatText, { color: themeColors.textTertiary }]}>
+              {item.total_distance_km.toFixed(1)} km
+            </Text>
+            {item.path.length > 0 && (
+              <>
+                <Text style={[styles.footerDot, { color: themeColors.textMuted }]}>·</Text>
+                <Ionicons name="ellipsis-horizontal" size={13} color={themeColors.textTertiary} />
+                <Text style={[styles.footerStatText, { color: themeColors.textTertiary }]}>
+                  {item.path.length} stops
+                </Text>
+              </>
+            )}
+          </View>
+          <Ionicons name="chevron-forward" size={18} color={themeColors.primary} />
         </View>
       </TouchableOpacity>
     );
@@ -310,337 +368,339 @@ export default function RouteSearchScreen({ navigation, route }: any) {
       onPress={() => onSelect(item)}
       activeOpacity={0.7}
     >
-      <Ionicons name="location-outline" size={20} color={themeColors.primary} />
+      <View style={[styles.suggestionDot, { backgroundColor: themeColors.primaryMuted }]}>
+        <Ionicons name="location" size={14} color={themeColors.primary} />
+      </View>
       <View style={{ flex: 1, marginLeft: 10 }}>
-        <Text style={[styles.suggestionText, { color: themeColors.textPrimary }]}>{item.stopageEn}</Text>
-        {item.stopageBn && <Text style={[styles.suggestionTextBn, { color: themeColors.textSecondary }]}>{item.stopageBn}</Text>}
+        <Text style={[styles.suggestionText, { color: themeColors.textPrimary }]}>
+          {item.stopageEn}
+        </Text>
+        {item.stopageBn && item.stopageBn !== item.stopageEn && (
+          <Text style={[styles.suggestionTextBn, { color: themeColors.textTertiary }]}>
+            {item.stopageBn}
+          </Text>
+        )}
       </View>
     </TouchableOpacity>
   );
 
   return (
-    <SafeAreaView style={[styles.safe, { backgroundColor: themeColors.background }]} edges={['top', 'left', 'right']}>
+    <SafeAreaView
+      style={[styles.safe, { backgroundColor: themeColors.background }]}
+      edges={['top', 'left', 'right']}
+    >
       <LinearGradient
         colors={[themeColors.gradientStart, themeColors.gradientEnd]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.header}
       >
-        {/* Compact Header with Title Only 
-        <View style={styles.headerTop}>
-          <Text style={[styles.headerTitle, { color: '#FFFFFF' }]}>🚌 Find Bus</Text>
-        </View>
-        */}
-        
-        {/* Search Card Container */}
-        <View style={[styles.searchCard, { backgroundColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.1)' }]}>
-          <View style={[styles.inputCard, { backgroundColor: themeColors.surface, borderColor: themeColors.borderLight }]}>
-            <Ionicons name="location" size={20} color={themeColors.primary} style={styles.icon} />
+        {/* Search Card */}
+        <View
+          style={[
+            styles.searchCard,
+            {
+              backgroundColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.12)',
+            },
+          ]}
+        >
+          {/* From Input */}
+          <View
+            style={[
+              styles.inputCard,
+              {
+                backgroundColor: themeColors.surface,
+                borderColor: themeColors.inputBorder,
+              },
+            ]}
+          >
+            <View style={[styles.inputDot, { backgroundColor: themeColors.success }]} />
             <TextInput
-              placeholder="Source Stoppage (e.g., Gabtoli)"
-              placeholderTextColor={themeColors.textTertiary}
+              placeholder="From where?"
+              placeholderTextColor={themeColors.inputPlaceholder}
               value={from}
               onChangeText={handleFromSearch}
-              style={[styles.input, { color: themeColors.text }]}
+              style={[styles.input, { color: themeColors.textPrimary }]}
               returnKeyType="next"
             />
             {from.length > 0 && (
-              <TouchableOpacity onPress={() => { setFrom(''); setFromStopName(null); setFromSuggestions([]); }}>
-                <Ionicons name="close-circle" size={20} color={themeColors.textTertiary} />
+              <TouchableOpacity
+                onPress={() => {
+                  setFrom('');
+                  setFromStopName(null);
+                  setFromSuggestions([]);
+                }}
+              >
+                <Ionicons name="close-circle" size={18} color={themeColors.textTertiary} />
               </TouchableOpacity>
             )}
           </View>
 
-          {/* From Suggestions Dropdown */}
           {fromSuggestions.length > 0 && (
-            <View style={[styles.suggestionsDropdown, { backgroundColor: themeColors.background }]}>
-              <ScrollView 
+            <View
+              style={[styles.suggestionsDropdown, { backgroundColor: themeColors.background }]}
+            >
+              <ScrollView
                 style={styles.suggestionsScroll}
                 keyboardShouldPersistTaps="handled"
                 nestedScrollEnabled={true}
               >
-                {fromSuggestions.map(stop => renderSuggestion(stop, selectFromStop))}
+                {fromSuggestions.map((stop) => renderSuggestion(stop, selectFromStop))}
               </ScrollView>
             </View>
           )}
 
-          <View style={[styles.inputCard, { marginTop: 8, backgroundColor: themeColors.surface, borderColor: themeColors.borderLight }]}>
-            <Ionicons name="navigate" size={20} color={themeColors.primary} style={styles.icon} />
+          {/* Swap Button */}
+          <TouchableOpacity
+            style={[styles.swapButton, { backgroundColor: themeColors.surface }]}
+            onPress={swapStops}
+            activeOpacity={0.7}
+          >
+            <Ionicons name="swap-vertical" size={18} color={themeColors.primary} />
+          </TouchableOpacity>
+
+          {/* To Input */}
+          <View
+            style={[
+              styles.inputCard,
+              {
+                backgroundColor: themeColors.surface,
+                borderColor: themeColors.inputBorder,
+              },
+            ]}
+          >
+            <View style={[styles.inputDot, { backgroundColor: themeColors.error }]} />
             <TextInput
-              placeholder="Destination Stoppage (e.g., Uttara)"
-              placeholderTextColor={themeColors.textTertiary}
+              placeholder="To where?"
+              placeholderTextColor={themeColors.inputPlaceholder}
               value={to}
               onChangeText={handleToSearch}
               style={[styles.input, { color: themeColors.textPrimary }]}
               returnKeyType="search"
-              onSubmitEditing={searchBuses}
+              onSubmitEditing={handleSearch}
             />
             {to.length > 0 && (
-              <TouchableOpacity onPress={() => { setTo(''); setToStopName(null); setToSuggestions([]); }}>
-                <Ionicons name="close-circle" size={20} color={themeColors.textTertiary} />
+              <TouchableOpacity
+                onPress={() => {
+                  setTo('');
+                  setToStopName(null);
+                  setToSuggestions([]);
+                }}
+              >
+                <Ionicons name="close-circle" size={18} color={themeColors.textTertiary} />
               </TouchableOpacity>
             )}
           </View>
 
-          {/* To Suggestions Dropdown */}
           {toSuggestions.length > 0 && (
-            <View style={[styles.suggestionsDropdown, { backgroundColor: themeColors.background }]}>
-              <ScrollView 
+            <View
+              style={[styles.suggestionsDropdown, { backgroundColor: themeColors.background }]}
+            >
+              <ScrollView
                 style={styles.suggestionsScroll}
                 keyboardShouldPersistTaps="handled"
                 nestedScrollEnabled={true}
               >
-                {toSuggestions.map(stop => renderSuggestion(stop, selectToStop))}
+                {toSuggestions.map((stop) => renderSuggestion(stop, selectToStop))}
               </ScrollView>
             </View>
           )}
 
+          {/* Via Stop (conditional) */}
+          {showViaStop && (
+            <>
+              <View
+                style={[
+                  styles.inputCard,
+                  {
+                    marginTop: 8,
+                    backgroundColor: themeColors.surface,
+                    borderColor: themeColors.inputBorder,
+                  },
+                ]}
+              >
+                <View style={[styles.inputDot, { backgroundColor: themeColors.warning }]} />
+                <TextInput
+                  placeholder="Via stoppage (optional)"
+                  placeholderTextColor={themeColors.inputPlaceholder}
+                  value={viaStop}
+                  onChangeText={handleViaSearch}
+                  style={[styles.input, { color: themeColors.textPrimary }]}
+                  returnKeyType="search"
+                  onSubmitEditing={handleSearch}
+                />
+                {viaStop.length > 0 && (
+                  <TouchableOpacity
+                    onPress={() => {
+                      setViaStop('');
+                      setViaSuggestions([]);
+                    }}
+                  >
+                    <Ionicons name="close-circle" size={18} color={themeColors.textTertiary} />
+                  </TouchableOpacity>
+                )}
+              </View>
+
+              {viaSuggestions.length > 0 && (
+                <View
+                  style={[
+                    styles.suggestionsDropdown,
+                    { backgroundColor: themeColors.background },
+                  ]}
+                >
+                  <ScrollView
+                    style={styles.suggestionsScroll}
+                    keyboardShouldPersistTaps="handled"
+                    nestedScrollEnabled={true}
+                  >
+                    {viaSuggestions.map((stop) => renderSuggestion(stop, selectViaStop))}
+                  </ScrollView>
+                </View>
+              )}
+            </>
+          )}
+
+          {/* Segmented Control */}
+          <View style={[styles.segmentContainer, { backgroundColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)' }]}>
+            {TRANSFER_MODES.map((tm) => (
+              <TouchableOpacity
+                key={tm.key}
+                style={[
+                  styles.segmentButton,
+                  selectedMode === tm.mode && [
+                    styles.segmentButtonActive,
+                    { backgroundColor: themeColors.surface },
+                  ],
+                ]}
+                onPress={() => handleModeChange(tm.mode)}
+                activeOpacity={0.7}
+              >
+                <Ionicons
+                  name={tm.icon as any}
+                  size={14}
+                  color={selectedMode === tm.mode ? themeColors.primary : themeColors.textTertiary}
+                  style={{ marginRight: 4 }}
+                />
+                <Text
+                  style={[
+                    styles.segmentText,
+                    {
+                      color:
+                        selectedMode === tm.mode
+                          ? themeColors.primary
+                          : themeColors.textTertiary,
+                      fontWeight: selectedMode === tm.mode ? '700' : '500',
+                    },
+                  ]}
+                >
+                  {tm.label}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+
+          {/* Search Button */}
           <TouchableOpacity
-            style={[styles.searchButton, { backgroundColor: themeColors.primary }, (!fromStopName || !toStopName) && styles.searchButtonDisabled]}
-            onPress={searchBuses}
+            style={[
+              styles.searchButton,
+              { backgroundColor: '#FFFFFF' },
+              (!fromStopName || !toStopName) && styles.searchButtonDisabled,
+            ]}
+            onPress={handleSearch}
             disabled={!fromStopName || !toStopName}
             activeOpacity={0.8}
           >
-            <Ionicons name="search" size={18} color="#FFF" style={{ marginRight: 6 }} />
-            <Text style={[styles.searchButtonText, { color: '#FFF' }]}>Search</Text>
+            <Ionicons
+              name="search"
+              size={18}
+              color={themeColors.primary}
+              style={{ marginRight: 8 }}
+            />
+            <Text style={[styles.searchButtonText, { color: themeColors.primary }]}>
+              Find Routes
+            </Text>
           </TouchableOpacity>
         </View>
       </LinearGradient>
 
+      {/* Results Body */}
       <View
         style={[
           styles.body,
           {
             backgroundColor: themeColors.background,
-            marginBottom: safeArea.bottom + 8, // Dynamic bottom margin for navigation bar
+            marginBottom: safeArea.bottom + 8,
           },
         ]}
       >
         {loading ? (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color={themeColors.primary} />
-            <Text style={[styles.loadingText, { color: themeColors.textSecondary }]}>Finding buses...</Text>
+            <Text style={[styles.loadingText, { color: themeColors.textSecondary }]}>
+              Finding best routes...
+            </Text>
           </View>
         ) : showData ? (
-          buses.length > 0 || transferRoutes.length > 0 ? (
-            <ScrollView 
+          displayedResults.length > 0 ? (
+            <FlatList
+              data={displayedResults}
+              keyExtractor={(item, index) => `route_${index}`}
+              renderItem={renderRouteCard}
               showsVerticalScrollIndicator={false}
-              contentContainerStyle={{ paddingBottom: Spacing.lg }}
-            >
-              {/* Direct Buses Section */}
-              {buses.length > 0 && (
-                <CollapsibleSection
-                  title={`Direct Bus (${buses.length} of ${allBuses.length})`}
-                  count={buses.length}
-                  defaultExpanded={true}
-                  icon="bus"
-                >
-                  <FlatList
-                    data={buses}
-                    keyExtractor={(item) => `bus_${item.id}`}
-                    renderItem={renderBusItem}
-                    scrollEnabled={false}
-                    showsVerticalScrollIndicator={false}
-                  />
-                  
-                  {/* Pagination Controls for Buses */}
-                  {buses.length < allBuses.length && (
-                    <View style={styles.paginationContainer}>
-                      <TouchableOpacity
-                        style={[styles.paginationButton, { backgroundColor: themeColors.primary }]}
-                        onPress={loadMoreBuses}
-                        activeOpacity={0.7}
-                      >
-                        <Ionicons name="arrow-down" size={16} color="#FFF" />
-                        <Text style={[styles.paginationButtonText, { color: '#FFF' }]}>
-                          Load 50 More
-                        </Text>
-                      </TouchableOpacity>
-                      
-                      <TouchableOpacity
-                        style={[styles.paginationButton, { backgroundColor: themeColors.badge }]}
-                        onPress={loadAllBuses}
-                        activeOpacity={0.7}
-                      >
-                        <Ionicons name="download" size={16} color="#FFF" />
-                        <Text style={[styles.paginationButtonText, { color: '#FFF' }]}>
-                          Load All
-                        </Text>
-                      </TouchableOpacity>
-                    </View>
+              contentContainerStyle={{ paddingTop: Spacing.md, paddingBottom: Spacing.lg }}
+              ListHeaderComponent={
+                <View style={styles.resultsHeader}>
+                  <Text style={[styles.resultsTitle, { color: themeColors.textPrimary }]}>
+                    {results.length} route{results.length !== 1 ? 's' : ''} found
+                  </Text>
+                  {searchDate && (
+                    <Text style={[styles.resultsSubtitle, { color: themeColors.textTertiary }]}>
+                      {searchDate} · {searchTime}
+                    </Text>
                   )}
-                </CollapsibleSection>
-              )}
-
-              {/* Transfer Buses Section - Lazy Load */}
-              {!transfersLoaded && fromStopName && toStopName && (
-                <TouchableOpacity
-                  style={[styles.lazyLoadButton, { backgroundColor: themeColors.primary }]}
-                  onPress={() => loadTransfers(fromStopName, toStopName)}
-                  activeOpacity={0.7}
-                >
-                  <Ionicons name="swap-horizontal" size={20} color="#FFF" />
-                  <Text style={[styles.lazyLoadButtonText, { color: '#FFF' }]}>
-                    {transferLoading ? 'Loading transfers...' : 'Show Buses with 1 Change'}
-                  </Text>
-                  {transferLoading && <ActivityIndicator color="#FFF" style={{ marginLeft: 10 }} />}
-                </TouchableOpacity>
-              )}
-
-              {/* Filter Section for Transfer Points */}
-              {transfersLoaded && uniqueTransferPoints.length > 0 && (
-                <View style={[styles.filterSection, { backgroundColor: themeColors.surface }]}>
-                  <Text style={[styles.filterTitle, { color: themeColors.textPrimary }]}>
-                    Filter by Transfer Point
-                  </Text>
-                  <ScrollView
-                    horizontal
-                    showsHorizontalScrollIndicator={false}
-                    style={styles.filterContainer}
+                </View>
+              }
+              ListFooterComponent={
+                displayedCount < results.length ? (
+                  <TouchableOpacity
+                    style={[styles.loadMoreButton, { backgroundColor: themeColors.primaryMuted }]}
+                    onPress={loadMore}
+                    activeOpacity={0.7}
                   >
-                    {uniqueTransferPoints.map((point) => (
-                      <TouchableOpacity
-                        key={point.id}
-                        style={[
-                          styles.filterChip,
-                          {
-                            backgroundColor: selectedTransferPointIds.includes(point.id)
-                              ? themeColors.primary
-                              : themeColors.borderLight,
-                          },
-                        ]}
-                        onPress={() => handleTransferPointFilterChange(point.id)}
-                      >
-                        <Text
-                          style={[
-                            styles.filterChipText,
-                            {
-                              color: selectedTransferPointIds.includes(point.id)
-                                ? '#FFF'
-                                : themeColors.textSecondary,
-                            },
-                          ]}
-                          numberOfLines={1}
-                        >
-                          {point.name}
-                        </Text>
-                      </TouchableOpacity>
-                    ))}
-                  </ScrollView>
-                </View>
-              )}
-
-              {/* Transfer Buses List */}
-              {transfersLoaded && transferRoutes.length > 0 && (
-                <CollapsibleSection
-                  title={`Buses with 1 Change (${transferRoutes.length} of ${allTransferRoutes.length})`}
-                  count={transferRoutes.length}
-                  defaultExpanded={buses.length === 0}
-                  icon="swap-horizontal"
-                >
-                  <FlatList
-                    data={transferRoutes}
-                    keyExtractor={(item) => item.id}
-                    renderItem={({ item }) => (
-                      <TransferBusCard
-                        transfer={item}
-                        onPress={(transfer) => {
-                          // Navigate to route details for the first bus in the transfer
-                          // This gives the user information about the first leg of the journey
-                          navigation.navigate('RouteDetails', {
-                            busId: transfer.firstBus.id,
-                            busName: transfer.firstBus.nameEnglish,
-                            busBn: transfer.firstBus.nameBangla,
-                            fromStopName: transfer.firstBusFromStop,
-                            toStopName: transfer.firstBusToStop,
-                            transferRoute: transfer, // Pass the full transfer for reference
-                          });
-                        }}
-                      />
-                    )}
-                    scrollEnabled={false}
-                    showsVerticalScrollIndicator={false}
-                  />
-                  
-                  {/* Pagination Controls for Transfers */}
-                  {transferRoutes.length < allTransferRoutes.length && (
-                    <View style={styles.paginationContainer}>
-                      <TouchableOpacity
-                        style={[styles.paginationButton, { backgroundColor: themeColors.primary }]}
-                        onPress={loadMoreTransfers}
-                        activeOpacity={0.7}
-                      >
-                        <Ionicons name="arrow-down" size={16} color="#FFF" />
-                        <Text style={[styles.paginationButtonText, { color: '#FFF' }]}>
-                          Load 50 More
-                        </Text>
-                      </TouchableOpacity>
-                      
-                      <TouchableOpacity
-                        style={[styles.paginationButton, { backgroundColor: themeColors.badge }]}
-                        onPress={loadAllTransfers}
-                        activeOpacity={0.7}
-                      >
-                        <Ionicons name="download" size={16} color="#FFF" />
-                        <Text style={[styles.paginationButtonText, { color: '#FFF' }]}>
-                          Load All
-                        </Text>
-                      </TouchableOpacity>
-                    </View>
-                  )}
-                </CollapsibleSection>
-              )}
-
-              {/* No transfers message */}
-              {transfersLoaded && transferRoutes.length === 0 && (
-                <View style={[styles.noTransfersContainer, { backgroundColor: themeColors.surface }]}>
-                  <Ionicons name="alert-circle-outline" size={48} color={themeColors.textSecondary} />
-                  <Text style={[styles.noTransfersText, { color: themeColors.textSecondary }]}>
-                    No transfer options available
-                  </Text>
-                </View>
-              )}
-            </ScrollView>
+                    <Ionicons name="add-circle-outline" size={18} color={themeColors.primary} />
+                    <Text style={[styles.loadMoreText, { color: themeColors.primary }]}>
+                      Show {Math.min(20, results.length - displayedCount)} more
+                    </Text>
+                  </TouchableOpacity>
+                ) : null
+              }
+            />
           ) : (
-            <View style={styles.noResultsContainer}>
-              <Ionicons name="sad-outline" size={64} color={themeColors.textMuted} />
-              <Text style={[styles.noRoutesTitle, { color: themeColors.textPrimary }]}>No Buses Found</Text>
-              
-              {/* Route Details */}
-              <View style={[styles.noRoutesText, { marginTop: Spacing.md, marginBottom: Spacing.md }]}>
-                <View style={styles.routeStops}>
-                  <Text style={[styles.route, { color: themeColors.textSecondary }]}>
-                    {fromStopName} → {toStopName}
-                  </Text>
-                </View>
-                
-                {/* Search Date and Time */}
-                {(searchDate || searchTime) && (
-                  <View style={styles.dateTimeRow}>
-                    <Ionicons name="calendar-outline" size={16} color={themeColors.textMuted} />
-                    <Text style={[styles.routeEmptyText, { color: themeColors.textMuted }]}>
-                      {searchDate}
-                    </Text>
-                    <Text style={[styles.routeEmptyText, { color: themeColors.textMuted, marginLeft: Spacing.sm }]}>
-                      {searchTime}
-                    </Text>
-                  </View>
-                )}
-              </View>
-
-              <Text style={[styles.noRoutesText, { color: themeColors.textSecondary }]}>
-                No direct buses or transfer options found.{'\n'}Try different locations or times.
+            <View style={styles.emptyContainer}>
+              <Ionicons name="map-outline" size={56} color={themeColors.textMuted} />
+              <Text style={[styles.emptyTitle, { color: themeColors.textPrimary }]}>
+                No routes found
+              </Text>
+              <Text style={[styles.emptyText, { color: themeColors.textSecondary }]}>
+                {fromStopName} → {toStopName}
+              </Text>
+              <Text style={[styles.emptyHint, { color: themeColors.textTertiary }]}>
+                Try different stops or search modes
               </Text>
             </View>
           )
         ) : (
-          <View style={styles.instructionsContainer}>
-            <Ionicons name="information-circle-outline" size={64} color={themeColors.primary} />
-            <Text style={[styles.instructionsTitle, { color: themeColors.textPrimary }]}>Find Your Bus</Text>
-            <Text style={[styles.instructionsText, { color: themeColors.textSecondary }]}>
-              📍 Select your starting location{' \n'}
-              📍 Choose your destination{' \n'}
-              🔍 Tap Search to find available buses
+          <View style={styles.emptyContainer}>
+            <View
+              style={[styles.heroIcon, { backgroundColor: themeColors.primaryMuted }]}
+            >
+              <Ionicons name="bus" size={36} color={themeColors.primary} />
+            </View>
+            <Text style={[styles.heroTitle, { color: themeColors.textPrimary }]}>
+              Find Your Bus
+            </Text>
+            <Text style={[styles.heroText, { color: themeColors.textSecondary }]}>
+              Search for the best bus routes{'\n'}between any two stops in Dhaka
             </Text>
           </View>
         )}
@@ -652,241 +712,138 @@ export default function RouteSearchScreen({ navigation, route }: any) {
 const styles = StyleSheet.create({
   safe: {
     flex: 1,
-    backgroundColor: Colors.backgroundLight,
   },
   header: {
     paddingHorizontal: Spacing.lg,
-    paddingTop: Spacing.md,
+    paddingTop: Spacing.sm,
     paddingBottom: Spacing.lg,
-    borderBottomLeftRadius: BorderRadius.xl,
-    borderBottomRightRadius: BorderRadius.xl,
-    shadowColor: Colors.shadowPrimary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
-  },
-  headerTop: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    marginBottom: Spacing.md,
-  },
-  headerTitle: {
-    fontSize: FontSize.xl,
-    fontWeight: '700',
-    color: Colors.textLight,
-    textShadowColor: Colors.blackOverlay20,
-    textShadowOffset: { width: 0, height: 2 },
-    textShadowRadius: 4,
-  },
-  headerSubtitle: {
-    fontSize: FontSize.md,
-    color: Colors.textLight,
-    opacity: 0.9,
-    marginTop: 4,
-    display: 'none',
-  },
-  menuButtons: {
-    flexDirection: 'row',
-    gap: Spacing.sm,
-  },
-  menuButton: {
-    width: 44,
-    height: 44,
-    borderRadius: BorderRadius.round,
-    backgroundColor: Colors.whiteOverlay20,
-    alignItems: 'center',
-    justifyContent: 'center',
+    borderBottomLeftRadius: BorderRadius.xxl,
+    borderBottomRightRadius: BorderRadius.xxl,
+    ...Platform.select({
+      android: { elevation: 8 },
+      ios: {
+        shadowColor: '#4F46E5',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.25,
+        shadowRadius: 12,
+      },
+    }),
   },
   searchCard: {
-    backgroundColor: Colors.whiteOverlay10,
-    borderRadius: BorderRadius.md,
-    padding: Spacing.sm,
-    // Theme colors applied inline at runtime
+    borderRadius: BorderRadius.lg,
+    padding: Spacing.md,
   },
   inputCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.inputBackground,
-    borderRadius: BorderRadius.sm,
+    borderRadius: BorderRadius.md,
     paddingHorizontal: Spacing.md,
-    height: 54,
-    borderWidth: 1.5,
-    borderColor: Colors.inputBorder,
-    shadowColor: Colors.shadow,
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 2,
-    // Theme colors applied inline at runtime
+    height: 50,
+    borderWidth: 1,
+    marginBottom: 0,
+  },
+  inputDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    marginRight: Spacing.md,
   },
   icon: {
     marginRight: Spacing.sm,
   },
   input: {
     flex: 1,
-    color: Colors.textPrimary,
     fontSize: FontSize.base,
+    fontWeight: '500',
+  },
+  swapButton: {
+    position: 'absolute',
+    right: Spacing.xxl,
+    top: 56,
+    zIndex: 10,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    ...Platform.select({
+      android: { elevation: 4 },
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+      },
+    }),
+  },
+  segmentContainer: {
+    flexDirection: 'row',
+    borderRadius: BorderRadius.md,
+    padding: 3,
+    marginTop: Spacing.sm,
+    marginBottom: Spacing.sm,
+  },
+  segmentButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: Spacing.sm,
+    borderRadius: BorderRadius.sm,
+  },
+  segmentButtonActive: {
+    ...Platform.select({
+      android: { elevation: 2 },
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.08,
+        shadowRadius: 3,
+      },
+    }),
+  },
+  segmentText: {
+    fontSize: FontSize.sm,
   },
   searchButton: {
     flexDirection: 'row',
-    backgroundColor: Colors.surface,
-    borderRadius: BorderRadius.sm,
-    paddingVertical: Spacing.sm,
+    borderRadius: BorderRadius.md,
+    paddingVertical: Spacing.md,
     paddingHorizontal: Spacing.lg,
-    marginTop: Spacing.sm,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: Colors.shadowPrimary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.4,
-    shadowRadius: 8,
-    elevation: 4,
-    // Theme colors applied inline at runtime
+    ...Platform.select({
+      android: { elevation: 4 },
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.12,
+        shadowRadius: 6,
+      },
+    }),
   },
   searchButtonDisabled: {
     opacity: 0.5,
   },
   searchButtonText: {
-    color: Colors.primary,
     fontSize: FontSize.lg,
     fontWeight: '700',
-    // Theme color applied inline at runtime
-  },
-  body: {
-    flex: 1,
-    paddingHorizontal: Spacing.lg,
-  },
-  loadingContainer: {
-    marginTop: Spacing.mega,
-    alignItems: 'center',
-  },
-  loadingText: {
-    marginTop: Spacing.md,
-    fontSize: FontSize.base,
-    color: Colors.textSecondary,
-  },
-  resultsHeader: {
-    marginTop: Spacing.lg,
-    marginBottom: Spacing.md,
-    paddingBottom: Spacing.md,
-    borderBottomWidth: 2,
-    borderBottomColor: Colors.primary,
-    // Theme colors applied inline at runtime
-  },
-  resultsTitle: {
-    fontSize: FontSize.xl,
-    fontWeight: '700',
-    color: Colors.textPrimary,
-    marginBottom: 4,
-    // Theme color applied inline at runtime
-  },
-  resultsCount: {
-    fontSize: FontSize.md,
-    color: Colors.textSecondary,
-    // Theme color applied inline at runtime
-  },
-  card: {
-    backgroundColor: Colors.surface,
-    borderRadius: BorderRadius.md,
-    padding: Spacing.lg,
-    marginBottom: Spacing.md,
-    marginTop: Spacing.sm,
-    borderLeftWidth: 5,
-    borderLeftColor: Colors.borderAccent,
-    shadowColor: Colors.shadowCard,
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 3 },
-    elevation: 3,
-    // Theme colors applied inline at runtime
-  },
-  cardContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  busIconContainer: {
-    backgroundColor: Colors.badge,
-    width: 60,
-    height: 60,
-    borderRadius: BorderRadius.md,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  routeBadge: {
-    backgroundColor: Colors.badge,
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
-    borderRadius: BorderRadius.round,
-    minWidth: 50,
-    alignItems: 'center',
-  },
-  routeBadgeText: {
-    color: Colors.badgeText,
-    fontSize: FontSize.md,
-    fontWeight: '700',
-  },
-  busName: {
-    fontSize: FontSize.lg,
-    fontWeight: '700',
-    color: Colors.textPrimary,
-    marginBottom: 2,
-  },
-  busNameBn: {
-    fontSize: FontSize.md,
-    fontWeight: '600',
-    color: Colors.primary,
-    marginBottom: 6,
-  },
-  serviceType: {
-    fontSize: FontSize.sm,
-    color: Colors.textMuted,
-    marginBottom: 6,
-    fontStyle: 'italic',
-  },
-  routeStops: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: Spacing.sm,
-    flexWrap: 'wrap',
-  },
-  route: {
-    fontSize: FontSize.md,
-    color: Colors.textSecondary,
-    flex: 0,
-    flexShrink: 1,
-  },
-  routeStats: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.sm,
-    flexWrap: 'wrap',
-  },
-  statPill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: Colors.pill,
-    paddingHorizontal: Spacing.sm,
-    paddingVertical: 4,
-    borderRadius: BorderRadius.round,
-    gap: 4,
-  },
-  statText: {
-    fontSize: FontSize.xs,
-    color: Colors.pillAccent,
-    fontWeight: '600',
   },
   suggestionsDropdown: {
-    backgroundColor: Colors.surface,
-    borderRadius: BorderRadius.sm,
-    marginTop: Spacing.sm,
+    borderRadius: BorderRadius.md,
+    marginTop: 4,
+    marginBottom: 4,
     maxHeight: 200,
-    shadowColor: Colors.shadow,
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 5,
+    overflow: 'hidden',
+    ...Platform.select({
+      android: { elevation: 4 },
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 6,
+      },
+    }),
   },
   suggestionsScroll: {
     maxHeight: 200,
@@ -894,158 +851,232 @@ const styles = StyleSheet.create({
   suggestionItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: Spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.borderLight,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm + 2,
+    borderBottomWidth: 0.5,
+    borderBottomColor: 'rgba(0,0,0,0.05)',
+  },
+  suggestionDot: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   suggestionText: {
     fontSize: FontSize.base,
-    color: Colors.textPrimary,
-    fontWeight: '600',
+    fontWeight: '500',
   },
   suggestionTextBn: {
     fontSize: FontSize.sm,
-    color: Colors.textSecondary,
+    marginTop: 1,
+  },
+  body: {
+    flex: 1,
+    paddingHorizontal: Spacing.lg,
+  },
+  loadingContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  loadingText: {
+    marginTop: Spacing.md,
+    fontSize: FontSize.base,
+    fontWeight: '500',
+  },
+  resultsHeader: {
+    marginBottom: Spacing.md,
+  },
+  resultsTitle: {
+    fontSize: FontSize.lg,
+    fontWeight: '700',
+  },
+  resultsSubtitle: {
+    fontSize: FontSize.sm,
     marginTop: 2,
   },
-  noResultsContainer: {
-    alignItems: 'center',
-    marginTop: Spacing.mega,
-    paddingHorizontal: Spacing.xl,
+  // Route Card
+  routeCard: {
+    borderRadius: BorderRadius.lg,
+    padding: Spacing.lg,
+    marginBottom: Spacing.md,
+    ...Platform.select({
+      android: { elevation: 2 },
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.06,
+        shadowRadius: 8,
+      },
+    }),
   },
-  noRoutesTitle: {
-    fontSize: FontSize.xl,
+  routeCardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: Spacing.md,
+  },
+  typeBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: Spacing.sm + 2,
+    paddingVertical: 4,
+    borderRadius: BorderRadius.round,
+  },
+  typeBadgeText: {
+    fontSize: FontSize.xs,
     fontWeight: '700',
-    color: Colors.textPrimary,
-    marginTop: Spacing.lg,
+    marginLeft: 4,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  fareBadge: {
+    paddingHorizontal: Spacing.md,
+    paddingVertical: 4,
+    borderRadius: BorderRadius.round,
+  },
+  fareText: {
+    fontSize: FontSize.md,
+    fontWeight: '800',
+  },
+  legsContainer: {
     marginBottom: Spacing.sm,
   },
-  noRoutesText: {
-    marginTop: Spacing.sm,
-    color: Colors.textSecondary,
+  legRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 6,
+  },
+  legDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    marginRight: Spacing.md,
+  },
+  legInfo: {
+    flex: 1,
+  },
+  legBusName: {
     fontSize: FontSize.base,
+    fontWeight: '700',
+  },
+  legStops: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 2,
+  },
+  legStopText: {
+    fontSize: FontSize.sm,
+    flex: 1,
+  },
+  legMeta: {
+    alignItems: 'flex-end',
+    marginLeft: Spacing.sm,
+  },
+  legDist: {
+    fontSize: FontSize.xs,
+    fontWeight: '500',
+  },
+  legFare: {
+    fontSize: FontSize.sm,
+    fontWeight: '700',
+    marginTop: 1,
+  },
+  transferIndicator: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 4,
+    paddingLeft: 3,
+  },
+  transferLine: {
+    flex: 1,
+    height: 1,
+  },
+  transferBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: 3,
+    borderRadius: BorderRadius.round,
+    marginHorizontal: Spacing.sm,
+  },
+  transferText: {
+    fontSize: FontSize.xs,
+    fontWeight: '600',
+    marginLeft: 4,
+  },
+  routeCardFooter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(0,0,0,0.04)',
+    paddingTop: Spacing.sm,
+  },
+  footerStats: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  footerStatText: {
+    fontSize: FontSize.xs,
+    fontWeight: '500',
+  },
+  footerDot: {
+    fontSize: FontSize.sm,
+    marginHorizontal: 2,
+  },
+  loadMoreButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: Spacing.md,
+    borderRadius: BorderRadius.md,
+    marginTop: Spacing.sm,
+    gap: 6,
+  },
+  loadMoreText: {
+    fontSize: FontSize.md,
+    fontWeight: '600',
+  },
+  emptyContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: Spacing.xxl,
+  },
+  emptyTitle: {
+    fontSize: FontSize.xl,
+    fontWeight: '700',
+    marginTop: Spacing.lg,
+  },
+  emptyText: {
+    fontSize: FontSize.base,
+    marginTop: Spacing.sm,
+    textAlign: 'center',
+  },
+  emptyHint: {
+    fontSize: FontSize.sm,
+    marginTop: Spacing.sm,
+    textAlign: 'center',
+  },
+  heroIcon: {
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: Spacing.md,
+  },
+  heroTitle: {
+    fontSize: FontSize.xxl,
+    fontWeight: '800',
+  },
+  heroText: {
+    fontSize: FontSize.base,
+    marginTop: Spacing.sm,
     textAlign: 'center',
     lineHeight: 22,
   },
-  instructionsContainer: {
-    alignItems: 'center',
-    marginTop: Spacing.mega,
-    paddingHorizontal: Spacing.xl,
-  },
-  instructionsTitle: {
-    fontSize: FontSize.xl,
-    fontWeight: '700',
-    color: Colors.textPrimary,
-    marginTop: Spacing.lg,
-    marginBottom: Spacing.md,
-  },
-  instructionsText: {
-    fontSize: FontSize.base,
-    color: Colors.textSecondary,
-    textAlign: 'left',
-    lineHeight: 28,
-  },
-  routeEmptyText: {
-    fontSize: FontSize.base,
-    color: Colors.textSecondary,
-    marginBottom: Spacing.md,
-  },
-  dateTimeRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.sm,
-    marginBottom: Spacing.xs,
-  },
-  lazyLoadButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginHorizontal: Spacing.lg,
-    marginTop: Spacing.md,
-    paddingVertical: Spacing.md,
-    backgroundColor: Colors.primary,
-    borderRadius: BorderRadius.sm,
-    gap: Spacing.sm,
-    shadowColor: Colors.shadowPrimary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 5,
-  },
-  lazyLoadButtonText: {
-    fontSize: FontSize.base,
-    fontWeight: '600',
-    color: '#FFF',
-  },
-  filterSection: {
-    marginHorizontal: Spacing.lg,
-    marginTop: Spacing.md,
-    paddingVertical: Spacing.md,
-    paddingHorizontal: Spacing.md,
-    borderRadius: BorderRadius.sm,
-    backgroundColor: Colors.surface,
-  },
-  filterTitle: {
-    fontSize: FontSize.sm,
-    fontWeight: '600',
-    color: Colors.textPrimary,
-    marginBottom: Spacing.md,
-  },
-  filterContainer: {
-    flexDirection: 'row',
-    gap: Spacing.sm,
-  },
-  filterChip: {
-    paddingVertical: Spacing.xs,
-    paddingHorizontal: Spacing.sm,
-    borderRadius: BorderRadius.round,
-    backgroundColor: Colors.borderLight,
-  },
-  filterChipText: {
-    fontSize: FontSize.xs,
-    fontWeight: '500',
-    color: Colors.textSecondary,
-  },
-  noTransfersContainer: {
-    alignItems: 'center',
-    marginHorizontal: Spacing.lg,
-    marginTop: Spacing.lg,
-    paddingVertical: Spacing.xl,
-    borderRadius: BorderRadius.md,
-    backgroundColor: Colors.surface,
-  },
-  noTransfersText: {
-    fontSize: FontSize.base,
-    fontWeight: '500',
-    color: Colors.textSecondary,
-    marginTop: Spacing.md,
-  },
-  paginationContainer: {
-    flexDirection: 'row',
-    gap: Spacing.md,
-    paddingVertical: Spacing.md,
-    paddingHorizontal: Spacing.sm,
-    justifyContent: 'center',
-  },
-  paginationButton: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: Spacing.md,
-    paddingHorizontal: Spacing.md,
-    borderRadius: BorderRadius.sm,
-    gap: Spacing.sm,
-    shadowColor: Colors.shadowPrimary,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  paginationButtonText: {
-    fontSize: FontSize.sm,
-    fontWeight: '600',
-    color: '#FFF',
-  },
 });
-

@@ -6,6 +6,7 @@ import {
   FlatList,
   TouchableOpacity,
   Alert,
+  Platform,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -13,7 +14,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import StorageService, { SearchHistory } from '../services/StorageService';
 import { useTheme } from '../theme/ThemeContext';
-import { Colors } from '../theme/colors';
+import { Colors, Spacing, BorderRadius, FontSize } from '../theme/colors';
 import { DarkColors } from '../theme/darkColors';
 
 export default function HistoryScreen({ navigation }: any) {
@@ -25,7 +26,7 @@ export default function HistoryScreen({ navigation }: any) {
   useFocusEffect(
     useCallback(() => {
       loadHistory();
-    }, [])
+    }, []),
   );
 
   const loadHistory = async () => {
@@ -38,7 +39,6 @@ export default function HistoryScreen({ navigation }: any) {
   };
 
   const handleHistoryClick = (item: SearchHistory) => {
-    // Navigate to search screen which will handle stop IDs
     navigation.navigate('RouteSearch', {
       fromStopName: item.fromStopName,
       toStopName: item.toStopName,
@@ -46,39 +46,31 @@ export default function HistoryScreen({ navigation }: any) {
   };
 
   const handleDeleteHistory = async (id: string) => {
-    Alert.alert(
-      'Delete History',
-      'Are you sure you want to delete this history item?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: async () => {
-            await StorageService.deleteSearchHistoryItem(id);
-            loadHistory();
-          },
+    Alert.alert('Delete History', 'Remove this search?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Delete',
+        style: 'destructive',
+        onPress: async () => {
+          await StorageService.deleteSearchHistoryItem(id);
+          loadHistory();
         },
-      ]
-    );
+      },
+    ]);
   };
 
   const handleClearAll = async () => {
-    Alert.alert(
-      'Clear All History',
-      'Are you sure you want to clear all history?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Clear',
-          style: 'destructive',
-          onPress: async () => {
-            await StorageService.clearSearchHistory();
-            loadHistory();
-          },
+    Alert.alert('Clear All History', 'Remove all search history?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Clear',
+        style: 'destructive',
+        onPress: async () => {
+          await StorageService.clearSearchHistory();
+          loadHistory();
         },
-      ]
-    );
+      },
+    ]);
   };
 
   const onRefresh = useCallback(async () => {
@@ -87,196 +79,86 @@ export default function HistoryScreen({ navigation }: any) {
     setRefreshing(false);
   }, []);
 
+  const formatDate = (timestamp: number) => {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+
+    if (diffMins < 1) return 'Just now';
+    if (diffMins < 60) return `${diffMins}m ago`;
+    if (diffHours < 24) return `${diffHours}h ago`;
+    if (diffDays < 7) return `${diffDays}d ago`;
+    return date.toLocaleDateString();
+  };
+
   const renderHistoryItem = ({ item }: { item: SearchHistory }) => (
-    <View style={styles.card}>
-      <TouchableOpacity
-        style={styles.cardContent}
-        onPress={() => handleHistoryClick(item)}
-        activeOpacity={0.7}
-      >
-        <View style={styles.iconContainer}>
-          <Ionicons name="history" size={20} color={themeColors.primary} />
+    <TouchableOpacity
+      style={[
+        styles.card,
+        {
+          backgroundColor: themeColors.surface,
+          borderColor: isDark ? themeColors.border : 'transparent',
+          borderWidth: isDark ? 1 : 0,
+        },
+      ]}
+      onPress={() => handleHistoryClick(item)}
+      activeOpacity={0.7}
+    >
+      <View style={[styles.cardIcon, { backgroundColor: themeColors.primaryMuted }]}>
+        <Ionicons name="time" size={18} color={themeColors.primary} />
+      </View>
+      <View style={styles.cardContent}>
+        <View style={styles.routeRow}>
+          <Text style={[styles.stopName, { color: themeColors.textPrimary }]} numberOfLines={1}>
+            {item.fromStopName}
+          </Text>
+          <Ionicons
+            name="arrow-forward"
+            size={12}
+            color={themeColors.textTertiary}
+            style={{ marginHorizontal: 6 }}
+          />
+          <Text style={[styles.stopName, { color: themeColors.textPrimary }]} numberOfLines={1}>
+            {item.toStopName}
+          </Text>
         </View>
-        <View style={styles.textContainer}>
-          <View style={styles.routeInfo}>
-            <Text style={styles.stopName} numberOfLines={1}>{item.fromStopName}</Text>
-            <Ionicons name="arrow-forward" size={14} color="#888" style={styles.arrow} />
-            <Text style={styles.stopName} numberOfLines={1}>{item.toStopName}</Text>
+        <View style={styles.metaRow}>
+          <View style={[styles.metaChip, { backgroundColor: themeColors.pill }]}>
+            <Text style={[styles.metaText, { color: themeColors.primary }]}>
+              {item.routesFound} routes
+            </Text>
           </View>
-          <View style={styles.metaInfo}>
-            <Text style={styles.routesFound}>{item.routesFound} routes</Text>
-            <Text style={styles.separator}>•</Text>
-            <Text style={styles.timestamp}>{new Date(item.timestamp).toLocaleDateString()}</Text>
-          </View>
+          <Text style={[styles.timeText, { color: themeColors.textTertiary }]}>
+            {formatDate(item.timestamp)}
+          </Text>
         </View>
-      </TouchableOpacity>
+      </View>
       <TouchableOpacity
-        style={styles.deleteButton}
+        style={[styles.deleteBtn, { backgroundColor: themeColors.errorLight || 'rgba(239,68,68,0.12)' }]}
         onPress={() => handleDeleteHistory(item.id)}
-        activeOpacity={0.7}
+        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
       >
-        <Ionicons name="trash-outline" size={18} color={themeColors.primary} />
+        <Ionicons name="trash-outline" size={15} color={themeColors.error} />
       </TouchableOpacity>
-    </View>
+    </TouchableOpacity>
   );
 
-  const styles = useMemo(() => StyleSheet.create({
-    safe: {
-      flex: 1,
-      backgroundColor: themeColors.background,
-    },
-    header: {
-      paddingHorizontal: 16,
-      paddingVertical: 16,
-      borderBottomLeftRadius: 22,
-      borderBottomRightRadius: 22,
-    },
-    headerContent: {
-      flexDirection: 'row',
-      alignItems: 'center',
-    },
-    headerBadge: {
-      width: 40,
-      height: 40,
-      borderRadius: 20,
-      backgroundColor: themeColors.whiteOverlay20,
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    headerTextContainer: {
-      flex: 1,
-      marginLeft: 12,
-    },
-    headerTitle: {
-      fontSize: 22,
-      fontWeight: '700',
-      color: themeColors.textLight,
-    },
-    headerSubtitle: {
-      fontSize: 14,
-      color: themeColors.whiteOverlay30,
-      marginTop: 2,
-    },
-    clearButton: {
-      paddingVertical: 8,
-      paddingHorizontal: 12,
-      backgroundColor: themeColors.whiteOverlay20,
-      borderRadius: 8,
-    },
-    clearButtonText: {
-      color: themeColors.textLight,
-      fontSize: 14,
-      fontWeight: '600',
-    },
-    body: {
-      flex: 1,
-    },
-    listContent: {
-      padding: 16,
-    },
-    card: {
-      backgroundColor: themeColors.surface,
-      borderRadius: 12,
-      marginBottom: 12,
-      elevation: 2,
-      shadowColor: '#000',
-      shadowOpacity: 0.05,
-      shadowRadius: 4,
-      shadowOffset: { width: 0, height: 2 },
-      flexDirection: 'row',
-      alignItems: 'center',
-    },
-    cardContent: {
-      flex: 1,
-      flexDirection: 'row',
-      alignItems: 'center',
-      padding: 14,
-    },
-    iconContainer: {
-      width: 48,
-      height: 48,
-      borderRadius: 24,
-      backgroundColor: themeColors.hoverAccent,
-      alignItems: 'center',
-      justifyContent: 'center',
-      marginRight: 12,
-    },
-    textContainer: {
-      flex: 1,
-    },
-    routeInfo: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      marginBottom: 6,
-    },
-    stopName: {
-      fontSize: 15,
-      fontWeight: '600',
-      color: themeColors.textPrimary,
-      flexShrink: 1,
-    },
-    arrow: {
-      marginHorizontal: 8,
-    },
-    metaInfo: {
-      flexDirection: 'row',
-      alignItems: 'center',
-    },
-    timestamp: {
-      fontSize: 13,
-      color: isDark ? '#999' : '#888',
-    },
-    separator: {
-      marginHorizontal: 8,
-      color: isDark ? '#555' : '#CCC',
-    },
-    routesFound: {
-      fontSize: 13,
-      color: themeColors.primaryDark,
-      fontWeight: '500',
-    },
-    deleteButton: {
-      width: 36,
-      height: 36,
-      borderRadius: 18,
-      backgroundColor: themeColors.hoverAccent,
-      alignItems: 'center',
-      justifyContent: 'center',
-      marginRight: 8,
-    },
-    emptyContainer: {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      paddingHorizontal: 40,
-    },
-    emptyTitle: {
-      fontSize: 20,
-      fontWeight: '700',
-      color: themeColors.textPrimary,
-      marginTop: 16,
-      marginBottom: 8,
-    },
-    emptyText: {
-      fontSize: 15,
-      color: isDark ? '#999' : '#666',
-      textAlign: 'center',
-    },
-  }), [themeColors, isDark]);
-
   return (
-    <SafeAreaView style={styles.safe} edges={['top']}>
+    <SafeAreaView
+      style={[styles.safe, { backgroundColor: themeColors.background }]}
+      edges={['top']}
+    >
       <LinearGradient
-        colors={[isDark ? DarkColors.gradientStart : Colors.gradientStart, isDark ? DarkColors.gradientEnd : Colors.gradientEnd]}
+        colors={[themeColors.gradientStart, themeColors.gradientEnd]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.header}
       >
-        <View style={styles.headerContent}>
-          <View style={styles.headerBadge}>
-            <Ionicons name="time-outline" size={20} color={themeColors.textLight} />
-          </View>
-          <View style={styles.headerTextContainer}>
+        <View style={styles.headerRow}>
+          <View>
             <Text style={styles.headerTitle}>Search History</Text>
             <Text style={styles.headerSubtitle}>{history.length} recent searches</Text>
           </View>
@@ -284,7 +166,9 @@ export default function HistoryScreen({ navigation }: any) {
             <TouchableOpacity
               style={styles.clearButton}
               onPress={handleClearAll}
+              activeOpacity={0.7}
             >
+              <Ionicons name="trash-outline" size={14} color="#FFF" />
               <Text style={styles.clearButtonText}>Clear</Text>
             </TouchableOpacity>
           )}
@@ -294,9 +178,13 @@ export default function HistoryScreen({ navigation }: any) {
       <View style={styles.body}>
         {history.length === 0 ? (
           <View style={styles.emptyContainer}>
-            <Ionicons name="time-outline" size={64} color={isDark ? '#444' : '#DDD'} />
-            <Text style={styles.emptyTitle}>No History</Text>
-            <Text style={styles.emptyText}>
+            <View style={[styles.emptyIcon, { backgroundColor: themeColors.primaryMuted }]}>
+              <Ionicons name="time-outline" size={36} color={themeColors.primary} />
+            </View>
+            <Text style={[styles.emptyTitle, { color: themeColors.textPrimary }]}>
+              No History Yet
+            </Text>
+            <Text style={[styles.emptyText, { color: themeColors.textSecondary }]}>
               Your search history will appear here
             </Text>
           </View>
@@ -305,6 +193,7 @@ export default function HistoryScreen({ navigation }: any) {
             data={history}
             keyExtractor={(item) => item.id}
             renderItem={renderHistoryItem}
+            showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.listContent}
             refreshing={refreshing}
             onRefresh={onRefresh}
@@ -314,3 +203,147 @@ export default function HistoryScreen({ navigation }: any) {
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  safe: {
+    flex: 1,
+  },
+  header: {
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.lg,
+    borderBottomLeftRadius: BorderRadius.xxl,
+    borderBottomRightRadius: BorderRadius.xxl,
+    ...Platform.select({
+      android: { elevation: 8 },
+      ios: {
+        shadowColor: '#4F46E5',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.25,
+        shadowRadius: 12,
+      },
+    }),
+  },
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  headerTitle: {
+    fontSize: FontSize.xxl,
+    fontWeight: '800',
+    color: '#FFF',
+  },
+  headerSubtitle: {
+    fontSize: FontSize.md,
+    color: 'rgba(255,255,255,0.65)',
+    marginTop: 4,
+    fontWeight: '500',
+  },
+  clearButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255,255,255,0.15)',
+    paddingVertical: Spacing.sm,
+    paddingHorizontal: Spacing.md,
+    borderRadius: BorderRadius.md,
+    gap: 6,
+  },
+  clearButtonText: {
+    color: '#FFF',
+    fontSize: FontSize.sm,
+    fontWeight: '600',
+  },
+  body: {
+    flex: 1,
+  },
+  listContent: {
+    padding: Spacing.lg,
+    paddingTop: Spacing.md,
+  },
+  card: {
+    borderRadius: BorderRadius.lg,
+    padding: Spacing.md,
+    marginBottom: Spacing.sm + 2,
+    flexDirection: 'row',
+    alignItems: 'center',
+    ...Platform.select({
+      android: { elevation: 1 },
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.04,
+        shadowRadius: 3,
+      },
+    }),
+  },
+  cardIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: Spacing.md,
+  },
+  cardContent: {
+    flex: 1,
+  },
+  routeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 4,
+  },
+  stopName: {
+    fontSize: FontSize.base,
+    fontWeight: '600',
+    flexShrink: 1,
+  },
+  metaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+  },
+  metaChip: {
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: BorderRadius.round,
+  },
+  metaText: {
+    fontSize: FontSize.xs,
+    fontWeight: '600',
+  },
+  timeText: {
+    fontSize: FontSize.xs,
+    fontWeight: '500',
+  },
+  deleteBtn: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: Spacing.sm,
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: Spacing.mega,
+  },
+  emptyIcon: {
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: Spacing.md,
+  },
+  emptyTitle: {
+    fontSize: FontSize.xl,
+    fontWeight: '700',
+  },
+  emptyText: {
+    fontSize: FontSize.base,
+    marginTop: Spacing.sm,
+    textAlign: 'center',
+  },
+});

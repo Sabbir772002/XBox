@@ -6,17 +6,15 @@ import { View, Text, ActivityIndicator } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import RouteSearchScreen from './screens/RouteSearchScreen';
 import RouteDetailsScreen from './screens/RouteDetailsScreen';
-import DetailsScreen from './screens/DetailsScreen';
 import HistoryScreen from './screens/HistoryScreen';
 import BookmarkScreen from './screens/BookmarkScreen';
 import BusListScreen from './screens/BusListScreen';
 import SettingsScreen from './screens/SettingsScreen';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors } from './theme/colors';
 import { DarkColors } from './theme/darkColors';
 import DatabaseService from './services/DatabaseService';
 import NetworkService from './services/NetworkService';
-import DistanceService from './services/DistanceService';
 import { ThemeProvider, useTheme } from './theme/ThemeContext';
 
 const Stack = createNativeStackNavigator();
@@ -40,6 +38,7 @@ function ErrorScreen({ error }: { error: string }) {
 
 function MainTabs() {
   const { isDark } = useTheme();
+  const insets = useSafeAreaInsets();
   const themeColors = isDark ? DarkColors : Colors;
 
   return (
@@ -67,8 +66,8 @@ function MainTabs() {
         tabBarActiveTintColor: themeColors.primary,
         tabBarInactiveTintColor: themeColors.textTertiary,
         tabBarStyle: {
-          height: 60,
-          paddingBottom: 8,
+          height: 60 + (insets.bottom > 0 ? insets.bottom - 10 : 0),
+          paddingBottom: insets.bottom > 0 ? insets.bottom : 8,
           paddingTop: 8,
           backgroundColor: themeColors.surface,
           borderTopWidth: 1,
@@ -124,7 +123,6 @@ function AppContent() {
         // Initialize services in order
         await NetworkService.initialize();
         await DatabaseService.initialize();
-        await DistanceService.initialize();
         
         setInitialized(true);
         console.log('✅ Application initialized successfully');
@@ -175,7 +173,6 @@ function AppContent() {
           name="RouteSearch" 
           component={RouteSearchScreen}
         />
-        <Stack.Screen name="Details" component={DetailsScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
