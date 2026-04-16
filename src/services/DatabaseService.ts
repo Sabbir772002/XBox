@@ -39,6 +39,8 @@ export interface Bus {
   stoppages?: BusStoppage[];
   estimatedDistanceKm?: number;
   estimatedFare?: number;
+  fare_weight?: number;
+  min_fare?: number;
 }
 
 export interface BusStoppage {

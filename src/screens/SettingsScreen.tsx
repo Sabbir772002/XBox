@@ -129,8 +129,8 @@ export default function SettingsScreen({ navigation }: any) {
 
   const handleAbout = () => {
     Alert.alert(
-      'About Bus Bhara',
-      'Bus Bhara helps commuters navigate Dhaka\'s bus network with accurate fare information.\n\nVersion: 2.0.0\nPowered by TransitNetwork Algorithm\n\n© 2025 Bus Bhara Team',
+      'About Local Bus',
+      'Local Bus helps commuters navigate Dhaka\'s bus network with accurate fare information.\n\nVersion: 2.0.0\nPowered by TransitNetwork Algorithm\n\n© 2025 Local Bus Team',
       [{ text: 'OK' }],
     );
   };
@@ -290,7 +290,7 @@ export default function SettingsScreen({ navigation }: any) {
 
           <SettingItem
             icon="information-circle"
-            label="About Bus Bhara"
+            label="About Local Bus"
             description="Version 2.0.0"
             onPress={handleAbout}
           />

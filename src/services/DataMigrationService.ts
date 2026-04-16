@@ -28,7 +28,9 @@ interface BusData {
   bangla: string;
   routes: string[];
   time: string;
-  service_type: string;
+  serviceType: string;
+  fare_weight?: number;
+  min_fare?: number;
 }
 
 interface BusDataFile {
@@ -47,14 +49,14 @@ export class DataMigrationService {
   static stopData: Map<string, Stop> = new Map();
   static stopsByName: Map<string, Stop> = new Map();
   static stopCoordinatesById: Map<number, [number, number]> = new Map();
-  
+
   // Distance data - same level as buses and stops
   static distanceData: Map<string, number> = new Map();
   static firebaseDistanceData: Map<string, number> = new Map();
-  
+
   // Raw Firebase data for TransitNetwork algorithm
   static rawFirebaseData: RawFirebaseData | null = null;
-  
+
   static isLoaded = false;
 
   private static normalizeStopName(value: string): string {
@@ -146,30 +148,32 @@ export class DataMigrationService {
    * Load all data from Firebase or JSON files (with fallback)
    * PRIORITY: 1) Cache (immediate), 2) Firebase (background), 3) JSON (fallback)
    */
-  static async loadDataFromJSON(): Promise<void> {
-    if (this.isLoaded) {
+  static async loadDataFromJSON(forceFresh: boolean = false): Promise<void> {
+    if (this.isLoaded && !forceFresh) {
       console.log('✓ Data already loaded');
       return;
     }
 
     try {
-      console.log('⏳ Starting data loading...');
+      console.log(`⏳ Starting data loading (fresh: ${forceFresh})...`);
       const startTime = Date.now();
 
-      // PRIORITY 1: Load from cache immediately (for offline support)
-      const cacheSuccess = await this.loadFromCache();
-      if (cacheSuccess) {
-        this.isLoaded = true;
-        const duration = Date.now() - startTime;
-        console.log(`✓ Data loaded from cache (${duration}ms) - Using previous data`);
-        console.log(`📊 Cache data: ${this.busData.length} buses, ${this.stopData.size} stops`);
-        
-        // Ensure engine is initialized even from cache
-        this.initializeTransitNetwork();
-        
-        // Trigger Firebase update in background (don't wait)
-        this.updateFromFirebaseBackground();
-        return;
+      // PRIORITY 1: Load from cache immediately (unless forceFresh)
+      if (!forceFresh) {
+        const cacheSuccess = await this.loadFromCache();
+        if (cacheSuccess) {
+          this.isLoaded = true;
+          const duration = Date.now() - startTime;
+          console.log(`✓ Data loaded from cache (${duration}ms) - Using previous data`);
+          console.log(`📊 Cache data: ${this.busData.length} buses, ${this.stopData.size} stops`);
+
+          // Ensure engine is initialized even from cache
+          this.initializeTransitNetwork();
+
+          // Trigger Firebase update in background (don't wait)
+          this.updateFromFirebaseBackground();
+          return;
+        }
       }
 
       console.log('💾 No cache found, loading from Firebase/JSON...');
@@ -224,24 +228,21 @@ export class DataMigrationService {
    */
   static async manualSyncData(): Promise<boolean> {
     try {
-      console.log('🔄 Manual sync started...');
-      
-      // Clear loaded flag to force reload
-      this.isLoaded = false;
-      
+      console.log('🔄 Manual sync started (Full reset)...');
+
+      // Clear persistent cache first
+      await AsyncStorage.removeItem(CACHE_KEY_BUSES);
+      await AsyncStorage.removeItem(CACHE_KEY_STOPS);
+      await AsyncStorage.removeItem(CACHE_KEY_DISTANCES);
+      await AsyncStorage.removeItem(CACHE_KEY_RAW_FIREBASE);
+      await AsyncStorage.removeItem(CACHE_KEY_TIMESTAMP);
+
       // Clear in-memory maps
-      this.busData = [];
-      this.stopData.clear();
-      this.stopsByName.clear();
-      this.stopCoordinatesById.clear();
-      this.distanceData.clear();
-      this.firebaseDistanceData.clear();
-      this.rawFirebaseData = null;
-      TransitNetworkService.reset();
-      
-      // Use same proven initial load code
-      await this.loadDataFromJSON();
-      
+      this.clearData();
+
+      // Force fresh reload from Firebase/JSON
+      await this.loadDataFromJSON(true);
+
       console.log(`✓ Manual sync completed: ${this.busData.length} buses, ${this.stopData.size} stops`);
       return true;
     } catch (error) {
@@ -280,7 +281,9 @@ export class DataMigrationService {
         english: bus.nameEnglish,
         bangla: bus.nameBangla,
         routes: bus.stoppages?.map((s) => s.stopageEn) || [],
-        service_type: bus.serviceType || 'Regular',
+        serviceType: bus.serviceType || 'Regular',
+        fare_weight: bus.fare_weight,
+        min_fare: bus.min_fare,
       }));
 
       // Build Stop Data array from stopData
@@ -323,7 +326,7 @@ export class DataMigrationService {
       if (!FirebaseService.isInitialized()) {
         FirebaseService.initialize(FIREBASE_CONFIG);
       }
-      
+
       const stopsData = await FirebaseService.fetchStops();
       const busesData = await FirebaseService.fetchBuses();
       const distancesData = await FirebaseService.fetchDistanceData(8000);
@@ -347,7 +350,7 @@ export class DataMigrationService {
         }
 
         await this.cacheData();
-        
+
         console.log('✓ Background Firebase update completed');
       }
     } catch (error) {
@@ -584,15 +587,15 @@ export class DataMigrationService {
           if (order > 0) {
             const prevStop = this.resolveStopByName(routes[order - 1] || '');
             const prevCoord = prevStop ? this.stopCoordinatesById.get(prevStop.id) : undefined;
-            
+
             if (prevStop && resolvedStop) {
               // Check both directions in loaded data and take minimum
               const directKey = `${prevStop.stopageEn}-${resolvedStop.stopageEn}`;
               const reverseKey = `${resolvedStop.stopageEn}-${prevStop.stopageEn}`;
-              
+
               const directDistance = this.distanceData.get(directKey) ?? this.firebaseDistanceData.get(directKey);
               const reverseDistance = this.distanceData.get(reverseKey) ?? this.firebaseDistanceData.get(reverseKey);
-              
+
               // Use loaded distance if available, preferring minimum
               if (directDistance !== undefined && directDistance !== null && reverseDistance !== undefined && reverseDistance !== null) {
                 segmentDistanceKm = Math.min(directDistance, reverseDistance);
@@ -625,11 +628,13 @@ export class DataMigrationService {
 
         this.busData.push({
           id: busId,
-          nameEnglish: bus.english || `Bus ${busId}`,
-          nameBangla: bus.bangla || '',
-          serviceType: bus.service_type || 'Regular',
+          nameEnglish: bus.english || bus.nameEnglish || `Bus ${busId}`,
+          nameBangla: bus.bangla || bus.nameBangla || '',
+          serviceType: bus.serviceType || 'Regular',
           totalStops: routes.length,
           stoppages,
+          fare_weight: bus.fare_weight ?? 2.45,
+          min_fare: bus.min_fare ?? 10,
         });
       });
 
@@ -654,8 +659,10 @@ export class DataMigrationService {
         busesMap[bus.id] = {
           english: bus.nameEnglish,
           bangla: bus.nameBangla,
-          service_type: bus.serviceType,
+          serviceType: bus.serviceType,
           routes: bus.stoppages?.map((s) => s.stopageEn) || [],
+          fare_weight: bus.fare_weight,
+          min_fare: bus.min_fare,
         };
       });
 
@@ -700,18 +707,20 @@ export class DataMigrationService {
   private static async loadBusData(): Promise<void> {
     try {
       console.log('📦 Loading bus data...');
-      // Load raw JSON data - in production this would come from files
-      const busDataJSON: BusDataFile = require('../assets/final_buss.json');
-      
-      if (!busDataJSON || !busDataJSON.data || !Array.isArray(busDataJSON.data)) {
+      // Load raw JSON data - unified final.json contains all data
+      const finalData: any = require('../assets/final.json');
+      const busDataArray = finalData['Bus Data'];
+
+      if (!busDataArray || !Array.isArray(busDataArray)) {
         throw new Error('Invalid bus data format: missing or malformed data array');
       }
-      
-      this.busData = busDataJSON.data.map((bus, index) => {
+
+      this.busData = busDataArray.map((bus: any, index: number) => {
+        const busId = index + 1;
         let cumulativeDistanceKm = 0;
         const routes = bus.routes || [];
 
-        const stoppages = routes.map((stopName, order) => {
+        const stoppages = routes.map((stopName: string, order: number) => {
           const resolvedStop = this.resolveStopByName(stopName || '');
           const currentCoord = resolvedStop ? this.stopCoordinatesById.get(resolvedStop.id) : undefined;
 
@@ -719,15 +728,15 @@ export class DataMigrationService {
           if (order > 0) {
             const prevStop = this.resolveStopByName(routes[order - 1] || '');
             const prevCoord = prevStop ? this.stopCoordinatesById.get(prevStop.id) : undefined;
-            
+
             if (prevStop && resolvedStop) {
               // Check both directions in loaded data and take minimum
               const directKey = `${prevStop.stopageEn}-${resolvedStop.stopageEn}`;
               const reverseKey = `${resolvedStop.stopageEn}-${prevStop.stopageEn}`;
-              
+
               const directDistance = this.distanceData.get(directKey) ?? this.firebaseDistanceData.get(directKey);
               const reverseDistance = this.distanceData.get(reverseKey) ?? this.firebaseDistanceData.get(reverseKey);
-              
+
               // Use loaded distance if available, preferring minimum
               if (directDistance !== undefined && directDistance !== null && reverseDistance !== undefined && reverseDistance !== null) {
                 segmentDistanceKm = Math.min(directDistance, reverseDistance);
@@ -747,7 +756,7 @@ export class DataMigrationService {
           return {
             stopOrder: order,
             stopId: resolvedStop?.id ?? 0,
-            stopageEn: stopName || '',
+            stopageEn: this.toTitleCase(stopName) || '',
             stopageBn: stopName || '',
             segmentDistanceKm: Number(segmentDistanceKm.toFixed(2)),
             cumulativeDistanceKm: Number(cumulativeDistanceKm.toFixed(2)),
@@ -760,9 +769,11 @@ export class DataMigrationService {
           id: index + 1,
           nameEnglish: bus.english || `Bus ${index + 1}`,
           nameBangla: bus.bangla || '',
-          serviceType: bus.service_type || 'Regular',
+          serviceType: bus.serviceType || 'Regular',
           totalStops: routes.length,
           stoppages,
+          fare_weight: bus.fare_weight ?? 2.45,
+          min_fare: bus.min_fare ?? 10,
         };
       });
 
@@ -780,13 +791,14 @@ export class DataMigrationService {
   private static async loadStopData(): Promise<void> {
     try {
       console.log('📍 Loading stop data...');
-      // Load raw JSON data - in production this would come from files
-      const stopDataArray: StopDataItem[] = require('../assets/final_safe.json');
-      
+      // Load raw JSON data - unified final.json contains all data
+      const finalData: any = require('../assets/final.json');
+      const stopDataArray = finalData['Stop Data'];
+
       if (!Array.isArray(stopDataArray)) {
         throw new Error('Invalid stop data format: expected array');
       }
-      
+
       stopDataArray.forEach((item) => {
         try {
           if (!item.id || !item.names || !Array.isArray(item.names) || item.names.length === 0) {
@@ -797,13 +809,13 @@ export class DataMigrationService {
           const stopName = item.names[0]; // Use first name as primary
           const stop: Stop = {
             id: item.id,
-            stopageEn: stopName,
+            stopageEn: this.toTitleCase(stopName),
             stopageBn: stopName,
           };
-          
+
           this.stopData.set(String(item.id), stop);
 
-          item.names.forEach((name) => {
+          item.names.forEach((name: string) => {
             const key = this.normalizeStopName(name);
             if (key) {
               this.stopsByName.set(key, stop);
@@ -833,9 +845,10 @@ export class DataMigrationService {
   private static async loadDistanceData(): Promise<void> {
     try {
       console.log('📏 Loading distance data...');
-      const distanceDataFile = require('../assets/mem_lvl2.json');
-      
-      if (typeof distanceDataFile !== 'object' || !distanceDataFile) {
+      const finalData: any = require('../assets/final.json');
+      const distanceDataFile = finalData['Dist Data'];
+
+      if (!distanceDataFile || (!Array.isArray(distanceDataFile) && typeof distanceDataFile !== 'object')) {
         console.warn('⚠️ Distance data file is empty or invalid');
         return;
       }
@@ -908,7 +921,10 @@ export class DataMigrationService {
       const fromDistance = routes[fromIdx].cumulativeDistanceKm ?? 0;
       const toDistance = routes[toIdx].cumulativeDistanceKm ?? 0;
       const estimatedDistanceKm = Number(Math.abs(toDistance - fromDistance).toFixed(2));
-      const estimatedFare = Number(Math.max(10, estimatedDistanceKm * 2.45).toFixed(2));
+
+      const rate = bus.fare_weight ?? 2.45;
+      const min = bus.min_fare ?? 10;
+      const estimatedFare = Math.ceil(Math.max(min, estimatedDistanceKm * rate));
 
       results.push({
         ...bus,
@@ -924,14 +940,14 @@ export class DataMigrationService {
    * Search stops by name
    */
   static searchStops(query: string): Stop[] {
-    const trimmedQuery = query.trim();
+    const lowerQuery = query.trim().toLowerCase();
     const results: Stop[] = [];
     const seen = new Set<number>();
 
     this.stopsByName.forEach((stop) => {
       if (!seen.has(stop.id)) {
-        if (stop.stopageEn.includes(trimmedQuery) || 
-            stop.stopageBn.includes(trimmedQuery)) {
+        if (stop.stopageEn.toLowerCase().includes(lowerQuery) ||
+          stop.stopageBn.includes(lowerQuery)) {
           results.push(stop);
           seen.add(stop.id);
         }
@@ -945,7 +961,7 @@ export class DataMigrationService {
    * Get all stops
    */
   static getAllStops(): Stop[] {
-    return Array.from(this.stopData.values()).sort((a, b) => 
+    return Array.from(this.stopData.values()).sort((a, b) =>
       a.stopageEn.localeCompare(b.stopageEn)
     );
   }
@@ -976,6 +992,29 @@ export class DataMigrationService {
     TransitNetworkService.reset();
     this.isLoaded = false;
     console.log('✓ All data cleared (buses, stops, distances, TransitNetwork)');
+  }
+
+  /**
+   * Capitalize each word in a string
+   */
+  public static toTitleCase(str: string): string {
+    if (!str) return str;
+    // Check if it's mostly Bangla - if so, don't title case
+    const hasLatin = /[a-zA-Z]/.test(str);
+    if (!hasLatin) return str;
+
+    return str
+      .toLowerCase()
+      .split(/\s+/)
+      .map(word => {
+        if (word.length === 0) return '';
+        // Special case for characters like ( ) and other punctuations
+        if (/^[a-zA-Z]/.test(word)) {
+          return word.charAt(0).toUpperCase() + word.slice(1);
+        }
+        return word;
+      })
+      .join(' ');
   }
 }
 

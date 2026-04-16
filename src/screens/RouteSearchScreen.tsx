@@ -11,10 +11,12 @@ import {
   Animated,
   Platform,
   Dimensions,
+  useColorScheme,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useFocusEffect } from '@react-navigation/native';
 import { useDynamicSafeArea } from '../hooks/useDynamicSafeArea';
 import DatabaseService, { Stop } from '../services/DatabaseService';
 import TransitNetworkService, { DetailedRoute } from '../services/TransitNetworkService';
@@ -50,14 +52,19 @@ export default function RouteSearchScreen({ navigation, route }: any) {
   const [selectedMode, setSelectedMode] = useState<number>(-1); // -1 = Best
   const [searchDate, setSearchDate] = useState<string | null>(null);
   const [searchTime, setSearchTime] = useState<string | null>(null);
+  const [recentHistory, setRecentHistory] = useState<any[]>([]);
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const safeArea = useDynamicSafeArea();
 
   const showViaStop = selectedMode === 1 || selectedMode === 2;
 
-  useEffect(() => {
-    loadStops();
+  useFocusEffect(
+    useCallback(() => {
+      loadStops();
+    }, [])
+  );
 
+  useEffect(() => {
     if (route?.params) {
       const { fromStopName: paramFrom, toStopName: paramTo } = route.params;
       if (paramFrom && paramTo) {
@@ -76,8 +83,11 @@ export default function RouteSearchScreen({ navigation, route }: any) {
     try {
       const stops = await DatabaseService.getAllStops();
       setAllStops(stops);
+      
+      const history = await StorageService.getSearchHistory();
+      setRecentHistory(history.slice(0, 10)); // Show top 10
     } catch (error) {
-      console.error('Error loading stops:', error);
+      console.error('Error loading stops or history:', error);
     }
   };
 
@@ -197,7 +207,20 @@ export default function RouteSearchScreen({ navigation, route }: any) {
 
       // Save to history
       if (fStop && tStop) {
-        await StorageService.addSearchHistory(1, 1, fStop, tStop, foundRoutes.length);
+        const fromStop = findExactStop(fStop);
+        const toStop = findExactStop(tStop);
+        
+        if (fromStop && toStop) {
+          await StorageService.addSearchHistory(
+            fromStop.id, 
+            toStop.id, 
+            fromStop.stopageEn, 
+            toStop.stopageEn, 
+            foundRoutes.length
+          );
+          const history = await StorageService.getSearchHistory();
+          setRecentHistory(history.slice(0, 10));
+        }
       }
     } catch (error) {
       console.error('Error searching routes:', error);
@@ -690,18 +713,72 @@ export default function RouteSearchScreen({ navigation, route }: any) {
             </View>
           )
         ) : (
-          <View style={styles.emptyContainer}>
-            <View
-              style={[styles.heroIcon, { backgroundColor: themeColors.primaryMuted }]}
-            >
-              <Ionicons name="bus" size={36} color={themeColors.primary} />
+          <View style={{ flex: 1 }}>
+            {recentHistory.length > 0 ? (
+              <View style={styles.recentSection}>
+                <View style={styles.recentHeader}>
+                  <Text style={[styles.recentTitle, { color: themeColors.textPrimary }]}>
+                    Recent Searches
+                  </Text>
+                  <TouchableOpacity onPress={() => navigation.navigate('History')}>
+                    <Text style={[styles.seeAllText, { color: themeColors.primary }]}>See All</Text>
+                  </TouchableOpacity>
+                </View>
+                <ScrollView 
+                  horizontal 
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={styles.recentScrollContent}
+                >
+                  {recentHistory.map((item, idx) => (
+                    <TouchableOpacity
+                      key={item.id}
+                      style={[
+                        styles.recentCard,
+                        { 
+                          backgroundColor: themeColors.surface,
+                          borderColor: isDark ? themeColors.border : 'rgba(0,0,0,0.05)',
+                          borderWidth: 1
+                        }
+                      ]}
+                      onPress={() => {
+                        setFrom(item.fromStopName);
+                        setTo(item.toStopName);
+                        setFromStopName(item.fromStopName);
+                        setToStopName(item.toStopName);
+                        searchRoutes(item.fromStopName, item.toStopName, '', selectedMode);
+                      }}
+                    >
+                      <View style={styles.recentRouteRow}>
+                        <Text style={[styles.recentStopText, { color: themeColors.textPrimary }]} numberOfLines={1}>
+                          {item.fromStopName}
+                        </Text>
+                        <Ionicons name="arrow-forward" size={12} color={themeColors.textTertiary} style={{ marginHorizontal: 4 }} />
+                        <Text style={[styles.recentStopText, { color: themeColors.textPrimary }]} numberOfLines={1}>
+                          {item.toStopName}
+                        </Text>
+                      </View>
+                      <Text style={[styles.recentMetaText, { color: themeColors.textTertiary }]}>
+                        {item.routesFound} routes found
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
+              </View>
+            ) : null}
+
+            <View style={styles.emptyContainer}>
+              <View
+                style={[styles.heroIcon, { backgroundColor: themeColors.primaryMuted }]}
+              >
+                <Ionicons name="bus" size={36} color={themeColors.primary} />
+              </View>
+              <Text style={[styles.heroTitle, { color: themeColors.textPrimary }]}>
+                Find Your Bus
+              </Text>
+              <Text style={[styles.heroText, { color: themeColors.textSecondary }]}>
+                Search for the best bus routes{'\n'}between any two stops in Dhaka
+              </Text>
             </View>
-            <Text style={[styles.heroTitle, { color: themeColors.textPrimary }]}>
-              Find Your Bus
-            </Text>
-            <Text style={[styles.heroText, { color: themeColors.textSecondary }]}>
-              Search for the best bus routes{'\n'}between any two stops in Dhaka
-            </Text>
           </View>
         )}
       </View>
@@ -758,7 +835,7 @@ const styles = StyleSheet.create({
   },
   swapButton: {
     position: 'absolute',
-    right: Spacing.xxl,
+    left: Spacing.xxl,
     top: 56,
     zIndex: 10,
     width: 32,
@@ -1078,5 +1155,58 @@ const styles = StyleSheet.create({
     marginTop: Spacing.sm,
     textAlign: 'center',
     lineHeight: 22,
+  },
+  recentSection: {
+    paddingHorizontal: Spacing.lg,
+    paddingTop: Spacing.lg,
+    paddingBottom: Spacing.sm,
+  },
+  recentHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: Spacing.sm + 2,
+    paddingHorizontal: 2,
+  },
+  recentTitle: {
+    fontSize: FontSize.lg,
+    fontWeight: '800',
+  },
+  seeAllText: {
+    fontSize: FontSize.sm,
+    fontWeight: '700',
+  },
+  recentScrollContent: {
+    paddingRight: Spacing.lg,
+    gap: 12,
+  },
+  recentCard: {
+    padding: Spacing.md,
+    borderRadius: BorderRadius.lg,
+    minWidth: 160,
+    maxWidth: 240,
+    ...Platform.select({
+      android: { elevation: 2 },
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.05,
+        shadowRadius: 4,
+      },
+    }),
+  },
+  recentRouteRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 6,
+  },
+  recentStopText: {
+    fontSize: FontSize.sm,
+    fontWeight: '700',
+    maxWidth: 80,
+  },
+  recentMetaText: {
+    fontSize: FontSize.xs,
+    fontWeight: '500',
   },
 });

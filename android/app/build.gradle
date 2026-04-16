@@ -82,8 +82,8 @@ android {
         applicationId "com.myapp.busroute"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 17
-        versionName "1.8"
+        versionCode 20
+        versionName "2.0.0"
         
         // Vector icons configuration
         vectorDrawables.useSupportLibrary = true
@@ -135,6 +135,7 @@ android {
             debuggable false
             signingConfig signingConfigs.release
             minifyEnabled enableProguardInReleaseBuilds
+            shrinkResources enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
     }

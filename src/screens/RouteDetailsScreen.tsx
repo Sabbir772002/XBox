@@ -21,6 +21,7 @@ import { Colors, Spacing, BorderRadius, FontSize } from '../theme/colors';
 import { DarkColors } from '../theme/darkColors';
 import RouteMap, { MapCoordinate } from '../components/RouteMap';
 import { DetailedRoute, RoutePathStop } from '../services/TransitNetworkService';
+import DataMigrationService from '../services/DataMigrationService';
 
 export default function RouteDetailsScreen({ route, navigation }: any) {
   const { isDark } = useTheme();
@@ -50,7 +51,10 @@ export default function RouteDetailsScreen({ route, navigation }: any) {
   const [legacyStoppages, setLegacyStoppages] = useState<BusStoppage[]>([]);
   const [legacySecondStoppages, setLegacySecondStoppages] = useState<BusStoppage[]>([]);
   const [journeyDistanceKm, setJourneyDistanceKm] = useState(0);
-  const [estimatedFare, setEstimatedFare] = useState(10);
+  const [serviceType, setServiceType] = useState('');
+  const [fareRate, setFareRate] = useState(2.45);
+  const [minFare, setMinFare] = useState(10);
+  const [estimatedFare, setEstimatedFare] = useState(0);
 
   const isAlgorithmRoute = !!algorithmRoute;
 
@@ -110,7 +114,14 @@ export default function RouteDetailsScreen({ route, navigation }: any) {
       const lastStop = journeyStops[journeyStops.length - 1];
       const totalDist = Number((lastStop?.journeyDistanceKm ?? 0).toFixed(2));
       setJourneyDistanceKm(totalDist);
-      setEstimatedFare(Number(Math.max(10, totalDist * 2.45).toFixed(2)));
+
+      const busInfo = DataMigrationService.busData.find((b) => b.id === busId);
+      setServiceType(busInfo?.serviceType || 'Regular');
+      const rate = busInfo?.fare_weight || 2.45;
+      const min = busInfo?.min_fare || 10;
+      setFareRate(rate);
+      setMinFare(min);
+      setEstimatedFare(Math.ceil(Math.max(min, totalDist * rate)));
     } catch (error) {
       console.error('Error loading bus stoppages:', error);
     } finally {
@@ -141,7 +152,9 @@ export default function RouteDetailsScreen({ route, navigation }: any) {
       setLegacySecondStoppages(secondStops);
 
       setJourneyDistanceKm(tr.totalDistance);
-      setEstimatedFare(tr.estimatedFare ?? Number(Math.max(10, tr.totalDistance * 2.45).toFixed(2)));
+      // For transfer routes, we don't have a single rate/min easily accessible here without more lookups
+      // but we can at least set the total estimated fare
+      setEstimatedFare(Math.ceil(tr.estimatedFare || Math.max(10, tr.totalDistance * 2.45)));
     } catch (error) {
       console.error('Error loading transfer stoppages:', error);
     } finally {
@@ -584,7 +597,7 @@ export default function RouteDetailsScreen({ route, navigation }: any) {
             </Text>
             {busBn && (
               <Text style={[styles.headerSubtitle, { color: 'rgba(255,255,255,0.7)' }]}>
-                {busBn}
+                {busBn} • {serviceType}
               </Text>
             )}
           </View>
@@ -655,6 +668,25 @@ export default function RouteDetailsScreen({ route, navigation }: any) {
               <Text style={[styles.statLabel, { color: themeColors.textTertiary }]}>Stops</Text>
             </View>
           </View>
+
+          {/* Fare Policy Note */}
+          <View style={[styles.farePolicyContainer, { backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.02)' }]}>
+            <Ionicons name="information-circle-outline" size={14} color={themeColors.textTertiary} />
+            <Text style={[styles.farePolicyText, { color: themeColors.textSecondary }]}>
+              Fare Calculation: Max(৳{minFare.toFixed(0)}, {fareRate} × km)
+            </Text>
+          </View>
+
+          {/* Jump to Full Route Button */}
+          {!showFullRoute && (
+            <TouchableOpacity
+              style={styles.fullRouteButton}
+              onPress={() => navigation.push('RouteDetails', { busId, busName, busBn, showFullRoute: true })}
+            >
+              <Text style={styles.fullRouteButtonText}>View Full Bus Route</Text>
+              <Ionicons name="chevron-forward" size={18} color={themeColors.primary} />
+            </TouchableOpacity>
+          )}
         </View>
 
         {/* Legacy Stoppages */}
@@ -708,9 +740,14 @@ export default function RouteDetailsScreen({ route, navigation }: any) {
                       +{(stoppage.segmentDistanceKm ?? 0).toFixed(2)} km
                     </Text>
                     {typeof stoppage.journeyDistanceKm === 'number' && (
-                      <Text style={[styles.timelineMetaText, { color: themeColors.textMuted }]}>
-                        trip {stoppage.journeyDistanceKm.toFixed(2)} km
-                      </Text>
+                      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <Text style={[styles.timelineMetaText, { color: themeColors.textMuted }]}>
+                          trip {stoppage.journeyDistanceKm.toFixed(1)} km
+                        </Text>
+                        <Text style={[styles.timelineMetaText, { color: themeColors.primary, fontWeight: '700', marginLeft: 8 }]}>
+                           ৳ {Math.ceil(Math.max(minFare, stoppage.journeyDistanceKm * fareRate))}
+                        </Text>
+                      </View>
                     )}
                   </View>
                   {(isFirst || isLast) && (
@@ -793,6 +830,24 @@ const styles = StyleSheet.create({
   headerBadgeText: {
     fontSize: FontSize.xs,
     fontWeight: '700',
+  },
+  fullRouteButtonText: {
+    fontSize: FontSize.sm,
+    fontWeight: '600',
+    color: Colors.primary,
+    marginRight: 4,
+  },
+  farePolicyContainer: {
+    marginTop: Spacing.md,
+    padding: Spacing.sm,
+    borderRadius: BorderRadius.md,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  farePolicyText: {
+    fontSize: FontSize.xs,
+    fontWeight: '500',
   },
   headerRouteBn: {
     fontSize: FontSize.base,
@@ -1049,5 +1104,14 @@ const styles = StyleSheet.create({
     marginTop: Spacing.lg,
     fontSize: FontSize.base,
     fontWeight: '500',
+  },
+  fullRouteButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 15,
+    paddingTop: 15,
+    borderTopWidth: 1,
+    borderTopColor: '#f1f5f9',
   },
 });

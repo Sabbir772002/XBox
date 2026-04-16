@@ -1,4 +1,4 @@
-// Premium Dark Theme for Bus Bhara App
+// Premium Dark Theme for Local Bus App
 // Deep navy with indigo accents
 
 export const DarkColors = {

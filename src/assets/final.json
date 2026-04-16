@@ -44,7 +44,7 @@
                 "Demra Staff Quarter"
             ],
             "time": "6 AM - 12 PM",
-            "service_type": "Semi-Sitting Service (Check System)"
+            "serviceType": "Semi-Sitting Service (Check System)"
         },
         {
             "english": "Active Paribahan Bus",
@@ -73,8 +73,6 @@
                 "Kalshi",
                 "ECB Square",
                 "MES",
-                "shewrapara",
-                "MES",
                 "Shewra",
                 "Kuril Flyover",
                 "Khilkhet",
@@ -87,7 +85,7 @@
                 "Abdullahpur"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Agradut Bus",
@@ -118,14 +116,10 @@
                 "Uttar Badda",
                 "Shahjadpur",
                 "Bashtola",
-                "Shahjadpur",
-                "Uttar Badda",
-                "Shahjadpur",
-                "Bashtola",
                 "Notun Bazar"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Airport Bangabandhu Avenue",
@@ -166,7 +160,7 @@
                 "Abdullahpur"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Azmeri Glory Bus",
@@ -183,6 +177,7 @@
                 "Malibagh Moor",
                 "Mouchak",
                 "Mogbazar",
+                "Hatirjheel Mor Bus stop",
                 "Sat rasta",
                 "Nabisco",
                 "Mohakhali",
@@ -213,7 +208,7 @@
                 "Chandra"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Ajmi Bus",
@@ -248,13 +243,12 @@
                 "Chittagong Road"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Akash Bus",
             "bangla": "আকাশ বাস",
             "routes": [
-                "Kadamtali",
                 "Keraniganj",
                 "Kadamtali",
                 "Babubazar",
@@ -288,13 +282,12 @@
                 "Jashimuddin (Uttara)",
                 "Rajlakshmi",
                 "Azampur",
-                "Rajlakshmi House Building",
                 "House Building",
                 "Abdullahpur",
                 "Tongi"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Akik Bus",
@@ -326,7 +319,7 @@
                 "Uttar Badda"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Al Makka Bus",
@@ -341,6 +334,7 @@
                 "Malibagh Moor",
                 "Mouchak",
                 "Mogbazar",
+                "Hatirjheel Mor Bus stop",
                 "Sat rasta",
                 "Nabisco",
                 "Mohakhali",
@@ -361,7 +355,7 @@
                 "Mirpur 1"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Al Madina Plus One Bus",
@@ -402,11 +396,11 @@
                 "Kamalapur"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
-            "english": "Alif Bus",
-            "bangla": "আলিফ বাস",
+            "english": "Alif Bus [1]",
+            "bangla": "আলিফ বাস [1]",
             "routes": [
                 "Mirpur 14",
                 "Mirpur Police Line, Bus stop",
@@ -432,11 +426,11 @@
                 "Dhaka EPZ"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
-            "english": "Alif Bus",
-            "bangla": "আলিফ বাস",
+            "english": "Alif Bus [2]",
+            "bangla": "আলিফ বাস [2]",
             "routes": [
                 "Shia Mosque",
                 "Japan Garden City",
@@ -461,11 +455,11 @@
                 "Banasree"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
-            "english": "Alif Bus",
-            "bangla": "আলিফ বাস",
+            "english": "Alif Bus [3]",
+            "bangla": "আলিফ বাস [3]",
             "routes": [
                 "Mirpur 1",
                 "Sony Cinema Hall",
@@ -494,11 +488,11 @@
                 "Banasree"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
-            "english": "Alif Bus",
-            "bangla": "আলিফ বাস",
+            "english": "Alif Bus [4]",
+            "bangla": "আলিফ বাস [4]",
             "routes": [
                 "Japan Garden City",
                 "Ring Road",
@@ -529,7 +523,7 @@
                 "Abdullahpur"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Anabil Super",
@@ -540,9 +534,11 @@
                 "Rayerbag",
                 "Shonir Akhra",
                 "Shanir Akhra",
+                "Kazla",
                 "Jatrabari",
                 "Janapath Moor",
                 "Sayedabad",
+                "TT Para",
                 "Kamalapur",
                 "Mugdapara",
                 "Bashabo",
@@ -586,7 +582,7 @@
                 "Gazipur Chourasta"
             ],
             "time": "",
-            "service_type": "Sitting Service (Check System)"
+            "serviceType": "Sitting Service (Check System)"
         },
         {
             "english": "Arnob Bus",
@@ -621,7 +617,7 @@
                 "Demra Staff Quarter"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Ashirbad Pahibahan",
@@ -658,7 +654,7 @@
                 "Azimpur"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Ashulia Classic",
@@ -696,7 +692,7 @@
                 "Sat rasta"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Asmani Bus",
@@ -735,7 +731,7 @@
                 "Madanpur"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "ATCL Bus",
@@ -752,11 +748,8 @@
                 "Science Lab",
                 "Bata Signal",
                 "Katabon",
-                "Bata Signal",
-                "Katabon",
                 "Shahbag",
                 "Ramna Park Bus stop",
-                "Motsho Bhaban",
                 "Matsya Bhaban",
                 "High Court",
                 "press club paltan",
@@ -766,7 +759,7 @@
                 "Arambagh Notre Dame College"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Ayat Bus",
@@ -783,6 +776,7 @@
                 "Taltola",
                 "IDB",
                 "Agargaon",
+                "Farmgate Bijoy Sarani",
                 "KhamarBari",
                 "Farmgate",
                 "karwan bazar",
@@ -794,7 +788,7 @@
                 "Kamalapur"
             ],
             "time": "",
-            "service_type": "Semi-Sitting Service"
+            "serviceType": "Semi-Sitting Service"
         },
         {
             "english": "Bahon Bus",
@@ -817,6 +811,8 @@
                 "Darussalam",
                 "Kallyanpur",
                 "shyamoli",
+                "Shishu Mela",
+                "College Gate",
                 "Asad Gate",
                 "Lalmatiya",
                 "Dhanmondi 27",
@@ -842,7 +838,7 @@
                 "Khilgaon"
             ],
             "time": "6 AM - 11 PM",
-            "service_type": "Semi-Sitting Service (Check System)"
+            "serviceType": "Semi-Sitting Service (Check System)"
         },
         {
             "english": "Baishakhi Bus",
@@ -873,14 +869,10 @@
                 "Uttar Badda",
                 "Shahjadpur",
                 "Bashtola",
-                "Shahjadpur",
-                "Uttar Badda",
-                "Shahjadpur",
-                "Bashtola",
                 "Notun Bazar"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Balaka Bus",
@@ -924,7 +916,7 @@
                 "Gazipur Chourasta"
             ],
             "time": "",
-            "service_type": "Semi-Sitting Service"
+            "serviceType": "Semi-Sitting Service"
         },
         {
             "english": "Basumati",
@@ -953,7 +945,6 @@
                 "Golap Shah Mazar",
                 "Naya Bazar",
                 "Babubazar",
-                "Kadamtali",
                 "Keraniganj",
                 "Kadamtali",
                 "Rajendrapur",
@@ -965,7 +956,7 @@
                 "Maowa"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Basumati Transport",
@@ -1006,7 +997,7 @@
                 "Gazipur Chourasta"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Best Satabdi",
@@ -1046,7 +1037,7 @@
                 "Diabari"
             ],
             "time": "",
-            "service_type": "Sitting, AC Bus"
+            "serviceType": "Sitting, AC Bus"
         },
         {
             "english": "Best Transport",
@@ -1058,13 +1049,13 @@
                 "Taltola",
                 "IDB",
                 "Agargaon",
+                "Farmgate Bijoy Sarani",
                 "KhamarBari",
                 "Farmgate",
                 "karwan bazar",
                 "Bangla Motor",
                 "Shahbag",
                 "Ramna Park Bus stop",
-                "Motsho Bhaban",
                 "Matsya Bhaban",
                 "High Court",
                 "press club paltan",
@@ -1078,7 +1069,7 @@
                 "Jatrabari"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Bhuiyan Paribahan",
@@ -1113,7 +1104,7 @@
                 "Abdullahpur"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Bihanga Bus",
@@ -1146,7 +1137,7 @@
                 "Notun Bazar"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Bikalpa Auto Service",
@@ -1163,14 +1154,12 @@
                 "Taltola",
                 "IDB",
                 "Agargaon",
-                "Farmgate Bijoy Sarani",
                 "Bijoy Sarani",
                 "Farmgate",
                 "karwan bazar",
                 "Bangla Motor",
                 "Shahbag",
                 "Ramna Park Bus stop",
-                "Motsho Bhaban",
                 "Matsya Bhaban",
                 "High Court",
                 "press club paltan",
@@ -1180,7 +1169,7 @@
                 "Motijheel"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Bikalpa City Super Service",
@@ -1197,8 +1186,8 @@
                 "Taltola",
                 "IDB",
                 "Agargaon",
-                "shyamoli",
                 "Shishu Mela",
+                "shyamoli",
                 "College Gate",
                 "Asad Gate",
                 "Lalmatiya",
@@ -1214,7 +1203,7 @@
                 "Dhakeshwari"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Bikash Bus",
@@ -1228,8 +1217,6 @@
                 "City College",
                 "Kalabagan",
                 "Dhanmondi 32 Kalabagan",
-                "Dhanmondi 27",
-                "dhanmondi 32 kalabagan",
                 "Shukrabad",
                 "Dhanmondi 27",
                 "Lalmatiya",
@@ -1258,7 +1245,7 @@
                 "Kamarpara"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Bikash Paribahan",
@@ -1269,6 +1256,7 @@
                 "Rayerbag",
                 "Shonir Akhra",
                 "Shanir Akhra",
+                "Kazla",
                 "Jatrabari",
                 "Janapath Moor",
                 "Sayedabad",
@@ -1311,7 +1299,7 @@
                 "Kamarpara"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Bondhu Paribahan",
@@ -1338,7 +1326,7 @@
                 "Notun Bazar"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Borak Bus",
@@ -1348,7 +1336,7 @@
                 "Meghna Ghat"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Bashumoti Bus",
@@ -1389,7 +1377,7 @@
                 "Gabtoli"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Brihottor Mirpur",
@@ -1405,11 +1393,11 @@
                 "Nobinagar Chandra"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
-            "english": "BRTC Bus",
-            "bangla": "বি আর টিসি বাস",
+            "english": "BRTC Bus [1]",
+            "bangla": "বি আর টিসি বাস [1]",
             "routes": [
                 "Madanpur",
                 "Kanchpur",
@@ -1419,6 +1407,7 @@
                 "Rayerbag",
                 "Shonir Akhra",
                 "Shanir Akhra",
+                "Kazla",
                 "Jatrabari",
                 "Janapath Moor",
                 "Sayedabad",
@@ -1450,11 +1439,11 @@
                 "Savar"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
-            "english": "BRTC",
-            "bangla": "বি আর টিসি বাস",
+            "english": "BRTC Bus [2]",
+            "bangla": "বি আর টিসি বাস [2]",
             "routes": [
                 "Motijheel",
                 "Gulistan",
@@ -1491,11 +1480,11 @@
                 "Tongi"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
-            "english": "BRTC Bus",
-            "bangla": "বি আর টিসি বাস",
+            "english": "BRTC Bus [3]",
+            "bangla": "বি আর টিসি বাস [3]",
             "routes": [
                 "Motijheel",
                 "Gulistan",
@@ -1528,11 +1517,11 @@
                 "Chandra"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
-            "english": "BRTC Bus",
-            "bangla": "বি আর টিসি বাস",
+            "english": "BRTC Bus [4]",
+            "bangla": "বি আর টিসি বাস [4]",
             "routes": [
                 "Mohammadpur",
                 "Asad Gate",
@@ -1560,11 +1549,11 @@
                 "Kuril Flyover"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
-            "english": "BRTC Bus",
-            "bangla": "বি আর টিসি বাস",
+            "english": "BRTC Bus [5]",
+            "bangla": "বি আর টিসি বাস [5]",
             "routes": [
                 "Kamalapur",
                 "Motijheel",
@@ -1601,11 +1590,11 @@
                 "Kuril Flyover"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
-            "english": "BRTC Bus",
-            "bangla": "বি আর টিসি বাস",
+            "english": "BRTC Bus [6]",
+            "bangla": "বি আর টিসি বাস [6]",
             "routes": [
                 "Vulta",
                 "Kanchan Bridge",
@@ -1615,7 +1604,7 @@
                 "Kuril Flyover"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "BRTC Bus",
@@ -1656,11 +1645,11 @@
                 "Abdullahpur"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
-            "english": "BRTC Bus",
-            "bangla": "বি আর টিসি বাস",
+            "english": "BRTC Bus [7]",
+            "bangla": "বি আর টিসি বাস [7]",
             "routes": [
                 "Mohammadpur",
                 "Shankar",
@@ -1673,7 +1662,6 @@
                 "Katabon",
                 "Shahbag",
                 "Ramna Park Bus stop",
-                "Motsho Bhaban",
                 "Matsya Bhaban",
                 "High Court",
                 "press club paltan",
@@ -1683,11 +1671,11 @@
                 "Motijheel"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
-            "english": "BRTC Bus",
-            "bangla": "বি আর টিসি বাস",
+            "english": "BRTC Bus [8]",
+            "bangla": "বি আর টিসি বাস [8]",
             "routes": [
                 "Gabtoli",
                 "Mirpur 1",
@@ -1724,7 +1712,7 @@
                 "Gazipur Chourasta"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "BRTC Articulated Bus",
@@ -1738,6 +1726,7 @@
                 "Old Airport",
                 "Bijoy Sarani",
                 "Farmgate",
+                "Karwan Bazar",
                 "Bangla Motor",
                 "Shahbag",
                 "Ramna Park Bus stop",
@@ -1747,7 +1736,7 @@
                 "Motijheel"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Cantonment Bus",
@@ -1774,7 +1763,7 @@
                 "Savar"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Cantonment Mini Service",
@@ -1788,7 +1777,7 @@
                 "Mohakhali"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Champion Bus",
@@ -1813,7 +1802,7 @@
                 "Gabtoli"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "City Link Bus",
@@ -1825,6 +1814,7 @@
                 "Rayerbag",
                 "Shonir Akhra",
                 "Shanir Akhra",
+                "Kazla",
                 "Jatrabari",
                 "Janapath Moor",
                 "Sayedabad",
@@ -1850,7 +1840,7 @@
                 "Ghatar Char"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "D Link Bus",
@@ -1885,7 +1875,7 @@
                 "Dhamra"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "D One Transport Bus",
@@ -1922,7 +1912,7 @@
                 "Kalampur"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Deepan Bus",
@@ -1939,7 +1929,6 @@
                 "Katabon",
                 "Shahbag",
                 "Ramna Park Bus stop",
-                "Motsho Bhaban",
                 "Matsya Bhaban",
                 "Paltan",
                 "Gulistan",
@@ -1947,17 +1936,19 @@
                 "Arambagh"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Desh Bangla Bus",
             "bangla": "দেশ বাংলা বাস",
             "routes": [
                 "Postagola",
+                "Jurain",
                 "Dholairpar",
                 "Jatrabari",
                 "Janapath Moor",
                 "Sayedabad",
+                "TT Para",
                 "Kamalapur",
                 "Mugdapara",
                 "Bashabo",
@@ -1994,7 +1985,7 @@
                 "Kamarpara"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Dewan Bus",
@@ -2005,8 +1996,6 @@
                 "Nilkhet",
                 "new market nilkhet",
                 "Dhaka College",
-                "City College",
-                "Science Lab",
                 "City College",
                 "Science Lab",
                 "Bata Signal",
@@ -2025,8 +2014,6 @@
                 "Gulshan 1",
                 "Badda Link Road",
                 "Badda",
-                "Badda Link Road",
-                "Badda",
                 "Uttar Badda",
                 "Shahjadpur",
                 "Bashtola",
@@ -2038,29 +2025,29 @@
                 "Kuril Flyover"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
-            "english": "Dhakar Chaka Bus",
-            "bangla": "ঢাকার চাকা বাস",
+            "english": "Dhakar Chaka Bus [1]",
+            "bangla": "ঢাকার চাকা বাস [1]",
             "routes": [
                 "Police Plaza",
                 "Gulshan 1",
                 "Gulshan 2"
             ],
             "time": "",
-            "service_type": "Sitting Service (Ticket System)"
+            "serviceType": "Sitting Service (Ticket System)"
         },
         {
-            "english": "Dhakar Chaka Bus",
-            "bangla": "ঢাকার চাকা বাস",
+            "english": "Dhakar Chaka Bus [2]",
+            "bangla": "ঢাকার চাকা বাস [2]",
             "routes": [
                 "Banani",
                 "Gulshan 2",
                 "Notun Bazar"
             ],
             "time": "",
-            "service_type": "Sitting Service (Ticket System)"
+            "serviceType": "Sitting Service (Ticket System)"
         },
         {
             "english": "Dhaka Metro Service",
@@ -2073,14 +2060,14 @@
                 "Technical",
                 "Kallyanpur",
                 "shyamoli",
+                "Shishu Mela",
+                "College Gate",
                 "Asad Gate",
                 "Lalmatiya",
                 "Dhanmondi 27",
                 "shukrabad",
                 "Dhanmondi 32 Kalabagan",
                 "Kalabagan",
-                "City College",
-                "Science Lab",
                 "City College",
                 "Dhaka College",
                 "new market nilkhet",
@@ -2089,7 +2076,7 @@
                 "Azimpur"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Dhaka Paribahan",
@@ -2100,6 +2087,7 @@
                 "Ramna Park Bus stop",
                 "Shahbag",
                 "Bangla Motor",
+                "Karwan Bazar",
                 "Farmgate",
                 "Banani",
                 "Staff Road",
@@ -2125,7 +2113,7 @@
                 "Shib Bari"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Dipon",
@@ -2144,7 +2132,6 @@
                 "Katabon",
                 "Shahbag",
                 "Ramna Park Bus stop",
-                "Motsho Bhaban",
                 "Matsya Bhaban",
                 "High Court",
                 "press club paltan",
@@ -2155,7 +2142,7 @@
                 "Arambagh"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Dip Paribahan",
@@ -2170,12 +2157,14 @@
                 "Kolabagan",
                 "panthapath",
                 "Karwan Bazar",
+                "Hatirjheel Mor Bus stop",
+                "Sat rasta",
                 "Nabisco",
                 "Gulshan 1",
                 "Kuril Flyover"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Dishari Bus",
@@ -2201,7 +2190,6 @@
                 "Bangla Motor",
                 "Shahbag",
                 "Ramna Park Bus stop",
-                "Motsho Bhaban",
                 "Matsya Bhaban",
                 "High Court",
                 "press club paltan",
@@ -2214,7 +2202,7 @@
                 "Keraniganj"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Elite Bus",
@@ -2244,7 +2232,7 @@
                 "Abdullahpur"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "ETC Bus",
@@ -2255,6 +2243,7 @@
                 "Ramna Park Bus stop",
                 "Shahbag",
                 "Bangla Motor",
+                "Karwan Bazar",
                 "Farmgate",
                 "KhamarBari",
                 "Farmgate Bijoy Sarani",
@@ -2271,7 +2260,7 @@
                 "Mirpur 12"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "ETC Transport",
@@ -2290,6 +2279,7 @@
                 "karwan bazar",
                 "Farmgate",
                 "KhamarBari",
+                "Farmgate Bijoy Sarani",
                 "Agargaon",
                 "IDB",
                 "Taltola",
@@ -2303,7 +2293,7 @@
                 "Mirpur 12"
             ],
             "time": "",
-            "service_type": "Sitting Service"
+            "serviceType": "Sitting Service"
         },
         {
             "english": "Everest Paribahan",
@@ -2326,7 +2316,7 @@
                 "Keraniganj"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Falgun Art Transport",
@@ -2374,7 +2364,7 @@
                 "house building"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "First Ten Bus",
@@ -2399,11 +2389,11 @@
                 "Gabtoli"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
-            "english": "FTCL Bus",
-            "bangla": "এফটিসিএল বাস",
+            "english": "FTCL Bus [1]",
+            "bangla": "এফটিসিএল বাস [1]",
             "routes": [
                 "Mohammadpur",
                 "Shankar",
@@ -2415,7 +2405,6 @@
                 "Katabon",
                 "Shahbag",
                 "Ramna Park Bus stop",
-                "Motsho Bhaban",
                 "Matsya Bhaban",
                 "High Court",
                 "press club paltan",
@@ -2425,6 +2414,7 @@
                 "Sayedabad",
                 "Janapath Moor",
                 "Jatrabari",
+                "Kazla",
                 "Shanir Akhra",
                 "Shonir Akhra",
                 "Rayerbag",
@@ -2433,11 +2423,11 @@
                 "Chittagong Road"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
-            "english": "FTCL Bus",
-            "bangla": "এফটিসিএল বাস",
+            "english": "FTCL Bus [2]",
+            "bangla": "এফটিসিএল বাস [2]",
             "routes": [
                 "Mohammadpur",
                 "Shankar",
@@ -2449,7 +2439,6 @@
                 "Katabon",
                 "Shahbag",
                 "Ramna Park Bus stop",
-                "Motsho Bhaban",
                 "Matsya Bhaban",
                 "Paltan",
                 "Gulistan",
@@ -2457,7 +2446,7 @@
                 "Arambagh"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Gazipur Paribahan",
@@ -2470,6 +2459,7 @@
                 "Malibagh Moor",
                 "Mouchak",
                 "Mogbazar",
+                "Hatirjheel Mor Bus stop",
                 "Sat rasta",
                 "Nabisco",
                 "Mohakhali",
@@ -2501,7 +2491,7 @@
                 "Shib Bari"
             ],
             "time": "",
-            "service_type": "Half-Sitting Service"
+            "serviceType": "Half-Sitting Service"
         },
         {
             "english": "Grameen Bus",
@@ -2525,7 +2515,7 @@
                 "Gabtoli"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Grameen Suveccha",
@@ -2565,28 +2555,30 @@
                 "Chandra"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Green Anabil",
             "bangla": "গ্রীন অনাবিল বাস",
             "routes": [
                 "Chashara",
-                "Zila Parishad Bus Stop",
+                "Zila Parishad Bus Stop জেলা পরিষদের বাস স্টপ",
                 "Shibu Market",
                 "Jalkuri",
-                "Rupayan Town Bus Stop",
+                "Rupayan Town Bus Stop রূপায়ন টাউন বাস স্টপ",
                 "Bhuigor Bus Stop",
                 "Kazibari Bus Stand",
-                "Sonali Market Bus Stop",
+                "Sonali Market Bus Stop সোনালী বাজার বাস স্টপ",
                 "Sign Board",
                 "Matuail",
                 "Rayerbag",
                 "Shonir Akhra",
                 "Shanir Akhra",
+                "Kazla",
                 "Jatrabari",
                 "Janapath Moor",
                 "Sayedabad",
+                "TT Para",
                 "Kamalapur",
                 "Mugdapara",
                 "Bashabo",
@@ -2630,7 +2622,7 @@
                 "Gazipur Chourasta"
             ],
             "time": "",
-            "service_type": "Half Sitting Service"
+            "serviceType": "Half Sitting Service"
         },
         {
             "english": "Green Dhaka",
@@ -2671,7 +2663,7 @@
                 "Abdullahpur"
             ],
             "time": "",
-            "service_type": "Sitting Service (Ticket System)"
+            "serviceType": "Sitting Service (Ticket System)"
         },
         {
             "english": "Gulshan Chaka",
@@ -2682,7 +2674,7 @@
                 "Notun Bazar"
             ],
             "time": "",
-            "service_type": "Sitting Service (Ticket System)"
+            "serviceType": "Sitting Service (Ticket System)"
         },
         {
             "english": "Hazi Transport",
@@ -2706,7 +2698,6 @@
                 "Bangla Motor",
                 "Shahbag",
                 "Ramna Park Bus stop",
-                "Motsho Bhaban",
                 "Matsya Bhaban",
                 "High Court",
                 "press club paltan",
@@ -2716,7 +2707,7 @@
                 "Motijheel"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Himachal Bus",
@@ -2736,7 +2727,6 @@
                 "Gulshan 1",
                 "Badda Link Road",
                 "Badda",
-                "Badda Link Road",
                 "Madhya Badda",
                 "Merul",
                 "Rampura Bridge",
@@ -2747,7 +2737,7 @@
                 "Khilgaon Khidma Hospital"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Himachal Suveccha",
@@ -2755,18 +2745,19 @@
             "routes": [
                 "Metro Hall",
                 "Chashara",
-                "Zila Parishad Bus Stop",
+                "Zila Parishad Bus Stop জেলা পরিষদের বাস স্টপ",
                 "Shibu Market",
                 "Jalkuri",
-                "Rupayan Town Bus Stop",
+                "Rupayan Town Bus Stop রূপায়ন টাউন বাস স্টপ",
                 "Bhuigor Bus Stop",
                 "Kazibari Bus Stand",
-                "Sonali Market Bus Stop",
+                "Sonali Market Bus Stop সোনালী বাজার বাস স্টপ",
                 "Sign Board",
                 "Matuail",
                 "Rayerbag",
                 "Shonir Akhra",
                 "Shanir Akhra",
+                "Kazla",
                 "Jatrabari",
                 "Janapath Moor",
                 "Gulistan",
@@ -2796,7 +2787,7 @@
                 "Mirpur 12"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Himalay Bus",
@@ -2807,6 +2798,7 @@
                 "Jatrabari",
                 "Bangladesh Bank",
                 "Mogbazar",
+                "Hatirjheel Mor Bus stop",
                 "Sat rasta",
                 "Nabisco",
                 "Mohakhali",
@@ -2828,7 +2820,7 @@
                 "Tongi"
             ],
             "time": "",
-            "service_type": "Half-Sitting Service"
+            "serviceType": "Half-Sitting Service"
         },
         {
             "english": "Itihash Bus",
@@ -2862,7 +2854,7 @@
                 "Chandra"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "J M Super Paribahan",
@@ -2871,6 +2863,7 @@
                 "Jatrabari",
                 "Janapath Moor",
                 "Sayedabad",
+                "TT Para",
                 "Kamalapur",
                 "Mugdapara",
                 "Bashabo",
@@ -2906,11 +2899,11 @@
                 "Tongi"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
-            "english": "Jabale Noor Paribahan",
-            "bangla": "জাবালে নুর পরিবহন বাস",
+            "english": "Jabale Noor Paribahan [1]",
+            "bangla": "জাবালে নুর পরিবহন বাস [1]",
             "routes": [
                 "Agargaon",
                 "IDB",
@@ -2936,11 +2929,11 @@
                 "Abdullahpur"
             ],
             "time": "",
-            "service_type": "Half-Sitting Service"
+            "serviceType": "Half-Sitting Service"
         },
         {
-            "english": "Jabale Noor Paribahan",
-            "bangla": "জাবালে নুর পরিবহন বাস",
+            "english": "Jabale Noor Paribahan [2]",
+            "bangla": "জাবালে নুর পরিবহন বাস [2]",
             "routes": [
                 "Gabtoli",
                 "Mirpur 1",
@@ -2964,7 +2957,7 @@
                 "Notun Bazar"
             ],
             "time": "",
-            "service_type": "Half-Sitting Service"
+            "serviceType": "Half-Sitting Service"
         },
         {
             "english": "Janjabil Bus",
@@ -2982,7 +2975,7 @@
                 "Babubazar"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Kamal Plus Paribahan",
@@ -2993,7 +2986,7 @@
                 "Matuail",
                 "Rayerbag",
                 "Shonir Akhra",
-                "Shanir Akhra",
+                "Kazla",
                 "Jatrabari",
                 "Janapath Moor",
                 "Sayedabad",
@@ -3006,8 +2999,6 @@
                 "new market nilkhet",
                 "Dhaka College",
                 "City College",
-                "Science Lab",
-                "City College",
                 "Jigatola",
                 "Dhanmondi 15",
                 "Star Kabab",
@@ -3017,7 +3008,7 @@
                 "Ghatar Char"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Kanak Bus",
@@ -3048,7 +3039,7 @@
                 "abdullahpur"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Khajababa Bus",
@@ -3070,6 +3061,7 @@
                 "karwan bazar",
                 "Farmgate",
                 "KhamarBari",
+                "Farmgate Bijoy Sarani",
                 "Agargaon",
                 "IDB",
                 "Taltola",
@@ -3083,14 +3075,13 @@
                 "Mirpur 12"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Kironmala Paribahan",
             "bangla": "কিরণমালা বাস",
             "routes": [
                 "Chiriyakhana",
-                "Sony Cinema Hall",
                 "Mirpur 1",
                 "Sony Cinema Hall",
                 "Rupnagar",
@@ -3106,7 +3097,7 @@
                 "Konabari"
             ],
             "time": "",
-            "service_type": "Semi-Sitting Service"
+            "serviceType": "Semi-Sitting Service"
         },
         {
             "english": "Labbayek Bus",
@@ -3151,7 +3142,7 @@
                 "Sign Board"
             ],
             "time": "",
-            "service_type": "Sitting Service (Check System)"
+            "serviceType": "Sitting Service (Check System)"
         },
         {
             "english": "Lal Sabuj (AC) Bus",
@@ -3191,7 +3182,7 @@
                 "Motijheel"
             ],
             "time": "",
-            "service_type": "AC Bus, Sitting Service"
+            "serviceType": "AC Bus, Sitting Service"
         },
         {
             "english": "Lams Paribahan",
@@ -3215,7 +3206,6 @@
                 "Bangla Motor",
                 "Shahbag",
                 "Ramna Park Bus stop",
-                "Motsho Bhaban",
                 "Matsya Bhaban",
                 "High Court",
                 "press club paltan",
@@ -3224,7 +3214,7 @@
                 "Motijheel"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Malancha Bus",
@@ -3241,7 +3231,6 @@
                 "Katabon",
                 "Shahbag",
                 "Ramna Park Bus stop",
-                "Motsho Bhaban",
                 "Matsya Bhaban",
                 "High Court",
                 "press club paltan",
@@ -3252,7 +3241,7 @@
                 "Dhupkhola"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Manjil Express",
@@ -3264,6 +3253,7 @@
                 "Rayerbag",
                 "Shonir Akhra",
                 "Shanir Akhra",
+                "Kazla",
                 "Jatrabari",
                 "Janapath Moor",
                 "Sayedabad",
@@ -3296,7 +3286,7 @@
                 "Abdullahpur"
             ],
             "time": "5:30 AM – 10:30 PM",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Meghla Transport",
@@ -3307,11 +3297,8 @@
                 "Science Lab",
                 "Bata Signal",
                 "Katabon",
-                "Bata Signal",
-                "Katabon",
                 "Shahbag",
                 "Ramna Park Bus stop",
-                "Motsho Bhaban",
                 "Matsya Bhaban",
                 "High Court",
                 "press club paltan",
@@ -3321,6 +3308,7 @@
                 "Sayedabad",
                 "Janapath Moor",
                 "Jatrabari",
+                "Kazla",
                 "Shanir Akhra",
                 "Shonir Akhra",
                 "Rayerbag",
@@ -3331,7 +3319,7 @@
                 "Vulta"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Meshkat Bus",
@@ -3342,16 +3330,17 @@
                 "Lalmatiya",
                 "KhamarBari",
                 "Farmgate",
+                "Karwan Bazar",
                 "Bangla Motor",
                 "Shahbag",
                 "Ramna Park Bus stop",
-                "Motsho Bhaban",
                 "Matsya Bhaban",
                 "Paltan",
                 "Dainik Bangla Moor",
                 "Motijheel",
                 "Ittefaq Moor Sayedabad",
                 "Jatrabari",
+                "Kazla",
                 "Shanir Akhra",
                 "Shonir Akhra",
                 "Rayerbag",
@@ -3360,7 +3349,7 @@
                 "Chittagong Road"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Midline Bus",
@@ -3377,7 +3366,6 @@
                 "Katabon",
                 "Shahbag",
                 "Ramna Park Bus stop",
-                "Motsho Bhaban",
                 "Matsya Bhaban",
                 "High Court",
                 "press club paltan",
@@ -3392,7 +3380,7 @@
                 "Khilgaon"
             ],
             "time": "6:00 AM – 11:00 PM",
-            "service_type": "Semi-Sitting Service (Check System)"
+            "serviceType": "Semi-Sitting Service (Check System)"
         },
         {
             "english": "Mirpur Metro Services",
@@ -3403,8 +3391,6 @@
                 "Nilkhet",
                 "new market nilkhet",
                 "Dhaka College",
-                "City College",
-                "Science Lab",
                 "City College",
                 "Kalabagan",
                 "dhanmondi 32 kalabagan",
@@ -3423,7 +3409,7 @@
                 "Mirpur 1"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Mirpur Link",
@@ -3441,6 +3427,7 @@
                 "Taltola",
                 "IDB",
                 "Agargaon",
+                "Farmgate Bijoy Sarani",
                 "KhamarBari",
                 "Lalmatiya",
                 "Dhanmondi 27",
@@ -3454,7 +3441,7 @@
                 "Azimpur"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Mirpur Mission",
@@ -3471,7 +3458,7 @@
                 "Motijheel"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Mirpur Transport Service",
@@ -3491,6 +3478,7 @@
                 "karwan bazar",
                 "Farmgate",
                 "KhamarBari",
+                "Farmgate Bijoy Sarani",
                 "Agargaon",
                 "IDB",
                 "Taltola",
@@ -3504,7 +3492,7 @@
                 "Mirpur 12"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Mirpur United Service",
@@ -3526,6 +3514,7 @@
                 "karwan bazar",
                 "Farmgate",
                 "KhamarBari",
+                "Farmgate Bijoy Sarani",
                 "Agargaon",
                 "IDB",
                 "Taltola",
@@ -3539,7 +3528,7 @@
                 "Mirpur 12"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "MM Lovely",
@@ -3584,19 +3573,16 @@
                 "Sign Board"
             ],
             "time": "",
-            "service_type": "Sitting Service (Check System)"
+            "serviceType": "Sitting Service (Check System)"
         },
         {
             "english": "Modhumita Bus",
             "bangla": "মধুমিতা বাস",
             "routes": [
                 "Chiriyakhana",
-                "Sony Cinema Hall",
+                "Mirpur 1",
                 "Mirpur College Bus stop",
                 "Mirpur 2",
-                "Mirpur College Bus stop",
-                "Sony Cinema Hall",
-                "Mirpur 1",
                 "Ansar Camp",
                 "Tolarbag",
                 "Bangla College",
@@ -3625,7 +3611,7 @@
                 "Demra Staff Quarter"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Mohona Bus",
@@ -3654,7 +3640,7 @@
                 "Fantasy Kingdom"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Moitri Bus",
@@ -3671,7 +3657,6 @@
                 "Katabon",
                 "Shahbag",
                 "Ramna Park Bus stop",
-                "Motsho Bhaban",
                 "Matsya Bhaban",
                 "High Court",
                 "press club paltan",
@@ -3682,25 +3667,26 @@
                 "Arambagh"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Moumita Bus",
             "bangla": "মৌমিতা বাস",
             "routes": [
                 "Chashara",
-                "Zila Parishad Bus Stop",
+                "Zila Parishad Bus Stop জেলা পরিষদের বাস স্টপ",
                 "Shibu Market",
                 "Jalkuri",
-                "Rupayan Town Bus Stop",
+                "Rupayan Town Bus Stop রূপায়ন টাউন বাস স্টপ",
                 "Bhuigor Bus Stop",
                 "Kazibari Bus Stand",
-                "Sonali Market Bus Stop",
+                "Sonali Market Bus Stop সোনালী বাজার বাস স্টপ",
                 "Sign Board",
                 "Matuail",
                 "Rayerbag",
                 "Shonir Akhra",
                 "Shanir Akhra",
+                "Kazla",
                 "Jatrabari",
                 "Janapath Moor",
                 "Sayedabad",
@@ -3738,7 +3724,7 @@
                 "Chandra"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "MTCL-2 Bus",
@@ -3758,7 +3744,6 @@
                 "Katabon",
                 "Shahbag",
                 "Ramna Park Bus stop",
-                "Motsho Bhaban",
                 "Matsya Bhaban",
                 "High Court",
                 "press club paltan",
@@ -3769,7 +3754,7 @@
                 "Arambagh Kingdom"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Nur E Makka",
@@ -3808,7 +3793,7 @@
                 "Malibagh Railgate"
             ],
             "time": "5:30 AM – 10:30 PM",
-            "service_type": "Sitting Service (Check System)"
+            "serviceType": "Sitting Service (Check System)"
         },
         {
             "english": "Nabakali",
@@ -3847,7 +3832,7 @@
                 "Keraniganj"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "New Vision",
@@ -3881,7 +3866,7 @@
                 "Motijheel"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Nilachol",
@@ -3893,6 +3878,7 @@
                 "Rayerbag",
                 "Shonir Akhra",
                 "Shanir Akhra",
+                "Kazla",
                 "Jatrabari",
                 "Janapath Moor",
                 "Sayedabad",
@@ -3927,7 +3913,7 @@
                 "Paturia"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Nishorgo",
@@ -3941,13 +3927,16 @@
                 "IDB",
                 "Agargaon",
                 "Asad Gate",
+                "College Gate",
+                "Shishu Mela",
                 "shyamoli",
+                "Adabor",
+                "Ring Road",
+                "Japan Garden City",
                 "Mohammadpur",
                 "Shankar",
                 "Dhanmondi 15",
                 "Jigatola",
-                "City College",
-                "Science Lab",
                 "City College",
                 "Dhaka College",
                 "new market nilkhet",
@@ -3956,7 +3945,7 @@
                 "Azimpur"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Omama International",
@@ -3990,7 +3979,7 @@
                 "Airport"
             ],
             "time": "5:30 AM – 10:30 PM",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "One Transport",
@@ -4030,7 +4019,7 @@
                 "Motijheel"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Pallabi Local Service",
@@ -4056,7 +4045,7 @@
                 "Mirpur 12"
             ],
             "time": "5:30 AM – 10:30 PM",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Pallabi Super",
@@ -4095,7 +4084,7 @@
                 "Kamarpara"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Paristhan",
@@ -4105,6 +4094,7 @@
                 "Mohammadpur",
                 "Asad Gate",
                 "College Gate",
+                "Shishu Mela",
                 "shyamoli",
                 "Kallyanpur",
                 "Darussalam",
@@ -4137,7 +4127,7 @@
                 "Abdullahpur"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Power Paribahan",
@@ -4170,7 +4160,7 @@
                 "Konabari"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Prattay",
@@ -4182,15 +4172,13 @@
                 "Sikder Medical College",
                 "Nawabganj",
                 "Hazaribag",
-                "Nawabganj",
-                "Hazaribag",
                 "Kamrangirchar",
                 "Showari Ghat",
                 "Mitford Ghat",
                 "Babubazar"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Prochesta",
@@ -4203,7 +4191,6 @@
                 "Vhaoar Viti Bus Stop, Dhaka - Mawa Hwy",
                 "Abdullahpur Bus Stand, Dhaka - Mawa Hwy, Kalakandi",
                 "Rajendrapur",
-                "Kadamtali",
                 "Keraniganj",
                 "Kadamtali",
                 "Babubazar",
@@ -4242,7 +4229,7 @@
                 "Abdullahpur"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Projapati",
@@ -4252,6 +4239,7 @@
                 "Mohammadpur",
                 "Asad Gate",
                 "College Gate",
+                "Shishu Mela",
                 "shyamoli",
                 "Kallyanpur",
                 "Darussalam",
@@ -4285,7 +4273,7 @@
                 "Kamarpara"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Provati Banasree",
@@ -4333,7 +4321,7 @@
                 "Baromi"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Purbachol Logistics and Transport",
@@ -4368,17 +4356,19 @@
                 "Chandra"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Raida",
             "bangla": "রাইদা বাস",
             "routes": [
                 "Postagola",
+                "Jurain",
                 "Dholairpar",
                 "Jatrabari",
                 "Janapath Moor",
                 "Sayedabad",
+                "TT Para",
                 "Kamalapur",
                 "Mugdapara",
                 "Bashabo",
@@ -4413,7 +4403,7 @@
                 "diabari"
             ],
             "time": "6:00 AM – 11:00 PM",
-            "service_type": "Sitting Service (Check System)"
+            "serviceType": "Sitting Service (Check System)"
         },
         {
             "english": "Dhaka (রাজা সিটি বাস)",
@@ -4443,7 +4433,7 @@
                 "Ghatar Char"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Dhaka (রজনীগন্ধা বাস)",
@@ -4455,6 +4445,7 @@
                 "Rayerbag",
                 "Shonir Akhra",
                 "Shanir Akhra",
+                "Kazla",
                 "Jatrabari",
                 "Janapath Moor",
                 "Sayedabad",
@@ -4477,7 +4468,7 @@
                 "Mohammadpur"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Dhaka (রাজধানী বাস)",
@@ -4525,7 +4516,7 @@
                 "Demra Staff Quarter"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Dhaka (রমযান বাস)",
@@ -4551,7 +4542,6 @@
                 "Katabon",
                 "Shahbag",
                 "Ramna Park Bus stop",
-                "Motsho Bhaban",
                 "Matsya Bhaban",
                 "Kakrail",
                 "Shantinagar",
@@ -4567,7 +4557,7 @@
                 "Demra Staff Quarter"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Dhaka ( রবরব বাস)",
@@ -4604,7 +4594,7 @@
                 "Banasree"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Dhaka (রাইস বাস)",
@@ -4627,26 +4617,25 @@
                 "Gulshan 1",
                 "Badda Link Road",
                 "Badda",
-                "Badda Link Road",
                 "Madhya Badda",
                 "Merul",
                 "Rampura Bridge",
                 "Banasree"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Dhaka (রংধনু এক্সপ্রেস বাস)",
             "bangla": "",
             "routes": [
-                "Adabor",
-                "Ring Road",
-                "Japan Garden City",
                 "Mohammadpur",
                 "Shia Mosque",
+                "Japan Garden City",
                 "Ring Road",
+                "Adabor",
                 "shyamoli",
+                "Shishu Mela",
                 "College Gate",
                 "Asad Gate",
                 "Lalmatiya",
@@ -4657,8 +4646,6 @@
                 "Science Lab",
                 "Bata Signal",
                 "Katabon",
-                "Bata Signal",
-                "Katabon",
                 "Shahbag",
                 "Kakrail",
                 "Fakirapul",
@@ -4667,7 +4654,7 @@
                 "Postagola"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Dhaka (রানওয়ে এক্সপ্রেস বাস)",
@@ -4705,7 +4692,7 @@
                 "ECB Square"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Dhaka (রুপা পরিবহন বাস)",
@@ -4730,7 +4717,7 @@
                 "Vashantek"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Dhaka (রুপকথা বাস)",
@@ -4762,7 +4749,7 @@
                 "Abdullahpur"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Safety Druti",
@@ -4779,6 +4766,7 @@
                 "Taltola",
                 "IDB",
                 "Agargaon",
+                "Farmgate Bijoy Sarani",
                 "KhamarBari",
                 "Lalmatiya",
                 "Dhanmondi 27",
@@ -4792,7 +4780,7 @@
                 "Azimpur"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Sakalpa Transport",
@@ -4801,7 +4789,6 @@
                 "Chiriyakhana",
                 "Sony Cinema Hall",
                 "Mirpur 1",
-                "Sony Cinema Hall",
                 "Mirpur College Bus stop",
                 "Mirpur 2",
                 "Mirpur Stadium, Bus stop",
@@ -4814,6 +4801,7 @@
                 "Farmgate Bijoy Sarani",
                 "Bijoy Sarani",
                 "Farmgate",
+                "Karwan Bazar",
                 "Bangla Motor",
                 "Mogbazar",
                 "Mouchak",
@@ -4822,17 +4810,19 @@
                 "Kamalapur"
             ],
             "time": "5:30 AM – 10:30 PM",
-            "service_type": ""
+            "serviceType": ""
         },
         {
-            "english": "Salsabil",
-            "bangla": "ছালছাবিল বাস",
+            "english": "Salsabil [1]",
+            "bangla": "ছালছাবিল বাস [1]",
             "routes": [
                 "Postagola",
+                "Jurain",
                 "Dholairpar",
                 "Jatrabari",
                 "Janapath Moor",
                 "Sayedabad",
+                "TT Para",
                 "Kamalapur",
                 "Mugdapara",
                 "Bashabo",
@@ -4876,17 +4866,19 @@
                 "Gazipur Chourasta"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
-            "english": "Salsabil",
-            "bangla": "ছালছাবিল বাস",
+            "english": "Salsabil [2]",
+            "bangla": "ছালছাবিল বাস [2]",
             "routes": [
                 "Postagola",
+                "Jurain",
                 "Dholairpar",
                 "Jatrabari",
                 "Janapath Moor",
                 "Sayedabad",
+                "TT Para",
                 "Kamalapur",
                 "Mugdapara",
                 "Bashabo",
@@ -4930,7 +4922,7 @@
                 "Gazipur Chourasta"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Savar Paribahan",
@@ -4974,7 +4966,7 @@
                 "Nandan Park"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Shadhin",
@@ -5000,7 +4992,7 @@
                 "Demra Staff Quarter"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Shadhin Express",
@@ -5017,6 +5009,7 @@
                 "Taltola",
                 "IDB",
                 "Agargaon",
+                "Farmgate Bijoy Sarani",
                 "KhamarBari",
                 "Farmgate",
                 "karwan bazar",
@@ -5031,7 +5024,6 @@
                 "Golap Shah Mazar",
                 "Naya Bazar",
                 "Babubazar",
-                "Kadamtali",
                 "Keraniganj",
                 "Kadamtali",
                 "Rajendrapur",
@@ -5043,7 +5035,7 @@
                 "Maowa"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Shahria Enterprise",
@@ -5070,7 +5062,6 @@
                 "Katabon",
                 "Shahbag",
                 "Ramna Park Bus stop",
-                "Motsho Bhaban",
                 "Matsya Bhaban",
                 "Kakrail",
                 "Fakirapul",
@@ -5084,7 +5075,7 @@
                 "Postagola"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Shatabdi",
@@ -5120,11 +5111,11 @@
                 "Kamarpara"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
-            "english": "Shikhor Paribahan",
-            "bangla": "শিখর পরিবহন বাস",
+            "english": "Shikhor Paribahan [1]",
+            "bangla": "শিখর পরিবহন বাস [1]",
             "routes": [
                 "Mirpur 12",
                 "Pallabi",
@@ -5144,7 +5135,6 @@
                 "Bangla Motor",
                 "Shahbag",
                 "Ramna Park Bus stop",
-                "Motsho Bhaban",
                 "Matsya Bhaban",
                 "High Court",
                 "press club paltan",
@@ -5155,11 +5145,11 @@
                 "Jatrabari"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
-            "english": "Shikhor Paribahan",
-            "bangla": "শিখর পরিবহন",
+            "english": "Shikhor Paribahan [2]",
+            "bangla": "শিখর পরিবহন বাস [2]",
             "routes": [
                 "Jatrabari",
                 "Janapath Moor",
@@ -5188,11 +5178,10 @@
                 "Mirpur 11",
                 "Purobi",
                 "Pallabi",
-                "Purobi",
                 "Mirpur 12"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Suveccha",
@@ -5204,6 +5193,7 @@
                 "Rayerbag",
                 "Shonir Akhra",
                 "Shanir Akhra",
+                "Kazla",
                 "Jatrabari",
                 "Janapath Moor",
                 "Sayedabad",
@@ -5242,7 +5232,7 @@
                 "Chandra"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Suvojatri",
@@ -5277,11 +5267,10 @@
                 "Gabtoli",
                 "Amin Bazar",
                 "Hemayetpur",
-                "Hemayetpur",
                 "Manikganj"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Siam Transport",
@@ -5325,7 +5314,7 @@
                 "Nobinagar"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Skyline",
@@ -5342,6 +5331,7 @@
                 "Malibagh Moor",
                 "Mouchak",
                 "Mogbazar",
+                "Hatirjheel Mor Bus stop",
                 "Sat rasta",
                 "Nabisco",
                 "Mohakhali",
@@ -5372,7 +5362,7 @@
                 "Gazipur Chourasta"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Somota Paribahan",
@@ -5384,6 +5374,7 @@
                 "Rayerbag",
                 "Shonir Akhra",
                 "Shanir Akhra",
+                "Kazla",
                 "Jatrabari",
                 "Janapath Moor",
                 "Sayedabad",
@@ -5416,7 +5407,7 @@
                 "Chiriyakhana"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Somoy",
@@ -5427,6 +5418,7 @@
                 "Rayerbag",
                 "Shonir Akhra",
                 "Shanir Akhra",
+                "Kazla",
                 "Jatrabari",
                 "Sayedabad Janapath Moor",
                 "Gulistan",
@@ -5435,7 +5427,6 @@
                 "press club paltan",
                 "High Court",
                 "Matsya Bhaban",
-                "Motsho Bhaban",
                 "Ramna Park Bus stop",
                 "Shahbag",
                 "Bangla Motor",
@@ -5453,11 +5444,10 @@
                 "Mirpur 11",
                 "Purobi",
                 "Pallabi",
-                "Purobi",
                 "Mirpur 12"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Somoy Niyantran",
@@ -5481,7 +5471,6 @@
                 "Bangla Motor",
                 "Shahbag",
                 "Ramna Park Bus stop",
-                "Motsho Bhaban",
                 "Matsya Bhaban",
                 "High Court",
                 "press club paltan",
@@ -5494,7 +5483,7 @@
                 "Keraniganj"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Super",
@@ -5505,6 +5494,7 @@
                 "Ramna Park Bus stop",
                 "Shahbag",
                 "Bangla Motor",
+                "Karwan Bazar",
                 "Farmgate",
                 "KhamarBari",
                 "shyamoli",
@@ -5519,7 +5509,7 @@
                 "Nobinagar"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Supravat",
@@ -5563,7 +5553,7 @@
                 "Tongi"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Swajan Paribahan",
@@ -5599,7 +5589,7 @@
                 "Sadarghat"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Talukdar",
@@ -5647,7 +5637,7 @@
                 "Chittagong Road"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Tanjil Paribahan",
@@ -5684,7 +5674,7 @@
                 "Sadarghat"
             ],
             "time": "5:30 AM – 10:30 PM",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Taranga Plus",
@@ -5701,7 +5691,6 @@
                 "Katabon",
                 "Shahbag",
                 "Ramna Park Bus stop",
-                "Motsho Bhaban",
                 "Matsya Bhaban",
                 "Kakrail",
                 "Shantinagar",
@@ -5715,7 +5704,7 @@
                 "South Banasree"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Tetulia",
@@ -5752,7 +5741,7 @@
                 "Abdullahpur"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Thikana",
@@ -5763,6 +5752,7 @@
                 "Rayerbag",
                 "Shonir Akhra",
                 "Shanir Akhra",
+                "Kazla",
                 "Jatrabari",
                 "Janapath Moor",
                 "Sayedabad",
@@ -5801,7 +5791,7 @@
                 "Chandra"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Thikana Express",
@@ -5854,7 +5844,7 @@
                 "Chandra"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Titas",
@@ -5870,7 +5860,7 @@
                 "Nobinagar Chandra"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Transilva",
@@ -5897,7 +5887,6 @@
                 "Katabon",
                 "Shahbag",
                 "Ramna Park Bus stop",
-                "Motsho Bhaban",
                 "Matsya Bhaban",
                 "High Court",
                 "Press Club Paltan",
@@ -5910,11 +5899,11 @@
                 "Jatrabari"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
-            "english": "Trust Transport Services",
-            "bangla": "ট্রাষ্ট ট্রান্সপোর্ট বাস",
+            "english": "Trust Transport Services [1]",
+            "bangla": "ট্রাষ্ট ট্রান্সপোর্ট বাস [1]",
             "routes": [
                 "Mirpur 10",
                 "Mirpur 13",
@@ -5926,11 +5915,11 @@
                 "Banani"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
-            "english": "Trust Transport Services",
-            "bangla": "ট্রাষ্ট ট্রান্সপোর্ট বাস",
+            "english": "Trust Transport Services [2]",
+            "bangla": "ট্রাষ্ট ট্রান্সপোর্ট বাস [2]",
             "routes": [
                 "Mirpur 10",
                 "Mirpur 13",
@@ -5949,11 +5938,11 @@
                 "Shahbag"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
-            "english": "Trust Transport Services",
-            "bangla": "ট্রাষ্ট ট্রান্সপোর্ট বাস",
+            "english": "Trust Transport Services [3]",
+            "bangla": "ট্রাষ্ট ট্রান্সপোর্ট বাস [3]",
             "routes": [
                 "Mirpur DOHS",
                 "Kalshi",
@@ -5980,7 +5969,7 @@
                 "Motijheel"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Trust Transport Services (AC)",
@@ -6002,7 +5991,7 @@
                 "karwan bazar"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Turag",
@@ -6011,6 +6000,7 @@
                 "Jatrabari",
                 "Janapath Moor",
                 "Sayedabad",
+                "TT Para",
                 "Kamalapur",
                 "Mugdapara",
                 "Bashabo",
@@ -6046,7 +6036,7 @@
                 "Tongi"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Victor Classic",
@@ -6089,7 +6079,7 @@
                 "Diabari"
             ],
             "time": "",
-            "service_type": "Semi-Sitting Service (Check System)"
+            "serviceType": "Semi-Sitting Service (Check System)"
         },
         {
             "english": "Victor Paribahan",
@@ -6124,7 +6114,7 @@
                 "Kuril Flyover"
             ],
             "time": "6:30 AM – 10:30 PM",
-            "service_type": "Semi-Sitting Service (Check System)"
+            "serviceType": "Semi-Sitting Service (Check System)"
         },
         {
             "english": "VIP 27",
@@ -6165,7 +6155,7 @@
                 "Gazipur Chourasta"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Welcome",
@@ -6205,7 +6195,7 @@
                 "Motijheel"
             ],
             "time": "5:30 AM – 10:30 PM",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Winner",
@@ -6217,11 +6207,11 @@
                 "new market nilkhet",
                 "Dhaka College",
                 "City College",
-                "Science Lab",
-                "City College",
                 "Kalabagan",
                 "Panthapath",
                 "karwan bazar",
+                "Hatirjheel Mor Bus stop",
+                "Sat rasta",
                 "Bot tola",
                 "Nabisco",
                 "Mohakhali",
@@ -6229,8 +6219,6 @@
                 "Wireless",
                 "Gulshan Bridge",
                 "Gulshan 1",
-                "Badda Link Road",
-                "Badda",
                 "Badda Link Road",
                 "Badda",
                 "Uttar Badda",
@@ -6244,10 +6232,10 @@
                 "Kuril Flyover"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
-            "english": "13 No. Bus Route Dhaka (১৩নং বাস)",
+            "english": "13 No. Bus Route Dhaka",
             "bangla": "",
             "routes": [
                 "Mohammadpur",
@@ -6256,8 +6244,6 @@
                 "Dhanmondi 15",
                 "Jigatola",
                 "City College",
-                "Science Lab",
-                "City College",
                 "Dhaka College",
                 "new market nilkhet",
                 "Nilkhet",
@@ -6265,10 +6251,10 @@
                 "Azimpur"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
-            "english": "4 No. Alike Bus Route Dhaka (৪নং বাস)",
+            "english": "4 No. Alike Bus Route Dhaka",
             "bangla": "",
             "routes": [
                 "Balughat",
@@ -6283,6 +6269,7 @@
                 "Old Airport",
                 "Bijoy Sarani",
                 "Farmgate",
+                "Karwan Bazar",
                 "Bangla Motor",
                 "Shahbag",
                 "Ramna Park Bus stop",
@@ -6292,10 +6279,10 @@
                 "Motijheel"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
-            "english": "6 No. Bus Route Dhaka (৬নং বাস)",
+            "english": "6 No. Bus Route Dhaka",
             "bangla": "",
             "routes": [
                 "Kamalapur",
@@ -6313,10 +6300,6 @@
                 "Bijoy Sarani",
                 "Old Airport",
                 "Jahangir Gate",
-                "Old Airport",
-                "Bijoy Sarani",
-                "Old Airport",
-                "Jahangir Gate",
                 "Mohakhali",
                 "Amtola (Mohakhali)",
                 "Wireless",
@@ -6326,10 +6309,10 @@
                 "Notun Bazar"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
-            "english": "6 No. Motijheel Banani Transport Bus Route Dhaka (৬নং মতিঝিল বনানী ট্রান্সপোর্ট বাস)",
+            "english": "6 No. Motijheel Banani Transport Bus Route Dhaka",
             "bangla": "",
             "routes": [
                 "Kamalapur",
@@ -6347,10 +6330,6 @@
                 "Bijoy Sarani",
                 "Old Airport",
                 "Jahangir Gate",
-                "Old Airport",
-                "Bijoy Sarani",
-                "Old Airport",
-                "Jahangir Gate",
                 "Mohakhali",
                 "Amtola (Mohakhali)",
                 "Wireless",
@@ -6360,10 +6339,10 @@
                 "Notun Bazar"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
-            "english": "7 No. Bus Route Dhaka (৭নং বাস)",
+            "english": "7 No. Bus Route Dhaka",
             "bangla": "",
             "routes": [
                 "Gabtoli",
@@ -6397,10 +6376,10 @@
                 "Sadarghat"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
-            "english": "8 No. Bus Route Dhaka (৮নং বাস)",
+            "english": "8 No. Bus Route Dhaka",
             "bangla": "",
             "routes": [
                 "Jatrabari",
@@ -6431,10 +6410,10 @@
                 "Gabtoli"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
-            "english": "9 No. Bus Route Dhaka (৯নং বাস)",
+            "english": "9 No. Bus Route Dhaka",
             "bangla": "",
             "routes": [
                 "College Gate",
@@ -6456,11 +6435,13 @@
                 "Mirpur 12"
             ],
             "time": "",
-            "service_type": ""
+            "serviceType": ""
         },
         {
             "english": "Metro Train",
             "bangla": "মেট্রো ট্রেন",
+            "min_fare": 20,
+            "fare_weight": 5,
             "routes": [
                 "Uttara North (MT)",
                 "Uttara Center (MT)",
@@ -6480,7 +6461,7 @@
                 "Motijheel (MT)",
                 "Kamalapur (MT)"
             ],
-            "service_type": ""
+            "serviceType": ""
         }
     ],
     "Stop Data": [
@@ -7717,10 +7698,6 @@
                 [
                     23.7585885,
                     90.3902931
-                ],
-                [
-                    23.7576572,
-                    90.3917909
                 ],
                 [
                     23.7582937,
@@ -9475,36 +9452,24 @@
             ],
             "coordinates": [
                 [
-                    23.7781982,
-                    90.3984238
+                    23.778448,
+                    90.398448
                 ],
                 [
-                    23.777991,
-                    90.397576
+                    23.77845,
+                    90.398201
                 ],
                 [
-                    23.7777762,
-                    90.3969476
+                    23.778502,
+                    90.398136
                 ],
                 [
-                    23.7786214,
-                    90.3981295
+                    23.778629,
+                    90.398083
                 ],
                 [
-                    23.7808639,
-                    90.399206
-                ],
-                [
-                    23.7808922,
-                    90.3984438
-                ],
-                [
-                    23.7844748,
-                    90.3991989
-                ],
-                [
-                    23.778318,
-                    90.39812
+                    23.778688,
+                    90.397965
                 ]
             ]
         },
@@ -9983,8 +9948,12 @@
             ],
             "coordinates": [
                 [
-                    23.7499345,
-                    90.3923405
+                    23.751362,
+                    90.387086
+                ],
+                [
+                    23.750793,
+                    90.387161
                 ]
             ]
         },
@@ -11150,7 +11119,7 @@
         },
         {
             "names": [
-                "BSCIC Bus Stop"
+                "BSCIC Bus Stop বিসিক বাস স্টপ"
             ],
             "coordinates": [
                 [
@@ -11162,7 +11131,7 @@
         },
         {
             "names": [
-                "Ponchoboti Bus Stop"
+                "Ponchoboti Bus Stop পঞ্চবটি বাস স্টপ"
             ],
             "coordinates": [
                 [
@@ -11174,7 +11143,7 @@
         },
         {
             "names": [
-                "Zila Parishad Bus Stop"
+                "Zila Parishad Bus Stop জেলা পরিষদের বাস স্টপ"
             ],
             "coordinates": [
                 [
@@ -11238,7 +11207,7 @@
         },
         {
             "names": [
-                "Dapa Bus Stop"
+                "Dapa Bus Stop দাপা বাস স্টপ"
             ],
             "coordinates": [
                 [
@@ -11250,7 +11219,7 @@
         },
         {
             "names": [
-                "Khan Shaheb Osman Ali Stadium Bus Stop"
+                "Khan Shaheb Osman Ali Stadium Bus Stop খান সাহেব ওসমান আলী স্টেডিয়ামে বাস স্টপ"
             ],
             "coordinates": [
                 [
@@ -11306,7 +11275,7 @@
         },
         {
             "names": [
-                "Rupayan Town Bus Stop"
+                "Rupayan Town Bus Stop রূপায়ন টাউন বাস স্টপ"
             ],
             "coordinates": [
                 [
@@ -11358,7 +11327,7 @@
         },
         {
             "names": [
-                "Sonali Market Bus Stop"
+                "Sonali Market Bus Stop সোনালী বাজার বাস স্টপ"
             ],
             "coordinates": [
                 [
@@ -12083,8 +12052,20 @@
             ],
             "coordinates": [
                 [
-                    23.780995023351746,
-                    90.39882302284241
+                    23.780922,
+                    90.398869
+                ],
+                [
+                    23.781047,
+                    90.398584
+                ],
+                [
+                    23.781049,
+                    90.398657
+                ],
+                [
+                    23.781008,
+                    90.398769
                 ]
             ]
         },
@@ -12151,136 +12132,214 @@
     ],
     "Dist Data": [
         {
-            "Gabtoli-Technical": 795.7
+            "Gabtoli-Mazar Road": 774.2
         },
         {
-            "Technical-Ansar Camp": 1105.3
+            "Mazar Road-Technical": 453.4
+        },
+        {
+            "Technical-Bangla College": 439.9
+        },
+        {
+            "Bangla College-Tolarbag": 237.3
+        },
+        {
+            "Tolarbag-Ansar Camp": 428.1
         },
         {
             "Ansar Camp-Mirpur 1": 784
         },
         {
-            "Mirpur 1-Sony Cinema Hall Mirpur 1": 213
+            "Mirpur 1-Sony Cinema Hall": 367.9
         },
         {
-            "Sony Cinema Hall Mirpur 1-Mirpur 2": 792
+            "Sony Cinema Hall-Mirpur College Bus stop": 1108.3
         },
         {
-            "Mirpur 2-Mirpur 10": 543.3
+            "Mirpur College Bus stop-Mirpur 2": 256.7
         },
         {
-            "Mirpur 10-Mirpur 11": 1001.6
+            "Mirpur 2-Mirpur Stadium, Bus stop": 252.2
         },
         {
-            "Mirpur 11-Purobi": 2.3
+            "Mirpur Stadium, Bus stop-Mirpur 10": 291.1
         },
         {
-            "Purobi-Kalshi": 3506.8
+            "Mirpur 10-Mirpur 2 Mirpur 10": 48.8
         },
         {
-            "Kalshi-ECB Square": 2105.5
+            "Mirpur 2 Mirpur 10-Mirpur 11": 644.3
+        },
+        {
+            "Mirpur 11-Purobi": 389.5
+        },
+        {
+            "Purobi-Kalshi Pallabi": 124.9
+        },
+        {
+            "Kalshi Pallabi-Kalshi": 1528.5
+        },
+        {
+            "Kalshi-ECB Square": 1813.7
         },
         {
             "ECB Square-MES": 1641.8
         },
         {
-            "MES-Shewra": 702.8
+            "MES-Shewra": 923
         },
         {
-            "Shewra-Kuril Flyover": 403.4
+            "Shewra-Kuril Flyover": 426.4
         },
         {
-            "Kuril Flyover-Jamuna Future Park": 936.8
+            "Kuril Flyover-Jamuna Future Park": 829.2
         },
         {
-            "Jamuna Future Park-Bashundhara": 4.5
+            "Jamuna Future Park-Bashundhara": 66.7
         },
         {
             "Bashundhara-Nadda": 277.1
         },
         {
-            "Nadda-Notun Bazar": 1338.7
+            "Nadda-Coca Cola Bus Stop": 1163.5
         },
         {
-            "Notun Bazar-Bashtola": 343.9
+            "Coca Cola Bus Stop-Notun Bazar": 991.1
+        },
+        {
+            "Notun Bazar-Bashtola": 400.8
         },
         {
             "Bashtola-Shahjadpur": 258
         },
         {
-            "Shahjadpur-Uttar Badda": 716.5
+            "Shahjadpur-Uttar Badda": 710.1
         },
         {
             "Uttar Badda-Badda": 158.2
         },
         {
-            "Badda-Madhya Badda": 713.2
+            "Badda-Badda Link Road": 417.4
         },
         {
-            "Madhya Badda-Merul": 464.3
+            "Badda Link Road-Madhya Badda": 299.5
+        },
+        {
+            "Madhya Badda-Merul": 501.9
         },
         {
             "Merul-Rampura Bridge": 618.6
         },
         {
-            "Rampura Bridge-Banasree": 2699.4
+            "Rampura Bridge-Banasree": 1593.7
         },
         {
-            "Banasree-Demra Staff Quarter": 8028.2
+            "Banasree-Meradia": 1109.9
         },
         {
-            "Savar-Hemayetpur": 11087.2
+            "Meradia-Mendipur Bus stand": 4556.1
+        },
+        {
+            "Mendipur Bus stand-Demra Staff Quarter": 2549.2
+        },
+        {
+            "Ring Road-Adabor": 579.6
+        },
+        {
+            "Adabor-Kallyanpur": 772.3
+        },
+        {
+            "Kallyanpur-Darussalam": 315.6
+        },
+        {
+            "Darussalam-Technical": 293.4
+        },
+        {
+            "Mirpur 1-Mirpur College Bus stop": 1017.8
+        },
+        {
+            "Kuril Flyover-Khilkhet": 505.6
+        },
+        {
+            "Khilkhet-Airport": 2829.8
+        },
+        {
+            "Airport-Rajlakshmi": 1654.7
+        },
+        {
+            "Rajlakshmi-Azampur": 392.2
+        },
+        {
+            "Azampur-Rajlakshmi House Building": 583.8
+        },
+        {
+            "Rajlakshmi House Building-House Building": 337.7
+        },
+        {
+            "House Building-Abdullahpur": 529.7
+        },
+        {
+            "Savar-Hemayetpur": 10909.9
         },
         {
             "Hemayetpur-Amin Bazar": 1474.7
         },
         {
-            "Amin Bazar-Gabtoli": 1215.5
+            "Amin Bazar-Gabtoli": 1094.3
         },
         {
-            "Technical-Kallyanpur": 985.7
+            "Technical-Darussalam": 293.4
         },
         {
-            "Kallyanpur-Shyamoli": 507.9
+            "Darussalam-Kallyanpur": 315.6
         },
         {
-            "Shyamoli-Shishu Mela": 115.7
+            "Kallyanpur-Shishu Mela": 885.6
         },
         {
             "Shishu Mela-Agargaon": 1814.9
         },
         {
-            "Agargaon-Zia Uddyan": 1040.6
+            "Agargaon-Zia Uddyan": 1011.9
         },
         {
             "Zia Uddyan-Bijoy Sarani": 705.4
         },
         {
-            "Bijoy Sarani-Jahangir Gate": 1211.3
+            "Bijoy Sarani-Old Airport": 877.2
         },
         {
-            "Jahangir Gate-Mohakhali": 1411.3
+            "Old Airport-Jahangir Gate": 433.4
         },
         {
-            "Mohakhali-Wireless": 653.9
+            "Jahangir Gate-Mohakhali": 931.3
         },
         {
-            "Wireless-Gulshan 1": 1111.4
+            "Mohakhali-Wireless": 942.7
         },
         {
-            "Gulshan 1-Badda Link Road": 868.4
+            "Wireless-Gulshan Bridge": 768.5
         },
         {
-            "Badda Link Road-Uttar Badda": 579.4
+            "Gulshan Bridge-Gulshan 1": 428.8
         },
         {
-            "Uttar Badda-Shahjadpur": 716.5
+            "Gulshan 1-Badda Link Road": 967.6
+        },
+        {
+            "Badda Link Road-Badda": 417.4
+        },
+        {
+            "Badda-Uttar Badda": 158.2
+        },
+        {
+            "Uttar Badda-Shahjadpur": 710.1
         },
         {
             "Shahjadpur-Bashtola": 258
         },
         {
-            "Bashtola-Notun Bazar": 343.9
+            "Bashtola-Notun Bazar": 400.8
         },
         {
             "Fulbaria-Golap Shah Mazar": 661.3
@@ -12292,40 +12351,40 @@
             "GPO-Paltan": 306.3
         },
         {
-            "Paltan-Press Club Paltan": 259.1
-        },
-        {
-            "Press Club Paltan-High Court": 404.4
+            "Paltan-High Court": 663.5
         },
         {
             "High Court-Matsya Bhaban": 280.4
         },
         {
-            "Matsya Bhaban-Shahbag": 1732
+            "Matsya Bhaban-Motsho Bhaban": 1.1
         },
         {
-            "Shahbag-Bangla Motor": 901.1
+            "Motsho Bhaban-Ramna Park Bus stop": 230.9
         },
         {
-            "Bangla Motor-Karwan Bazar": 463.3
+            "Ramna Park Bus stop-Shahbag": 685.4
         },
         {
-            "Karwan Bazar-Farmgate": 817.6
+            "Shahbag-Bangla Motor": 794.8
+        },
+        {
+            "Bangla Motor-Farmgate": 1339.7
         },
         {
             "Farmgate-Bijoy Sarani": 725.2
         },
         {
-            "Mohakhali-Chairman Bari": 1739.9
+            "Mohakhali-Chairman Bari": 2376.1
         },
         {
             "Chairman Bari-Sainik Club": 1099.8
         },
         {
-            "Sainik Club-Banani": 110
+            "Sainik Club-Banani": 439
         },
         {
-            "Banani-Kakali": 130.2
+            "Banani-Kakali": 50
         },
         {
             "Kakali-Staff Road": 1851.8
@@ -12334,25 +12393,10 @@
             "Staff Road-MES": 561.4
         },
         {
-            "Kuril Flyover-Khilkhet": 375.1
+            "Airport-Jashimuddin (Uttara)": 1275.6
         },
         {
-            "Khilkhet-Airport": 1277.8
-        },
-        {
-            "Airport-Jashimuddin (Uttara)": 1063.5
-        },
-        {
-            "Jashimuddin (Uttara)-Rajlakshmi": 386.1
-        },
-        {
-            "Rajlakshmi-Azampur": 392.2
-        },
-        {
-            "Azampur-House Building": 52.4
-        },
-        {
-            "House Building-Abdullahpur": 324
+            "Jashimuddin (Uttara)-Rajlakshmi": 387.1
         },
         {
             "Sadarghat-Ray Saheb Bazar": 1112.7
@@ -12376,13 +12420,22 @@
             "Malibagh Moor-Mouchak": 275.9
         },
         {
-            "Mouchak-Nabisco": 3368
+            "Mouchak-Mogbazar": 967
         },
         {
-            "Nabisco-Mohakhali": 1098.8
+            "Mogbazar-Hatirjheel Mor Bus stop": 633.1
         },
         {
-            "Mohakhali-Sainik Club": 682.2
+            "Hatirjheel Mor Bus stop-Sat rasta": 387.7
+        },
+        {
+            "Sat rasta-Nabisco": 1775.7
+        },
+        {
+            "Nabisco-Mohakhali": 1126.2
+        },
+        {
+            "Mohakhali-Sainik Club": 1460.8
         },
         {
             "Abdullahpur-Tongi": 504.9
@@ -12392,1725 +12445,6 @@
         },
         {
             "Station Road-Mill Gate": 453.3
-        },
-        {
-            "Mill Gate-Board Bazar": 5703.2
-        },
-        {
-            "Board Bazar-Gazipur Bypass": 3647.4
-        },
-        {
-            "Gazipur Bypass-Konabari": 7611.7
-        },
-        {
-            "Konabari-Chandra": 9666.6
-        },
-        {
-            "Keraniganj-Kadamtali": 782.3
-        },
-        {
-            "Kadamtali-Babubazar": 1179.4
-        },
-        {
-            "Babubazar-Naya Bazar": 464
-        },
-        {
-            "Mouchak-Malibagh Railgate": 326.5
-        },
-        {
-            "Malibagh Railgate-Hazipara": 900.4
-        },
-        {
-            "Hazipara-Rampura Bazar": 1257.3
-        },
-        {
-            "Rampura Bazar-Rampura Bridge": 10.9
-        },
-        {
-            "Rampura Bridge-Merul": 618.6
-        },
-        {
-            "Merul-Badda": 1258.1
-        },
-        {
-            "Badda-Shahjadpur": 874.7
-        },
-        {
-            "Notun Bazar-Nadda": 1338.7
-        },
-        {
-            "Nadda-Bashundhara": 277.1
-        },
-        {
-            "Bashundhara-Jamuna Future Park": 4.5
-        },
-        {
-            "Jamuna Future Park-Kuril Flyover": 936.8
-        },
-        {
-            "Motijheel-Gulistan": 1240.1
-        },
-        {
-            "Gulistan-GPO": 447.2
-        },
-        {
-            "Mouchak-Mogbazar": 1009.4
-        },
-        {
-            "Mogbazar-Nabisco": 2360.2
-        },
-        {
-            "Chairman Bari-Kakali": 1632.3
-        },
-        {
-            "Kakali-Banani": 130.2
-        },
-        {
-            "Banani-ECB Square": 3876.2
-        },
-        {
-            "ECB Square-Kalshi": 2105.5
-        },
-        {
-            "Kalshi-Purobi": 3506.8
-        },
-        {
-            "Purobi-Mirpur 10": 999.3
-        },
-        {
-            "Mirpur 10-Mirpur 2": 543.3
-        },
-        {
-            "Mirpur 2-Mirpur 1": 1274.5
-        },
-        {
-            "Nandan Park-Zirani Bazar": 4456.2
-        },
-        {
-            "Zirani Bazar-Baipayl": 6691.8
-        },
-        {
-            "Baipayl-Nobinagar": 4013.7
-        },
-        {
-            "Nobinagar-Savar": 8124.1
-        },
-        {
-            "Shishu Mela-College Gate": 469
-        },
-        {
-            "College Gate-Asad Gate": 1086
-        },
-        {
-            "Asad Gate-KhamarBari": 977
-        },
-        {
-            "KhamarBari-Farmgate": 563
-        },
-        {
-            "Farmgate-Karwan Bazar": 817.6
-        },
-        {
-            "Karwan Bazar-Bangla Motor": 463.3
-        },
-        {
-            "Bangla Motor-Shahbag": 901.1
-        },
-        {
-            "Shahbag-High Court": 2152.9
-        },
-        {
-            "High Court-Press Club Paltan": 404.4
-        },
-        {
-            "Press Club Paltan-Paltan": 259.1
-        },
-        {
-            "Paltan-GPO": 306.3
-        },
-        {
-            "GPO-Gulistan": 447.2
-        },
-        {
-            "Gulistan-Motijheel": 1240.1
-        },
-        {
-            "Motijheel-Kamalapur": 708.3
-        },
-        {
-            "Mirpur 14-Mirpur 10": 2175.9
-        },
-        {
-            "Mirpur 2-Sony Cinema Hall Mirpur 1": 792
-        },
-        {
-            "Sony Cinema Hall Mirpur 1-Mirpur 1": 213
-        },
-        {
-            "Mirpur 1-Mazar Road": 2133.7
-        },
-        {
-            "Mazar Road-Konabari, Mazar Road": 1371.4
-        },
-        {
-            "Konabari, Mazar Road-Beribadh": 3899.6
-        },
-        {
-            "Beribadh-Rupnagar": 316.9
-        },
-        {
-            "Rupnagar-Birulia": 3042.7
-        },
-        {
-            "Birulia-Ashulia": 1897.9
-        },
-        {
-            "Ashulia-Zirabo": 3870.1
-        },
-        {
-            "Zirabo-Fantasy Kingdom": 4656.5
-        },
-        {
-            "Fantasy Kingdom-Nandan Park": 13224.7
-        },
-        {
-            "Shia Mosque-Japan Garden City": 12
-        },
-        {
-            "Japan Garden City-Adabor": 1373
-        },
-        {
-            "Adabor-Shyamoli": 430.6
-        },
-        {
-            "Badda Link Road-Madhya Badda": 289.1
-        },
-        {
-            "Mirpur 1-Mirpur 2": 1274.5
-        },
-        {
-            "Mirpur 10-Kazipara": 953.7
-        },
-        {
-            "Kazipara-Shewrapara": 1344.9
-        },
-        {
-            "Shewrapara-Agargaon": 1497.1
-        },
-        {
-            "Agargaon-Bijoy Sarani": 1605.4
-        },
-        {
-            "Japan Garden City-Ring Road": 792.7
-        },
-        {
-            "Ring Road-Adabor": 580.4
-        },
-        {
-            "Bijoy Sarani-Old Airport": 877.2
-        },
-        {
-            "Old Airport-Jahangir Gate": 433.4
-        },
-        {
-            "Sainik Club-kakali": 4628.4
-        },
-        {
-            "kakali-Banani": 4518.4
-        },
-        {
-            "Banani-Staff Road": 1851.8
-        },
-        {
-            "Sign Board-Shonir Akhra": 3371
-        },
-        {
-            "Shonir Akhra-Jatrabari": 1325.5
-        },
-        {
-            "Jatrabari-Sayedabad": 980.3
-        },
-        {
-            "Sayedabad-Mugdapara": 2310.4
-        },
-        {
-            "Mugdapara-Bashabo": 403.3
-        },
-        {
-            "Bashabo-Khilgaon": 1041.9
-        },
-        {
-            "Khilgaon-Malibagh Railgate": 618.6
-        },
-        {
-            "Badda-Uttar Badda": 158.2
-        },
-        {
-            "Gazipur Bypass-Gazipur Chourasta": 1373.4
-        },
-        {
-            "Duaripara-Rupnagar Abashik": 792.4
-        },
-        {
-            "Rupnagar Abashik-Shiyal Bari": 974.4
-        },
-        {
-            "Shiyal Bari-Proshika Moor": 406.3
-        },
-        {
-            "Proshika Moor-Mirpur 2": 521.4
-        },
-        {
-            "Mirpur 1-Ansar Camp": 784
-        },
-        {
-            "Ansar Camp-Technical": 1105.3
-        },
-        {
-            "Asad Gate-Dhanmondi 27": 212.9
-        },
-        {
-            "Dhanmondi 27-Shukrabad": 228.8
-        },
-        {
-            "Shukrabad-Dhanmondi 32 Kalabagan": 631.2
-        },
-        {
-            "Dhanmondi 32 Kalabagan-Kalabagan": 275.4
-        },
-        {
-            "Kalabagan-City College": 731.6
-        },
-        {
-            "City College-New Market Nilkhet": 553.3
-        },
-        {
-            "New Market Nilkhet-Nilkhet": 248.9
-        },
-        {
-            "Nilkhet-Azimpur": 574
-        },
-        {
-            "Nobinagar-Baipayl": 4013.7
-        },
-        {
-            "Baipayl-Jamgora": 1769.5
-        },
-        {
-            "Jamgora-Fantasy Kingdom": 494.5
-        },
-        {
-            "Fantasy Kingdom-Zirabo": 4656.5
-        },
-        {
-            "Zirabo-Ashulia Bazar": 2145.1
-        },
-        {
-            "Ashulia Bazar-Kamarpara": 5162
-        },
-        {
-            "Kamarpara-Abdullahpur": 1135.5
-        },
-        {
-            "Abdullahpur-House Building": 324
-        },
-        {
-            "House Building-Azampur": 52.4
-        },
-        {
-            "Azampur-Rajlakshmi": 392.2
-        },
-        {
-            "Rajlakshmi-Jashimuddin (Uttara)": 386.1
-        },
-        {
-            "Jashimuddin (Uttara)-Airport": 1063.5
-        },
-        {
-            "Airport-Khilkhet": 1277.8
-        },
-        {
-            "Khilkhet-Kuril Flyover": 375.1
-        },
-        {
-            "Kuril Flyover-Shewra": 403.4
-        },
-        {
-            "Shewra-MES": 702.8
-        },
-        {
-            "MES-Kakali": 2400.7
-        },
-        {
-            "Banani-Chairman Bari": 2.4
-        },
-        {
-            "Chairman Bari-Mohakhali": 1739.9
-        },
-        {
-            "Mohakhali-Nabisco": 1098.8
-        },
-        {
-            "Nabisco-Sat rasta": 1377.6
-        },
-        {
-            "Dhour-Abdullahpur": 4096.5
-        },
-        {
-            "Demra Staff Quarter-Tarabo": 2664.3
-        },
-        {
-            "Tarabo-Madanpur": 8042
-        },
-        {
-            "Mohammadpur-Asad Gate": 376.9
-        },
-        {
-            "Asad Gate-Shukrabad": 441.6
-        },
-        {
-            "Shukrabad-Kalabagan City College": 1502.8
-        },
-        {
-            "Kalabagan City College-Science Lab": 294.2
-        },
-        {
-            "Science Lab-Katabon": 721.3
-        },
-        {
-            "Katabon-Bata Signal": 302
-        },
-        {
-            "Bata Signal-Shahbag": 699.8
-        },
-        {
-            "Shahbag-Matsya Bhaban": 1732
-        },
-        {
-            "Matsya Bhaban-High Court": 280.4
-        },
-        {
-            "Gulistan-Arambagh Notre Dame College": 1932.5
-        },
-        {
-            "Chiriyakhana-Sony Cinema Hall Mirpur 1": 1425.6
-        },
-        {
-            "Shewrapara-Taltola": 339.2
-        },
-        {
-            "Taltola-Agargaon": 1157.9
-        },
-        {
-            "Agargaon-KhamarBari": 1620.5
-        },
-        {
-            "Bangla Motor-Mogbazar": 1047
-        },
-        {
-            "Mogbazar-Mouchak": 1009.4
-        },
-        {
-            "Mouchak-Malibagh Moor": 275.9
-        },
-        {
-            "Malibagh Moor-Rajarbag": 585.6
-        },
-        {
-            "Rajarbag-Kamalapur": 947.9
-        },
-        {
-            "Ansar Camp-Bangla College": 1135.4
-        },
-        {
-            "Bangla College-Technical": 21.7
-        },
-        {
-            "Technical-Darussalam": 750.2
-        },
-        {
-            "Darussalam-Kallyanpur": 315.6
-        },
-        {
-            "Shyamoli-Asad Gate": 1495.4
-        },
-        {
-            "Dhanmondi 27-Dhanmondi 32 Kalabagan": 860
-        },
-        {
-            "Dhanmondi 32 Kalabagan-Science Lab": 730
-        },
-        {
-            "Katabon-Shahbag": 348.3
-        },
-        {
-            "Paltan-Dainik Bangla Moor": 536.5
-        },
-        {
-            "Dainik Bangla Moor-Motijheel": 272.7
-        },
-        {
-            "Motijheel-Arambagh": 267.4
-        },
-        {
-            "Arambagh-Kamlapur": 2444.2
-        },
-        {
-            "Kamlapur-Mugdapara": 18.1
-        },
-        {
-            "Mohakhali-Gulshan 1": 1765.3
-        },
-        {
-            "Badda Link Road-Bashtola": 1553.8
-        },
-        {
-            "Bashtola-Uttar Badda": 974.5
-        },
-        {
-            "Uttar Badda-Notun Bazar": 1318.4
-        },
-        {
-            "Sayedabad-Manik Nagar": 1523
-        },
-        {
-            "Manik Nagar-TT Para": 312.2
-        },
-        {
-            "TT Para-Kamalapur": 360.5
-        },
-        {
-            "Kamalapur-Malibagh Moor": 1785.6
-        },
-        {
-            "Mogbazar-Satrasta": 1093.9
-        },
-        {
-            "Satrasta-Nabisco": 1461.1
-        },
-        {
-            "Chairman Bari-Banani": 2.4
-        },
-        {
-            "Asad Gate-Manik Mia Avenue": 478.4
-        },
-        {
-            "Manik Mia Avenue-KhamarBari": 408.7
-        },
-        {
-            "Karwan Bazar-Bangla Motor Shahbag": 612.7
-        },
-        {
-            "Bangla Motor Shahbag-Matsya Bhaban": 1892.7
-        },
-        {
-            "GPO-Golap Shah Mazar": 629.1
-        },
-        {
-            "Golap Shah Mazar-Naya Bazar": 1421.1
-        },
-        {
-            "Naya Bazar-Babubazar": 464
-        },
-        {
-            "Babubazar-Keraniganj": 1997.7
-        },
-        {
-            "Keraniganj-Maowa": 32650.5
-        },
-        {
-            "Gabtoli-Mirpur 1": 2476
-        },
-        {
-            "Board Bazar-Gazipur Chourasta": 6176.7
-        },
-        {
-            "Azimpur-Nilkhet": 574
-        },
-        {
-            "Nilkhet-New Market Nilkhet": 248.9
-        },
-        {
-            "New Market Nilkhet-City College": 553.3
-        },
-        {
-            "City College-Kalabagan": 731.6
-        },
-        {
-            "Kalabagan-Dhanmondi 32 Kalabagan": 275.4
-        },
-        {
-            "Dhanmondi 32 Kalabagan-Dhanmondi 27": 860
-        },
-        {
-            "Dhanmondi 27-KhamarBari": 1376.2
-        },
-        {
-            "Farmgate-Jahangir Gate": 1936.5
-        },
-        {
-            "House Building-Diabari": 3473.7
-        },
-        {
-            "Motijheel-Ittefaq Moor": 628.9
-        },
-        {
-            "Ittefaq Moor-Sayedabad": 1099.6
-        },
-        {
-            "Sayedabad-Jatrabari": 980.3
-        },
-        {
-            "Sainik Club-Kakali": 642.9
-        },
-        {
-            "Duaripara-Pallabi": 1258.8
-        },
-        {
-            "Pallabi-Purobi": 963.4
-        },
-        {
-            "Purobi-Mirpur 11": 2.3
-        },
-        {
-            "Mirpur 11-Mirpur 10": 1001.6
-        },
-        {
-            "Shahbag-Motsho Bhaban": 1598.5
-        },
-        {
-            "Motsho Bhaban-High Court": 281.5
-        },
-        {
-            "Naya Bazar-Ray Saheb Bazar": 338.8
-        },
-        {
-            "Ray Saheb Bazar-Sadarghat": 1112.7
-        },
-        {
-            "Mirpur 11-Mirpur 1": 3890.8
-        },
-        {
-            "Mirpur 1-Kazipara": 3075.5
-        },
-        {
-            "Bijoy Sarani-Farmgate": 725.2
-        },
-        {
-            "Agargaon-Shyamoli": 1814.9
-        },
-        {
-            "Azimpur-Dhakeshwari": 814.4
-        },
-        {
-            "Kalabagan-Dhanmondi 27": 741.9
-        },
-        {
-            "Dhanmondi 32 Kalabagan-KhamarBari": 2236.1
-        },
-        {
-            "Kakali-Kuril Flyover": 3848.3
-        },
-        {
-            "Airport-Abdullahpur": 3146.3
-        },
-        {
-            "Abdullahpur-Kamarpara": 1135.5
-        },
-        {
-            "Sign Board-Matuail": 558.5
-        },
-        {
-            "Matuail-Rayerbag": 1076.3
-        },
-        {
-            "Rayerbag-Shonir Akhra": 814.1
-        },
-        {
-            "Sayedabad-Gulistan": 1791
-        },
-        {
-            "Gulistan-Chankhar Pul": 1121.1
-        },
-        {
-            "Chankhar Pul-Bakshi Bazar": 502.5
-        },
-        {
-            "Bakshi Bazar-Azimpur": 1130.3
-        },
-        {
-            "Kamarpara-Dhour": 706.7
-        },
-        {
-            "Palashi-Meghna Ghat": 29679.1
-        },
-        {
-            "Gazipur Chourasta-Tongi": 10823.1
-        },
-        {
-            "Tongi-Airport": 3872.4
-        },
-        {
-            "Khilkhet-Kalshi Pallabi": 7037.2
-        },
-        {
-            "Kalshi Pallabi-Mirpur 11": 1858.8
-        },
-        {
-            "Mirpur 10-Mirpur 1": 1891.3
-        },
-        {
-            "Mirpur 1-Gabtoli": 2476
-        },
-        {
-            "Madanpur-Kanchpur": 5882.7
-        },
-        {
-            "Kanchpur-Chittagong Road": 2006.1
-        },
-        {
-            "Chittagong Road-Sign Board": 2978.7
-        },
-        {
-            "Farmgate-KhamarBari": 563
-        },
-        {
-            "KhamarBari-Asad Gate": 977
-        },
-        {
-            "Asad Gate-College Gate": 1086
-        },
-        {
-            "College Gate-Shishu Mela": 469
-        },
-        {
-            "Shishu Mela-Shyamoli": 115.7
-        },
-        {
-            "Shyamoli-Kallyanpur": 507.9
-        },
-        {
-            "Kallyanpur-Technical": 985.7
-        },
-        {
-            "Technical-Gabtoli": 795.7
-        },
-        {
-            "Gabtoli-Amin Bazar": 1215.5
-        },
-        {
-            "Amin Bazar-Hemayetpur": 1474.7
-        },
-        {
-            "Hemayetpur-Savar": 11087.2
-        },
-        {
-            "Hemayetpur-Baipayl": 22133.8
-        },
-        {
-            "Baipayl-Zirani Bazar": 6691.8
-        },
-        {
-            "Zirani Bazar-Chandra": 9080
-        },
-        {
-            "Kamalapur-Motijheel": 708.3
-        },
-        {
-            "Vulta-Kanchan Bridge": 11918.6
-        },
-        {
-            "Kanchan Bridge-Nila Market": 27270.5
-        },
-        {
-            "Nila Market-300 Feet": 2057.8
-        },
-        {
-            "300 Feet-Bashundhara (300 Feet Gate)": 7673.3
-        },
-        {
-            "Bashundhara (300 Feet Gate)-Kuril Flyover": 1306.3
-        },
-        {
-            "Mohammadpur-Shankar": 1010.7
-        },
-        {
-            "Shankar-Star Kabab": 493.1
-        },
-        {
-            "Star Kabab-Dhanmondi 15": 429.4
-        },
-        {
-            "Dhanmondi 15-Jigatola": 662.1
-        },
-        {
-            "Jigatola-City College": 926
-        },
-        {
-            "City College-Science Lab": 294.2
-        },
-        {
-            "Science Lab-Bata Signal": 374.1
-        },
-        {
-            "Tongi-Mill Gate": 486.7
-        },
-        {
-            "Balughat-Cantonment": 1900.7
-        },
-        {
-            "Cantonment-Bijoy Sarani": 6194.7
-        },
-        {
-            "Farmgate-Bangla Motor": 1344.3
-        },
-        {
-            "Shahbag-Paltan": 2727.4
-        },
-        {
-            "Paltan-Gulistan": 753.4
-        },
-        {
-            "Mirpur 14-Kachukhet": 695.3
-        },
-        {
-            "Kachukhet-Sainik Club": 1289
-        },
-        {
-            "Banani-Mohakhali": 572.2
-        },
-        {
-            "Vashantek-Mirpur 14": 1920.6
-        },
-        {
-            "Shahbag-Bata Signal": 699.8
-        },
-        {
-            "Bata Signal-Science Lab": 374.1
-        },
-        {
-            "Science Lab-City College": 294.2
-        },
-        {
-            "City College-Jigatola": 926
-        },
-        {
-            "Jigatola-Dhanmondi 15": 662.1
-        },
-        {
-            "Dhanmondi 15-Star Kabab": 429.4
-        },
-        {
-            "Star Kabab-Shankar": 493.1
-        },
-        {
-            "Shankar-Mohammadpur": 1010.7
-        },
-        {
-            "Mohammadpur-Bosila": 1821.4
-        },
-        {
-            "Bosila-Ghatar Char": 1909.5
-        },
-        {
-            "Fulbaria-Chankhar Pul": 564.5
-        },
-        {
-            "Dhanmondi 27-Asad Gate": 212.9
-        },
-        {
-            "Kallyanpur-Darussalam": 315.6
-        },
-        {
-            "Darussalam-Technical": 750.2
-        },
-        {
-            "Savar-Dhamra": 15515.2
-        },
-        {
-            "Motijheel-Dainik Bangla Moor": 272.7
-        },
-        {
-            "Dainik Bangla Moor-Paltan": 536.5
-        },
-        {
-            "Press Club Paltan-Matsya Bhaban": 684.7
-        },
-        {
-            "High Court-Shahbag": 2152.9
-        },
-        {
-            "Farmgate-Asad Gate": 1521
-        },
-        {
-            "Amin Bazar-Nobinagar": 20941.2
-        },
-        {
-            "Nobinagar-Dhamrai": 7396.9
-        },
-        {
-            "Dhamrai-Kalampur": 7394.1
-        },
-        {
-            "Tajmahal Road-Shankar": 1888.9
-        },
-        {
-            "Shankar-Dhanmondi 15": 922.5
-        },
-        {
-            "Science Lab-Shahbag": 1069.6
-        },
-        {
-            "Matsya Bhaban-Paltan": 943.9
-        },
-        {
-            "Postagola-Dholairpar": 1327.4
-        },
-        {
-            "Dholairpar-Jatrabari": 438.3
-        },
-        {
-            "Khilgaon-Malibagh": 363.4
-        },
-        {
-            "Malibagh-Rampura Bazar": 1647.1
-        },
-        {
-            "Uttar Badda-Bashtola": 974.5
-        },
-        {
-            "Kuril Flyover-Kuril Flyover": 23
-        },
-        {
-            "Azimpur-Eden College": 203.7
-        },
-        {
-            "Eden College-Nilkhet": 370.3
-        },
-        {
-            "New Market Nilkhet-Dhaka College": 222.3
-        },
-        {
-            "Dhaka College-City College": 331
-        },
-        {
-            "Badda Link Road-Badda": 421.1
-        },
-        {
-            "Police Plaza-Gulshan 1": 1307.5
-        },
-        {
-            "Gulshan 1-Gulshan 2": 110.5
-        },
-        {
-            "Banani-Gulshan 2": 1340.8
-        },
-        {
-            "Gulshan 2-Notun Bazar": 988.9
-        },
-        {
-            "Tajmahal Road-Salimullah Road": 564.5
-        },
-        {
-            "Salimullah Road-Jakir Hossen Road": 889.4
-        },
-        {
-            "Jakir Hossen Road-Shankar": 1172.4
-        },
-        {
-            "Paltan-Baitul Mukarram": 278.2
-        },
-        {
-            "Baitul Mukarram-Gulistan": 777.2
-        },
-        {
-            "Azimpur-City College": 1467.5
-        },
-        {
-            "City College-Kolabagan": 1007.1
-        },
-        {
-            "Kolabagan-Panthapath": 2003.2
-        },
-        {
-            "Panthapath-Karwan Bazar": 75.3
-        },
-        {
-            "Karwan Bazar-Nabisco": 3446.7
-        },
-        {
-            "Nabisco-Gulshan Link Road": 3244.3
-        },
-        {
-            "Gulshan Link Road-Gulshan 1": 52.8
-        },
-        {
-            "Gulshan 1-Kuril Flyover": 5223.3
-        },
-        {
-            "Chiriyakhana-Mirpur 1": 1710.3
-        },
-        {
-            "Golap Shah Mazar-Shahbag": 3214.5
-        },
-        {
-            "Bangla Motor-Farmgate": 1344.3
-        },
-        {
-            "Farmgate-Agargaon": 2192.4
-        },
-        {
-            "Agargaon-Shewrapara": 1497.1
-        },
-        {
-            "Shewrapara-Kazipara": 1344.9
-        },
-        {
-            "Kazipara-Mirpur 10": 953.7
-        },
-        {
-            "Mirpur 10-Pallabi": 1962.7
-        },
-        {
-            "KhamarBari-Agargaon": 1620.5
-        },
-        {
-            "Agargaon-Taltola": 1157.9
-        },
-        {
-            "Taltola-Shewrapara": 339.2
-        },
-        {
-            "Purobi-Pallabi": 963.4
-        },
-        {
-            "Rupnagar Abashik-Mirpur 2": 1852.9
-        },
-        {
-            "Mirpur 1-KhamarBari": 6523.6
-        },
-        {
-            "KhamarBari-Gulistan": 5577.8
-        },
-        {
-            "Gulistan-Keraniganj": 3826.3
-        },
-        {
-            "Star Kabab-Jigatola": 1039.1
-        },
-        {
-            "Gulistan-Sayedabad": 1791
-        },
-        {
-            "Sayedabad-Janapath Moor": 557.3
-        },
-        {
-            "Janapath Moor-Jatrabari": 520.2
-        },
-        {
-            "Jatrabari-Shonir Akhra": 1325.5
-        },
-        {
-            "Shonir Akhra-Rayerbag": 814.1
-        },
-        {
-            "Rayerbag-Matuail": 1076.3
-        },
-        {
-            "Matuail-Sign Board": 558.5
-        },
-        {
-            "Sign Board-Chittagong Road": 2978.7
-        },
-        {
-            "Motijheel-Paltan": 1162.9
-        },
-        {
-            "Gazipur Chourasta-Shib Bari": 4206.8
-        },
-        {
-            "Chashara-Shibu Market": 2182.4
-        },
-        {
-            "Shibu Market-Jalkuri": 2155.2
-        },
-        {
-            "Jalkuri-Sign Board": 3461.2
-        },
-        {
-            "Sony Cinema Hall Mirpur 1-Mirpur 10": 1353.9
-        },
-        {
-            "Shewrapara-Mohakhali": 4419.4
-        },
-        {
-            "Gulshan 1-Badda": 1691.4
-        },
-        {
-            "Badda-Rampura Bridge": 1876.7
-        },
-        {
-            "Rampura Bridge-Rampura Bazar": 10.9
-        },
-        {
-            "Rampura Bazar-Khilgaon Khidma Hospital": 3101.2
-        },
-        {
-            "Metro Hall-Chashara": 581
-        },
-        {
-            "Jatrabari-Janapath Moor": 520.2
-        },
-        {
-            "Janapath Moor-Gulistan": 2158.5
-        },
-        {
-            "Karwan Bazar-Farmgate Bijoy Sarani": 2357.9
-        },
-        {
-            "Farmgate Bijoy Sarani-Agargaon": 757.4
-        },
-        {
-            "Purobi-Mirpur 12": 963.4
-        },
-        {
-            "Madanpur-Jatrabari": 14599.4
-        },
-        {
-            "Jatrabari-Bangladesh Bank": 2838.7
-        },
-        {
-            "Bangladesh Bank-Mogbazar": 7238.1
-        },
-        {
-            "Mogbazar-Mohakhali": 3458.9
-        },
-        {
-            "Mohakhali-Tongi": 13515.9
-        },
-        {
-            "Sony Cinema Hall Mirpur 1-Ansar Camp": 1032.1
-        },
-        {
-            "Savar-Nobinagar Baipayl": 8344.6
-        },
-        {
-            "Nobinagar Baipayl-Zirani Bazar": 9508.4
-        },
-        {
-            "Zirani Bazar-Nandan Park": 4456.2
-        },
-        {
-            "Nandan Park-Chandra": 1602.8
-        },
-        {
-            "Pallabi-Kalshi": 2585.9
-        },
-        {
-            "Kalshi-Kuril Flyover": 4909.5
-        },
-        {
-            "Kuril Flyover-Airport": 2513.4
-        },
-        {
-            "Jashimuddin (Uttara)-Rajlakshmi House Building": 1381.1
-        },
-        {
-            "Rajlakshmi House Building-Abdullahpur": 805.7
-        },
-        {
-            "Mirpur 1-Mirpur 10": 1891.3
-        },
-        {
-            "Mirpur 10-Kalshi": 2837
-        },
-        {
-            "Kuril Flyover-Notun Bazar": 2620.3
-        },
-        {
-            "New Market Nilkhet-Science Lab": 553.3
-        },
-        {
-            "Mohammadpur-Ghatar Char": 3762.5
-        },
-        {
-            "Khilkhet-Airport Jashimuddin (Uttara)": 3369
-        },
-        {
-            "Airport Jashimuddin (Uttara)-Rajlakshmi": 405
-        },
-        {
-            "Sony Cinema Hall Mirpur 1-Rupnagar": 4519.1
-        },
-        {
-            "Zirabo-Narshinghapur": 6386.2
-        },
-        {
-            "Narshinghapur-Sura Bari": 1
-        },
-        {
-            "Sura Bari-Kashimpur": 2970.5
-        },
-        {
-            "Kashimpur-Jarun": 1047.9
-        },
-        {
-            "Jarun-Konabari": 2028.3
-        },
-        {
-            "Rajarbag-Khilgaon Flyover": 1756.4
-        },
-        {
-            "Khilgaon Flyover-Bashabo": 782.5
-        },
-        {
-            "Bashabo-Mugdapara": 403.3
-        },
-        {
-            "Mugdapara-Manik Nagar": 820.4
-        },
-        {
-            "Manik Nagar-Golapbag Chourasta": 538.4
-        },
-        {
-            "Golapbag Chourasta-Sayedabad": 660.6
-        },
-        {
-            "Jatrabari-Kazla": 546.6
-        },
-        {
-            "Kazla-Shonir Akhra": 776.4
-        },
-        {
-            "Gulistan-Dayaganj": 1429.2
-        },
-        {
-            "Dayaganj-Dhupkhola": 782.7
-        },
-        {
-            "Kakrail-Malibagh Moor": 875.7
-        },
-        {
-            "Kalabagan-Science Lab": 454.5
-        },
-        {
-            "Shonir Akhra-Sign Board": 3371
-        },
-        {
-            "Sign Board-Kanchpur": 4451.8
-        },
-        {
-            "Kanchpur-Vulta": 10988
-        },
-        {
-            "Motijheel-Ittefaq Moor Sayedabad": 624.4
-        },
-        {
-            "Ittefaq Moor Sayedabad-Jatrabari": 2106.9
-        },
-        {
-            "Jatrabari-Shanir Akhra": 1589.6
-        },
-        {
-            "Shanir Akhra-Rayerbag": 998.3
-        },
-        {
-            "Arambagh-Kamalapur": 421.6
-        },
-        {
-            "Kamalapur-Bashabo": 1048.5
-        },
-        {
-            "Technical-Bangla College": 21.7
-        },
-        {
-            "Bangla College-Tolarbag": 698.8
-        },
-        {
-            "Tolarbag-Ansar Camp": 428.1
-        },
-        {
-            "ECB Square-Purobi": 5062.4
-        },
-        {
-            "KhamarBari-Dhanmondi 27": 1376.2
-        },
-        {
-            "Dhanmondi 32 Kalabagan-City College": 1007.1
-        },
-        {
-            "New Market Nilkhet-Azimpur": 914.2
-        },
-        {
-            "Farmgate-Press Club Paltan": 3900.2
-        },
-        {
-            "Press Club Paltan-Motijheel": 1162.4
-        },
-        {
-            "Badda Link Road-Merul": 833.9
-        },
-        {
-            "Savar-Baipayl": 12309
-        },
-        {
-            "Dhanmondi 32 Kalabagan-Shukrabad": 631.2
-        },
-        {
-            "Shukrabad-Kalabagan": 333.1
-        },
-        {
-            "Motijheel-Arambagh Kingdom": 454.6
-        },
-        {
-            "Rampura Bazar-Hazipara": 1257.3
-        },
-        {
-            "Hazipara-Malibagh Railgate": 900.4
-        },
-        {
-            "Savar-Nobinagar": 8124.1
-        },
-        {
-            "Nobinagar-Manikganj": 29545.8
-        },
-        {
-            "Manikganj-Paturia": 27033.2
-        },
-        {
-            "Bosila-Mohammadpur": 1821.4
-        },
-        {
-            "College Gate-Shyamoli": 469
-        },
-        {
-            "Rajlakshmi-House Building": 392.2
-        },
-        {
-            "Gabtoli-Beribadh Tin Rastar Moor": 3553.6
-        },
-        {
-            "Beribadh Tin Rastar Moor-Rayer Bazar": 520.6
-        },
-        {
-            "Rayer Bazar-Sikder Medical College": 388.9
-        },
-        {
-            "Sikder Medical College-Hazaribag": 1009.5
-        },
-        {
-            "Hazaribag-Nawabganj": 253.9
-        },
-        {
-            "Nawabganj-Kamrangirchar": 1186.5
-        },
-        {
-            "Kamrangirchar-Showari Ghat": 1478.5
-        },
-        {
-            "Showari Ghat-Mitford Ghat": 965.6
-        },
-        {
-            "Mitford Ghat-Babubazar": 0.6
-        },
-        {
-            "Maowa-Keraniganj": 32650.5
-        },
-        {
-            "Keraniganj-Babubazar": 1997.7
-        },
-        {
-            "Bangla College-Ansar Camp": 1135.4
-        },
-        {
-            "Mirpur 1-Mirpur 2 Mirpur 10": 2238.3
-        },
-        {
-            "Mirpur 2 Mirpur 10-Mirpur 11": 1785.7
-        },
-        {
-            "Malibagh Moor-Mogbazar": 1285.2
-        },
-        {
-            "Gazipur Chourasta-Joydebpur": 3787.1
-        },
-        {
-            "Joydebpur-Sreepur": 29714.4
-        },
-        {
-            "Sreepur-Baromi": 8675.1
-        },
-        {
-            "Janapath Moor-Sayedabad": 557.3
-        },
-        {
-            "Malibagh Railgate-Rampura Bazar": 2157.8
-        },
-        {
-            "Postagola-Jurain": 267.6
-        },
-        {
-            "Jurain-Dayaganj": 2565.5
-        },
-        {
-            "Dayaganj-Gulistan": 1429.2
-        },
-        {
-            "Science Lab-Jigatola": 926
-        },
-        {
-            "Hemayetpur-Gabtoli": 2739.1
-        },
-        {
-            "Asad Gate-Mohammadpur": 376.9
-        },
-        {
-            "Matsya Bhaban-Kakrail": 889.5
-        },
-        {
-            "Mirpur 10-Purobi": 999.3
-        },
-        {
-            "MES-Banani": 2400.7
-        },
-        {
-            "Kakali-Gulshan 2": 1487.7
-        },
-        {
-            "Gulshan 2-Gulshan 1": 110.5
-        },
-        {
-            "Mirpur 10-Mirpur 14": 2175.9
-        },
-        {
-            "Mirpur 14-Vashantek": 1920.6
-        },
-        {
-            "Mogbazar-Malibagh Moor": 1285.2
-        },
-        {
-            "Malibagh Moor-Kamalapur": 1785.6
-        },
-        {
-            "Sadarghat-Golap Shah Mazar": 2767.5
-        },
-        {
-            "Shahbag-Science Lab": 1069.6
-        },
-        {
-            "Science Lab-Kalabagan": 454.5
-        },
-        {
-            "Kadamtali-Rajendrapur": 4743.1
-        },
-        {
-            "Rajendrapur-Maowa": 31889.9
-        },
-        {
-            "Kakrail-Fakirapul": 942.6
-        },
-        {
-            "Fakirapul-Arambagh": 630.7
-        },
-        {
-            "Arambagh-Motijheel": 267.4
-        },
-        {
-            "Ittefaq Moor-Tikatuli": 789.1
-        },
-        {
-            "Tikatuli-Dayaganj": 699.2
-        },
-        {
-            "Dayaganj-Gandaria": 390.9
-        },
-        {
-            "Gandaria-Jurain": 2811.8
-        },
-        {
-            "Jurain-Postagola": 267.6
-        },
-        {
-            "Kakali-Shewra": 3349.8
-        },
-        {
-            "Gulistan-Janapath Moor": 2158.5
-        },
-        {
-            "Bijoy Sarani-Agargaon": 1605.4
-        },
-        {
-            "Agargaon-IDB": 783.9
-        },
-        {
-            "IDB-Taltola": 734
-        },
-        {
-            "Mirpur 11-Pallabi": 961.1
-        },
-        {
-            "Bakshi Bazar-Dhakeshwari": 333.2
-        },
-        {
-            "Dhakeshwari-Azimpur": 814.4
-        },
-        {
-            "Hemayetpur-Manikganj": 37827.6
-        },
-        {
-            "Banasree-Rampura Bridge": 2699.4
-        },
-        {
-            "Dhour-Beribadh": 10011.5
-        },
-        {
-            "Beribadh-Ashulia": 6417.4
-        },
-        {
-            "Fantasy Kingdom-Jamgora": 494.5
-        },
-        {
-            "Jamgora-Shimultola": 19.1
-        },
-        {
-            "Shimultola-Baipayl": 1750.4
-        },
-        {
-            "Baipayl-Palli Bidyut": 2887.8
-        },
-        {
-            "Palli Bidyut-Savar Cantonment": 1794.6
-        },
-        {
-            "Savar Cantonment-Nobinagar": 1580.3
-        },
-        {
-            "Gulistan-Shahbag": 3159.9
-        },
-        {
-            "Shahbag-Farmgate": 2245.4
-        },
-        {
-            "Farmgate-Shyamoli": 3303.7
-        },
-        {
-            "Shyamoli-Gabtoli": 2469.2
-        },
-        {
-            "Gabtoli-Savar": 14162.4
-        },
-        {
-            "Victoria Park-Sadarghat": 635
-        },
-        {
-            "Ray Saheb Bazar-Golap Shah Mazar": 1646.2
-        },
-        {
-            "Sign Board-Sanarpar": 1011.7
-        },
-        {
-            "Sanarpar-Chittagong Road": 1966.9
-        },
-        {
-            "Banasree-South Banasree": 1324.8
-        },
-        {
-            "Shonbari Sreenagar-Nimtola": 10418
-        },
-        {
-            "Nimtola-Kuchimura": 2202.9
-        },
-        {
-            "Kuchimura-Rajendrapur": 11950.8
-        },
-        {
-            "Rajendrapur-Hasnabad": 3545.3
-        },
-        {
-            "Hasnabad-Postagola": 1512.1
-        },
-        {
-            "Jurain-Dholairpar": 1094.2
-        },
-        {
-            "Savar-Nobinagar Chandra": 8535
-        },
-        {
-            "Press Club Paltan-GPO": 547.2
-        },
-        {
-            "Motijheel-Sayedabad": 1739.2
-        },
-        {
-            "Mirpur 10-Mirpur 13": 856.5
-        },
-        {
-            "Mirpur 13-Mirpur 14": 1043
-        },
-        {
-            "Kachukhet-Workshop": 660.2
-        },
-        {
-            "Workshop-Saudi Colony": 978.8
-        },
-        {
-            "Saudi Colony-Jahangir Gate": 351.3
-        },
-        {
-            "Jahangir Gate-Farmgate": 1936.5
-        },
-        {
-            "Mirpur DOHS-Kalshi": 4673.1
-        },
-        {
-            "ECB Square-Garrison (Cantonment)": 2732.9
-        },
-        {
-            "Garrison (Cantonment)-Adamjee College": 871.6
-        },
-        {
-            "Adamjee College-Workshop": 751.9
-        },
-        {
-            "Kalabagan-Banani": 6017
-        },
-        {
-            "Kakali-MES": 2400.7
-        },
-        {
-            "Kalabagan-Panthapath": 1633.9
-        },
-        {
-            "Karwan Bazar-Bot tola": 2714.1
-        },
-        {
-            "Bot tola-Nabisco": 178.3
-        },
-        {
-            "Badda-Badda Link Road": 421.1
-        },
-        {
-            "Balughat-Signal": 1539.9
-        },
-        {
-            "Signal-CMH": 794.7
-        },
-        {
-            "CMH-Garrison (Cantonment)": 1398.7
-        },
-        {
-            "Workshop-Jahangir Gate": 1306.7
-        },
-        {
-            "Jahangir Gate-Bijoy Sarani": 1211.3
-        },
-        {
-            "Mogbazar-Karwan Bazar": 1469.8
-        },
-        {
-            "Bijoy Sarani-Mohakhali": 1922.8
-        },
-        {
-            "Golap Shah Mazar-Gulistan": 1.9
-        },
-        {
-            "Gulistan-Naya Bazar": 1053.9
-        },
-        {
-            "Sayedabad-Motijheel": 1739.2
-        },
-        {
-            "Mirpur 12-Pallabi": 850
-        },
-        {
-            "Gabtoli-Mazar Road": 774.2
-        },
-        {
-            "Mazar Road-Technical": 453.4
-        },
-        {
-            "Mirpur 1-Sony Cinema Hall": 367.9
-        },
-        {
-            "Sony Cinema Hall-Mirpur College Bus stop": 1108.3
-        },
-        {
-            "Mirpur College Bus stop-Mirpur 2": 256.7
-        },
-        {
-            "Mirpur 2-Mirpur Stadium, Bus stop": 252.2
-        },
-        {
-            "Mirpur Stadium, Bus stop-Mirpur 10": 291.1
-        },
-        {
-            "Mirpur 10-Mirpur 2 Mirpur 10": 48.8
-        },
-        {
-            "Purobi-Kalshi Pallabi": 124.9
-        },
-        {
-            "Kalshi Pallabi-Kalshi": 1528.5
-        },
-        {
-            "Nadda-Coca Cola Bus Stop": 1163.5
-        },
-        {
-            "Coca Cola Bus Stop-Notun Bazar": 991.1
-        },
-        {
-            "Banasree-Meradia": 1109.9
-        },
-        {
-            "Meradia-Mendipur Bus stand": 4556.1
-        },
-        {
-            "Mendipur Bus stand-Demra Staff Quarter": 2549.2
-        },
-        {
-            "Adabor-Kallyanpur": 772.3
-        },
-        {
-            "Mirpur 1-Mirpur College Bus stop": 1017.8
-        },
-        {
-            "MES-MES": 197.2
-        },
-        {
-            "Airport-Rajlakshmi": 1654.7
-        },
-        {
-            "Azampur-Rajlakshmi House Building": 583.8
-        },
-        {
-            "Rajlakshmi House Building-House Building": 337.7
-        },
-        {
-            "Kallyanpur-Shishu Mela": 885.6
-        },
-        {
-            "Wireless-Gulshan Bridge": 768.5
-        },
-        {
-            "Gulshan Bridge-Gulshan 1": 428.8
-        },
-        {
-            "Paltan-High Court": 663.5
-        },
-        {
-            "Matsya Bhaban-Motsho Bhaban": 1.1
-        },
-        {
-            "Motsho Bhaban-Ramna Park Bus stop": 230.9
-        },
-        {
-            "Ramna Park Bus stop-Shahbag": 685.4
-        },
-        {
-            "Mogbazar-Sat rasta": 1002.9
-        },
-        {
-            "Sat rasta-Nabisco": 1775.7
         },
         {
             "Mill Gate-Cherag Ali": 1025.9
@@ -14125,7 +12459,25 @@
             "Boro Bari Bus Stop-Board Bazar": 8495.1
         },
         {
+            "Board Bazar-Gazipur Bypass": 3647.4
+        },
+        {
+            "Gazipur Bypass-Konabari": 7611.7
+        },
+        {
+            "Konabari-Chandra": 9666.6
+        },
+        {
             "Dhamrai-Nobinagar": 7396.9
+        },
+        {
+            "Nobinagar-Savar": 8168.2
+        },
+        {
+            "Hemayetpur-Gabtoli": 2739.1
+        },
+        {
+            "Shishu Mela-College Gate": 469
         },
         {
             "College Gate-Lalmatiya": 1343
@@ -14135,6 +12487,9 @@
         },
         {
             "Dhanmondi 27-Kalabagan": 1092.4
+        },
+        {
+            "Kalabagan-City College": 731.6
         },
         {
             "City College-Dhaka College": 331
@@ -14158,7 +12513,28 @@
             "Gulistan-Chittagong Road": 10744.5
         },
         {
-            "Kadamtali-Keraniganj": 782.3
+            "Keraniganj-Kadamtali": 782.3
+        },
+        {
+            "Kadamtali-Babubazar": 1173.4
+        },
+        {
+            "Babubazar-Naya Bazar": 529.8
+        },
+        {
+            "Mouchak-Malibagh Railgate": 326.5
+        },
+        {
+            "Malibagh Railgate-Hazipara": 900.4
+        },
+        {
+            "Hazipara-Rampura Bazar": 1257.3
+        },
+        {
+            "Rampura Bazar-Rampura Bridge": 10.9
+        },
+        {
+            "Rampura Bridge-Merul": 618.6
         },
         {
             "Merul-Madhya Badda": 501.9
@@ -14173,10 +12549,43 @@
             "Coca Cola Bus Stop-Nadda": 1163.5
         },
         {
+            "Nadda-Bashundhara": 277.1
+        },
+        {
+            "Bashundhara-Jamuna Future Park": 66.7
+        },
+        {
+            "Jamuna Future Park-Kuril Flyover": 829.2
+        },
+        {
+            "Azampur-House Building": 583.8
+        },
+        {
+            "Motijheel-Gulistan": 1240.1
+        },
+        {
+            "Gulistan-GPO": 447.2
+        },
+        {
+            "Chairman Bari-Kakali": 654.4
+        },
+        {
+            "Kakali-Banani": 50
+        },
+        {
+            "Banani-ECB Square": 3876.2
+        },
+        {
+            "ECB Square-Kalshi": 1813.7
+        },
+        {
             "Kalshi-Kalshi Pallabi": 1528.5
         },
         {
             "Kalshi Pallabi-Purobi": 124.9
+        },
+        {
+            "Purobi-Mirpur 11": 389.5
         },
         {
             "Mirpur 11-Mirpur 2 Mirpur 10": 644.3
@@ -14200,10 +12609,37 @@
             "Sony Cinema Hall-Mirpur 1": 367.9
         },
         {
+            "Nandan Park-Zirani Bazar": 4456.2
+        },
+        {
+            "Zirani Bazar-Baipayl": 6639.8
+        },
+        {
+            "Baipayl-Palli Bidyut": 1621.2
+        },
+        {
+            "Palli Bidyut-Savar Cantonment": 844.8
+        },
+        {
+            "Savar Cantonment-Nobinagar": 1573
+        },
+        {
+            "College Gate-Asad Gate": 1086
+        },
+        {
             "Asad Gate-Lalmatiya": 257
         },
         {
             "Lalmatiya-KhamarBari": 949.8
+        },
+        {
+            "KhamarBari-Farmgate": 545.8
+        },
+        {
+            "Farmgate-Bangla Motor": 1339.7
+        },
+        {
+            "Bangla Motor-Shahbag": 794.8
         },
         {
             "Shahbag-Ramna Park Bus stop": 685.4
@@ -14212,7 +12648,22 @@
             "Ramna Park Bus stop-Motsho Bhaban": 230.9
         },
         {
+            "Motsho Bhaban-High Court": 281.5
+        },
+        {
             "High Court-Paltan": 663.5
+        },
+        {
+            "Paltan-GPO": 306.3
+        },
+        {
+            "GPO-Gulistan": 447.2
+        },
+        {
+            "Gulistan-Motijheel": 1240.1
+        },
+        {
+            "Motijheel-Kamalapur": 708.3
         },
         {
             "Mirpur 14-Mirpur Police Line, Bus stop": 574.9
@@ -14230,10 +12681,22 @@
             "Mirpur College Bus stop-Mirpur 1": 1017.8
         },
         {
+            "Mirpur 1-Mazar Road": 2133.7
+        },
+        {
+            "Mazar Road-Konabari, Mazar Road": 1371.4
+        },
+        {
             "Konabari, Mazar Road-Rongila Bazaar Bus stop": 2400.2
         },
         {
             "Rongila Bazaar Bus stop-Beribadh": 1491.6
+        },
+        {
+            "Beribadh-Rupnagar": 316.9
+        },
+        {
+            "Rupnagar-Birulia": 3042.7
         },
         {
             "Birulia-Panchaboti Bus stop, Bus stop": 1248
@@ -14248,10 +12711,22 @@
             "Ashulia Bazar-Zirabo": 2145.1
         },
         {
+            "Zirabo-Fantasy Kingdom": 4494.2
+        },
+        {
             "Fantasy Kingdom-Dhaka EPZ": 3732.8
         },
         {
+            "Shia Mosque-Japan Garden City": 1.8
+        },
+        {
+            "Japan Garden City-Ring Road": 792.7
+        },
+        {
             "Adabor-Shishu Mela": 964.1
+        },
+        {
+            "Mirpur 10-Kazipara": 953.7
         },
         {
             "Kazipara-Taltola": 2198.3
@@ -14269,16 +12744,43 @@
             "Farmgate Bijoy Sarani-Bijoy Sarani": 848.1
         },
         {
+            "Banani-Staff Road": 1851.8
+        },
+        {
+            "Sign Board-Matuail": 558.5
+        },
+        {
+            "Matuail-Rayerbag": 1076.3
+        },
+        {
+            "Rayerbag-Shonir Akhra": 763.8
+        },
+        {
             "Shonir Akhra-Shanir Akhra": 249.9
         },
         {
-            "Shanir Akhra-Jatrabari": 1060.9
+            "Shanir Akhra-Kazla": 511.8
         },
         {
-            "Sayedabad-Kamalapur": 2038.3
+            "Kazla-Jatrabari": 546.6
+        },
+        {
+            "Jatrabari-Janapath Moor": 520.2
+        },
+        {
+            "Janapath Moor-Sayedabad": 557.3
+        },
+        {
+            "Sayedabad-TT Para": 1831.8
+        },
+        {
+            "TT Para-Kamalapur": 360.5
         },
         {
             "Kamalapur-Mugdapara": 305.4
+        },
+        {
+            "Mugdapara-Bashabo": 403.3
         },
         {
             "Bashabo-Khilgaon Flyover": 782.5
@@ -14296,10 +12798,37 @@
             "Malibagh-Malibagh Railgate": 339.3
         },
         {
+            "Gazipur Bypass-Gazipur Chourasta": 1373.4
+        },
+        {
+            "Duaripara-Rupnagar Abashik": 792.4
+        },
+        {
+            "Rupnagar Abashik-Shiyal Bari": 974.4
+        },
+        {
+            "Shiyal Bari-Proshika Moor": 406.3
+        },
+        {
+            "Proshika Moor-Mirpur 2": 521.4
+        },
+        {
+            "Mirpur 1-Ansar Camp": 784
+        },
+        {
             "Ansar Camp-Tolarbag": 428.1
         },
         {
             "Tolarbag-Bangla College": 237.3
+        },
+        {
+            "Bangla College-Technical": 439.9
+        },
+        {
+            "Dhanmondi 27-Shukrabad": 228.8
+        },
+        {
+            "Shukrabad-Kalabagan": 771.2
         },
         {
             "Nobinagar-Savar Cantonment": 1573
@@ -14309,6 +12838,18 @@
         },
         {
             "Palli Bidyut-Baipayl": 1621.2
+        },
+        {
+            "Baipayl-Jamgora": 2226.6
+        },
+        {
+            "Jamgora-Fantasy Kingdom": 169.7
+        },
+        {
+            "Fantasy Kingdom-Zirabo": 4494.2
+        },
+        {
+            "Zirabo-Ashulia Bazar": 2145.1
         },
         {
             "Ashulia Bazar-Ashulia": 3161.3
@@ -14326,10 +12867,34 @@
             "Sluice Gate-Abdullahpur": 1147
         },
         {
+            "Abdullahpur-House Building": 529.7
+        },
+        {
             "House Building-Rajlakshmi House Building": 337.7
         },
         {
             "Rajlakshmi House Building-Azampur": 583.8
+        },
+        {
+            "Azampur-Rajlakshmi": 392.2
+        },
+        {
+            "Rajlakshmi-Jashimuddin (Uttara)": 387.1
+        },
+        {
+            "Jashimuddin (Uttara)-Airport": 1275.6
+        },
+        {
+            "Airport-Khilkhet": 2829.8
+        },
+        {
+            "Khilkhet-Kuril Flyover": 505.6
+        },
+        {
+            "Kuril Flyover-Shewra": 426.4
+        },
+        {
+            "Shewra-MES": 923
         },
         {
             "MES-Staff Road": 561.4
@@ -14338,25 +12903,106 @@
             "Staff Road-Kakali": 1851.8
         },
         {
+            "Banani-Chairman Bari": 654.4
+        },
+        {
+            "Chairman Bari-Mohakhali": 2376.1
+        },
+        {
+            "Mohakhali-Nabisco": 1126.2
+        },
+        {
+            "Nabisco-Sat rasta": 1775.7
+        },
+        {
+            "Demra Staff Quarter-Tarabo": 2700.7
+        },
+        {
+            "Tarabo-Madanpur": 8042
+        },
+        {
+            "Shukrabad-Dhanmondi 32 Kalabagan": 631.2
+        },
+        {
+            "Dhanmondi 32 Kalabagan-Kalabagan": 275.4
+        },
+        {
             "Kalabagan-Kalabagan City College": 731.6
+        },
+        {
+            "Kalabagan City College-Science Lab": 215.9
+        },
+        {
+            "Science Lab-Bata Signal": 320.4
         },
         {
             "Bata Signal-Katabon": 274.9
         },
         {
-            "Motsho Bhaban-Matsya Bhaban": 1.1
+            "Katabon-Shahbag": 417.6
+        },
+        {
+            "Ramna Park Bus stop-Matsya Bhaban": 364.4
+        },
+        {
+            "Matsya Bhaban-High Court": 280.4
+        },
+        {
+            "Gulistan-Arambagh Notre Dame College": 1932.5
         },
         {
             "Chiriyakhana-Sony Cinema Hall": 1342.3
         },
         {
-            "Kallyanpur-Asad Gate": 2320.7
+            "Farmgate Bijoy Sarani-KhamarBari": 857.4
         },
         {
-            "Mohakhali-Amtola (Mohakhali)": 127.2
+            "Bangla Motor-Mogbazar": 963.7
         },
         {
-            "Amtola (Mohakhali)-Wireless": 747.9
+            "Mogbazar-Mouchak": 967
+        },
+        {
+            "Mouchak-Malibagh Moor": 275.9
+        },
+        {
+            "Malibagh Moor-Rajarbag": 585.6
+        },
+        {
+            "Rajarbag-Kamalapur": 947.9
+        },
+        {
+            "Dhanmondi 27-Dhanmondi 32 Kalabagan": 860
+        },
+        {
+            "City College-Science Lab": 215.9
+        },
+        {
+            "Paltan-Dainik Bangla Moor": 536.5
+        },
+        {
+            "Dainik Bangla Moor-Motijheel": 272.7
+        },
+        {
+            "Motijheel-Arambagh": 267.3
+        },
+        {
+            "Arambagh-Kamlapur": 2436.6
+        },
+        {
+            "Kamlapur-Mugdapara": 18.1
+        },
+        {
+            "Mohakhali-Amtola (Mohakhali)": 275.2
+        },
+        {
+            "Amtola (Mohakhali)-Wireless": 674
+        },
+        {
+            "Sayedabad-Manik Nagar": 1523
+        },
+        {
+            "Manik Nagar-TT Para": 312.2
         },
         {
             "Kamalapur-Rajarbag": 947.9
@@ -14365,19 +13011,40 @@
             "Rajarbag-Malibagh Moor": 585.6
         },
         {
-            "Mogbazar-Hatirjheel Mor Bus stop": 633.1
+            "Hatirjheel Mor Bus stop-Satrasta": 388.6
         },
         {
-            "Hatirjheel Mor Bus stop-Satrasta": 388.6
+            "Satrasta-Nabisco": 1357
+        },
+        {
+            "Chairman Bari-Banani": 654.4
         },
         {
             "Lalmatiya-Manik Mia Avenue": 628.1
         },
         {
+            "Manik Mia Avenue-KhamarBari": 321.7
+        },
+        {
             "Farmgate-Bangla Motor Shahbag": 1421.1
         },
         {
-            "Babubazar-Kadamtali": 1173.4
+            "Bangla Motor Shahbag-Matsya Bhaban": 1888.9
+        },
+        {
+            "GPO-Golap Shah Mazar": 629.1
+        },
+        {
+            "Golap Shah Mazar-Naya Bazar": 1421.1
+        },
+        {
+            "Naya Bazar-Babubazar": 529.8
+        },
+        {
+            "Babubazar-Keraniganj": 1991.8
+        },
+        {
+            "Kadamtali-Rajendrapur": 4743.1
         },
         {
             "Rajendrapur-Abdullahpur Bus Stand, Dhaka - Mawa Hwy, Kalakandi": 8132.7
@@ -14398,19 +13065,79 @@
             "Shonbari Sreenagar-Maowa": 7323
         },
         {
+            "Gabtoli-Mirpur 1": 2907.9
+        },
+        {
+            "Azimpur-Eden College": 208.9
+        },
+        {
+            "Eden College-Nilkhet": 370.3
+        },
+        {
             "Nilkhet-Dhaka College": 442.9
+        },
+        {
+            "Dhaka College-City College": 331
+        },
+        {
+            "City College-Kalabagan": 731.6
+        },
+        {
+            "Kalabagan-Dhanmondi 27": 1092.4
         },
         {
             "Dhanmondi 27-Lalmatiya": 1203.8
         },
         {
+            "House Building-Diabari": 3282.4
+        },
+        {
+            "Motijheel-Ittefaq Moor": 628.9
+        },
+        {
+            "Ittefaq Moor-Sayedabad": 1099.6
+        },
+        {
+            "Sayedabad-Janapath Moor": 557.3
+        },
+        {
+            "Janapath Moor-Jatrabari": 520.2
+        },
+        {
+            "Sainik Club-Kakali": 439
+        },
+        {
             "Mirpur 12-Purobi": 991.1
+        },
+        {
+            "Mirpur 12-Pallabi": 4.6
+        },
+        {
+            "Pallabi-Purobi": 1016.4
         },
         {
             "Mirpur 11-Sony Cinema Hall": 2565.4
         },
         {
+            "Mirpur 1-Kazipara": 3075.5
+        },
+        {
+            "Agargaon-Bijoy Sarani": 1605.4
+        },
+        {
+            "Bijoy Sarani-Farmgate": 725.2
+        },
+        {
             "Agargaon-Shishu Mela": 1814.9
+        },
+        {
+            "Azimpur-Dhakeshwari": 780.6
+        },
+        {
+            "Kalabagan-Dhanmondi 32 Kalabagan": 275.4
+        },
+        {
+            "Dhanmondi 32 Kalabagan-Shukrabad": 631.2
         },
         {
             "Shukrabad-Dhanmondi 27": 228.8
@@ -14419,10 +13146,28 @@
             "Airport-Airport Jashimuddin (Uttara)": 1269.3
         },
         {
+            "Airport Jashimuddin (Uttara)-Rajlakshmi": 372.4
+        },
+        {
             "Abdullahpur-Sluice Gate": 1147
         },
         {
             "Sluice Gate-Kamarpara": 11.5
+        },
+        {
+            "Sayedabad-Gulistan": 1791
+        },
+        {
+            "Gulistan-Chankhar Pul": 1121.1
+        },
+        {
+            "Chankhar Pul-Bakshi Bazar": 572.9
+        },
+        {
+            "Bakshi Bazar-Azimpur": 1295.5
+        },
+        {
+            "Palashi-Meghna Ghat": 29259.2
         },
         {
             "Gazipur Chourasta-Gazipur Bypass": 1373.4
@@ -14461,10 +13206,43 @@
             "MES-ECB Square": 1641.8
         },
         {
+            "Mirpur 1-Gabtoli": 2907.9
+        },
+        {
+            "Gabtoli-Amin Bazar": 1094.3
+        },
+        {
+            "Amin Bazar-Hemayetpur": 1474.7
+        },
+        {
+            "Hemayetpur-Savar": 10909.9
+        },
+        {
+            "Savar-Nobinagar Chandra": 8579.1
+        },
+        {
+            "Madanpur-Kanchpur": 5882.7
+        },
+        {
+            "Kanchpur-Chittagong Road": 2006.1
+        },
+        {
+            "Chittagong Road-Sign Board": 2978.7
+        },
+        {
+            "Farmgate-KhamarBari": 545.8
+        },
+        {
             "KhamarBari-Lalmatiya": 949.8
         },
         {
             "Lalmatiya-Asad Gate": 257
+        },
+        {
+            "Asad Gate-College Gate": 1086
+        },
+        {
+            "College Gate-Shishu Mela": 469
         },
         {
             "Shishu Mela-Kallyanpur": 885.6
@@ -14476,7 +13254,61 @@
             "Mazar Road-Gabtoli": 774.2
         },
         {
+            "Hemayetpur-Baipayl": 22124.7
+        },
+        {
+            "Baipayl-Zirani Bazar": 6639.8
+        },
+        {
+            "Zirani Bazar-Chandra": 9080
+        },
+        {
+            "Mohammadpur-Asad Gate": 376.9
+        },
+        {
+            "Kamalapur-Motijheel": 708.3
+        },
+        {
+            "Vulta-Kanchan Bridge": 8376.3
+        },
+        {
+            "Kanchan Bridge-Nila Market": 6257.4
+        },
+        {
+            "Nila Market-300 Feet": 56.3
+        },
+        {
+            "300 Feet-Bashundhara (300 Feet Gate)": 6227.2
+        },
+        {
+            "Bashundhara (300 Feet Gate)-Kuril Flyover": 798.7
+        },
+        {
+            "Mohammadpur-Shankar": 914.3
+        },
+        {
+            "Shankar-Star Kabab": 420.4
+        },
+        {
+            "Star Kabab-Dhanmondi 15": 429.4
+        },
+        {
+            "Dhanmondi 15-Jigatola": 662.1
+        },
+        {
+            "Jigatola-City College": 926
+        },
+        {
+            "Balughat-Cantonment": 1907.9
+        },
+        {
             "Cantonment-Workshop": 3555.3
+        },
+        {
+            "Workshop-Saudi Colony": 985.2
+        },
+        {
+            "Saudi Colony-Jahangir Gate": 351.3
         },
         {
             "Jahangir Gate-Old Airport": 433.4
@@ -14485,13 +13317,76 @@
             "Old Airport-Bijoy Sarani": 877.2
         },
         {
+            "Farmgate-Karwan Bazar": 817.6
+        },
+        {
+            "Karwan Bazar-Bangla Motor": 458.7
+        },
+        {
             "Motsho Bhaban-Paltan": 945
+        },
+        {
+            "Paltan-Gulistan": 753.4
+        },
+        {
+            "Mirpur 14-Kachukhet": 590.7
+        },
+        {
+            "Kachukhet-Sainik Club": 1485.8
+        },
+        {
+            "Banani-Mohakhali": 1736.7
+        },
+        {
+            "Vashantek-Mirpur 14": 1920.6
         },
         {
             "Shahbag-Katabon": 417.6
         },
         {
+            "Katabon-Bata Signal": 274.9
+        },
+        {
+            "Bata Signal-Science Lab": 320.4
+        },
+        {
+            "Science Lab-City College": 215.9
+        },
+        {
+            "City College-Jigatola": 926
+        },
+        {
+            "Jigatola-Dhanmondi 15": 662.1
+        },
+        {
+            "Dhanmondi 15-Star Kabab": 429.4
+        },
+        {
+            "Star Kabab-Shankar": 420.4
+        },
+        {
+            "Shankar-Mohammadpur": 914.3
+        },
+        {
+            "Mohammadpur-Bosila": 1821.4
+        },
+        {
+            "Bosila-Ghatar Char": 1909.5
+        },
+        {
+            "Fulbaria-Chankhar Pul": 558.4
+        },
+        {
+            "Savar-Nobinagar": 8168.2
+        },
+        {
             "Nobinagar-Dhamra": 7392.9
+        },
+        {
+            "Motijheel-Dainik Bangla Moor": 272.7
+        },
+        {
+            "Dainik Bangla Moor-Paltan": 536.5
         },
         {
             "Paltan-Matsya Bhaban": 943.9
@@ -14500,10 +13395,52 @@
             "High Court-Motsho Bhaban": 281.5
         },
         {
+            "Nobinagar-Dhamrai": 7396.9
+        },
+        {
+            "Dhamrai-Kalampur": 7394.1
+        },
+        {
             "Tajmahal Road-Mohammadpur": 742.9
         },
         {
+            "Shankar-Dhanmondi 15": 849.8
+        },
+        {
+            "Matsya Bhaban-Paltan": 943.9
+        },
+        {
+            "Postagola-Jurain": 267.6
+        },
+        {
+            "Jurain-Dholairpar": 1094.2
+        },
+        {
+            "Dholairpar-Jatrabari": 438.3
+        },
+        {
+            "Police Plaza-Gulshan 1": 1307.5
+        },
+        {
+            "Gulshan 1-Gulshan 2": 1617.6
+        },
+        {
+            "Banani-Gulshan 2": 1371.7
+        },
+        {
+            "Gulshan 2-Notun Bazar": 991.6
+        },
+        {
+            "Technical-Kallyanpur": 969.9
+        },
+        {
             "Gulistan-Motsho Bhaban": 1536.1
+        },
+        {
+            "Bangla Motor-Karwan Bazar": 458.7
+        },
+        {
+            "Karwan Bazar-Farmgate": 817.6
         },
         {
             "Farmgate-Banani": 4673.3
@@ -14512,16 +13449,64 @@
             "Rajlakshmi-Rajlakshmi House Building": 976
         },
         {
+            "Board Bazar-Gazipur Chourasta": 6176.7
+        },
+        {
+            "Gazipur Chourasta-Shib Bari": 3766.7
+        },
+        {
+            "Tajmahal Road-Salimullah Road": 564.5
+        },
+        {
+            "Salimullah Road-Jakir Hossen Road": 889.4
+        },
+        {
+            "Jakir Hossen Road-Shankar": 1062.3
+        },
+        {
+            "Paltan-Baitul Mukarram": 289
+        },
+        {
+            "Baitul Mukarram-Gulistan": 787.9
+        },
+        {
             "Kalabagan-Kolabagan": 275.4
         },
         {
             "Kolabagan-Karwan Bazar": 2078.5
         },
         {
+            "Karwan Bazar-Hatirjheel Mor Bus stop": 933.3
+        },
+        {
             "Nabisco-Gulshan 1": 3045.8
         },
         {
+            "Gulshan 1-Kuril Flyover": 5249.6
+        },
+        {
+            "Babubazar-Kadamtali": 1173.4
+        },
+        {
+            "Kadamtali-Keraniganj": 782.3
+        },
+        {
+            "Agargaon-IDB": 783.9
+        },
+        {
+            "IDB-Taltola": 734
+        },
+        {
             "Taltola-Kazipara": 2198.3
+        },
+        {
+            "Kazipara-Mirpur 10": 953.7
+        },
+        {
+            "Purobi-Pallabi": 1016.4
+        },
+        {
+            "Pallabi-Kalshi": 2267.8
         },
         {
             "Golap Shah Mazar-Motsho Bhaban": 1590.7
@@ -14530,10 +13515,19 @@
             "KhamarBari-Farmgate Bijoy Sarani": 857.4
         },
         {
+            "Farmgate Bijoy Sarani-Agargaon": 757.4
+        },
+        {
             "Pallabi-Mirpur 12": 4.6
         },
         {
+            "Mirpur 1-KhamarBari": 6489.2
+        },
+        {
             "Karwan Bazar-Gulistan": 3856.8
+        },
+        {
+            "Gulistan-Naya Bazar": 1053.9
         },
         {
             "Ramna Park Bus stop-Kakrail": 1120.2
@@ -14548,10 +13542,79 @@
             "Bashtola-Coca Cola Bus Stop": 1652.8
         },
         {
+            "Star Kabab-Jigatola": 1039.1
+        },
+        {
+            "Gulistan-Sayedabad": 1791
+        },
+        {
+            "Jatrabari-Kazla": 546.6
+        },
+        {
+            "Kazla-Shanir Akhra": 511.8
+        },
+        {
             "Shanir Akhra-Shonir Akhra": 249.9
         },
         {
-            "Kazipara-Mohakhali": 4758.6
+            "Shonir Akhra-Rayerbag": 763.8
+        },
+        {
+            "Rayerbag-Matuail": 1076.3
+        },
+        {
+            "Matuail-Sign Board": 558.5
+        },
+        {
+            "Sign Board-Chittagong Road": 2978.7
+        },
+        {
+            "Motijheel-Paltan": 1162.9
+        },
+        {
+            "Zirani Bazar-Nandan Park": 4456.2
+        },
+        {
+            "Nandan Park-Chandra": 1602.8
+        },
+        {
+            "Chashara-Zila Parishad Bus Stop জেলা পরিষদের বাস স্টপ": 1082.9
+        },
+        {
+            "Zila Parishad Bus Stop জেলা পরিষদের বাস স্টপ-Shibu Market": 1062.3
+        },
+        {
+            "Shibu Market-Jalkuri": 2229.1
+        },
+        {
+            "Jalkuri-Rupayan Town Bus Stop রূপায়ন টাউন বাস স্টপ": 1372.4
+        },
+        {
+            "Rupayan Town Bus Stop রূপায়ন টাউন বাস স্টপ-Bhuigor Bus Stop": 638.2
+        },
+        {
+            "Bhuigor Bus Stop-Kazibari Bus Stand": 202.7
+        },
+        {
+            "Kazibari Bus Stand-Sonali Market Bus Stop সোনালী বাজার বাস স্টপ": 539.1
+        },
+        {
+            "Sonali Market Bus Stop সোনালী বাজার বাস স্টপ-Sign Board": 908
+        },
+        {
+            "Kazipara-Mohakhali": 5471.2
+        },
+        {
+            "Badda-Madhya Badda": 723.6
+        },
+        {
+            "Rampura Bridge-Rampura Bazar": 10.9
+        },
+        {
+            "Rampura Bazar-Hazipara": 1257.3
+        },
+        {
+            "Hazipara-Malibagh Railgate": 900.4
         },
         {
             "Malibagh Railgate-Malibagh": 339.3
@@ -14560,13 +13623,37 @@
             "Malibagh-Khilgaon Khidma Hospital": 498.7
         },
         {
+            "Metro Hall-Chashara": 581
+        },
+        {
+            "Janapath Moor-Gulistan": 2158.5
+        },
+        {
             "Kanchpur-Jatrabari": 9105.1
+        },
+        {
+            "Jatrabari-Bangladesh Bank": 2832.4
+        },
+        {
+            "Bangladesh Bank-Mogbazar": 7231.8
+        },
+        {
+            "Savar-Nobinagar Baipayl": 8388.7
         },
         {
             "Nobinagar Baipayl-Savar Cantonment": 420.5
         },
         {
             "Kuril Flyover-Bashundhara": 895.9
+        },
+        {
+            "Gabtoli-Beribadh Tin Rastar Moor": 3553.6
+        },
+        {
+            "Beribadh Tin Rastar Moor-Rayer Bazar": 571.6
+        },
+        {
+            "Rayer Bazar-Sikder Medical College": 388.9
         },
         {
             "Sikder Medical College-Nawabganj": 2478
@@ -14578,7 +13665,46 @@
             "Hazaribag-Kamrangirchar": 871.3
         },
         {
+            "Kamrangirchar-Showari Ghat": 1477.9
+        },
+        {
+            "Showari Ghat-Mitford Ghat": 776.2
+        },
+        {
+            "Mitford Ghat-Babubazar": 189.4
+        },
+        {
+            "Shonir Akhra-Kazla": 734.6
+        },
+        {
+            "Chiriyakhana-Mirpur 1": 1710.3
+        },
+        {
             "Sony Cinema Hall-Rupnagar": 4523.8
+        },
+        {
+            "Zirabo-Narshinghapur": 6386.2
+        },
+        {
+            "Narshinghapur-Sura Bari": 3.5
+        },
+        {
+            "Sura Bari-Kashimpur": 2973
+        },
+        {
+            "Kashimpur-Jarun": 1047.9
+        },
+        {
+            "Jarun-Konabari": 2028.3
+        },
+        {
+            "Rajarbag-Khilgaon Flyover": 1756.4
+        },
+        {
+            "Khilgaon Flyover-Bashabo": 782.5
+        },
+        {
+            "Bashabo-Mugdapara": 403.3
         },
         {
             "Mugdapara-Kamalapur": 305.4
@@ -14590,10 +13716,31 @@
             "TT Para-Manik Nagar": 312.2
         },
         {
-            "Kazla-Shanir Akhra": 511.8
+            "Manik Nagar-Golapbag Chourasta": 538.4
+        },
+        {
+            "Golapbag Chourasta-Sayedabad": 660.6
+        },
+        {
+            "Gulistan-Dayaganj": 1429.2
+        },
+        {
+            "Dayaganj-Dhupkhola": 782.7
         },
         {
             "Chittagong Road-Kanchpur": 2006.1
+        },
+        {
+            "Kanchpur-Vulta": 10988
+        },
+        {
+            "Motijheel-Ittefaq Moor Sayedabad": 624.4
+        },
+        {
+            "Ittefaq Moor Sayedabad-Jatrabari": 2106.9
+        },
+        {
+            "Arambagh-Kamalapur": 414
         },
         {
             "Kamalapur-Kamlapur": 645.2
@@ -14605,34 +13752,22 @@
             "Dhaka College-New Market Nilkhet": 222.3
         },
         {
+            "New Market Nilkhet-Nilkhet": 248.9
+        },
+        {
             "Karwan Bazar-Paltan": 3004.3
         },
         {
             "Paltan-Motijheel": 1162.9
         },
         {
-            "Chashara-Zila Parishad Bus Stop": 1082.9
-        },
-        {
-            "Zila Parishad Bus Stop-Shibu Market": 1062.3
-        },
-        {
-            "Jalkuri-Rupayan Town Bus Stop": 1372.4
-        },
-        {
-            "Rupayan Town Bus Stop-Bhuigor Bus Stop": 638.2
-        },
-        {
-            "Bhuigor Bus Stop-Kazibari Bus Stand": 202.7
-        },
-        {
-            "Kazibari Bus Stand-Sonali Market Bus Stop": 539.1
-        },
-        {
-            "Sonali Market Bus Stop-Sign Board": 908
-        },
-        {
             "Gulistan-Golap Shah Mazar": 1.9
+        },
+        {
+            "Mirpur 2-Ansar Camp": 2093.6
+        },
+        {
+            "Motijheel-Arambagh Kingdom": 454.6
         },
         {
             "High Court-Fulbaria": 1011.3
@@ -14647,43 +13782,16 @@
             "Kalampur-Manikganj": 18616.3
         },
         {
+            "Manikganj-Paturia": 27033.2
+        },
+        {
             "Mirpur 14 Bus Stand-Mirpur 10": 2153.1
         },
         {
             "Agargaon-Asad Gate": 2678
         },
         {
-            "Mirpur 2-Chalantika Moor": 1158.7
-        },
-        {
-            "Chalantika Moor-Mirpur 11": 362.8
-        },
-        {
-            "College Gate-Kallyanpur": 1354.6
-        },
-        {
-            "Maowa-Shonbari Sreenagar": 7323
-        },
-        {
-            "Kuchimura-Vhaoar Viti Bus Stop, Dhaka - Mawa Hwy": 1631.8
-        },
-        {
-            "Vhaoar Viti Bus Stop, Dhaka - Mawa Hwy-Abdullahpur Bus Stand, Dhaka - Mawa Hwy, Kalakandi": 2165.8
-        },
-        {
-            "Abdullahpur Bus Stand, Dhaka - Mawa Hwy, Kalakandi-Rajendrapur": 8132.7
-        },
-        {
-            "Rajendrapur-Kadamtali": 4743.1
-        },
-        {
-            "Sony Cinema Hall-Mirpur 2": 1056.7
-        },
-        {
-            "Staff Road-Banani": 1851.8
-        },
-        {
-            "Agargaon-Mohakhali": 3348.5
+            "Shishu Mela-Adabor": 964.1
         },
         {
             "Adabor-Ring Road": 579.6
@@ -14695,16 +13803,82 @@
             "Japan Garden City-Mohammadpur": 681.5
         },
         {
+            "Mirpur 2-Chalantika Moor": 1158.7
+        },
+        {
+            "Chalantika Moor-Mirpur 11": 362.8
+        },
+        {
+            "Purobi-Mirpur 12": 991.1
+        },
+        {
+            "Bosila-Mohammadpur": 1821.4
+        },
+        {
+            "Maowa-Shonbari Sreenagar": 7323
+        },
+        {
+            "Shonbari Sreenagar-Nimtola": 10418
+        },
+        {
+            "Nimtola-Kuchimura": 2202.9
+        },
+        {
+            "Kuchimura-Vhaoar Viti Bus Stop, Dhaka - Mawa Hwy": 1631.8
+        },
+        {
+            "Vhaoar Viti Bus Stop, Dhaka - Mawa Hwy-Abdullahpur Bus Stand, Dhaka - Mawa Hwy, Kalakandi": 2165.8
+        },
+        {
+            "Abdullahpur Bus Stand, Dhaka - Mawa Hwy, Kalakandi-Rajendrapur": 8132.7
+        },
+        {
+            "Rajendrapur-Keraniganj": 6482.5
+        },
+        {
+            "Sony Cinema Hall-Mirpur 2": 1056.7
+        },
+        {
+            "Gazipur Chourasta-Joydebpur": 3780.7
+        },
+        {
+            "Joydebpur-Sreepur": 29720.8
+        },
+        {
+            "Sreepur-Baromi": 8675.1
+        },
+        {
+            "Jurain-Dayaganj": 2565.5
+        },
+        {
+            "Dayaganj-Gulistan": 1429.2
+        },
+        {
+            "Asad Gate-Mohammadpur": 376.9
+        },
+        {
+            "Matsya Bhaban-Kakrail": 889.5
+        },
+        {
+            "Staff Road-Banani": 1851.8
+        },
+        {
+            "Kakali-Gulshan 2": 1371.7
+        },
+        {
+            "Gulshan 2-Gulshan 1": 1617.6
+        },
+        {
+            "Agargaon-Mohakhali": 3471.7
+        },
+        {
             "Mohammadpur-Shia Mosque": 667.5
         },
         {
-            "Shia Mosque-Ring Road": 792.8
-        },
-        {
-            "Ring Road-College Gate": 1995.8
-        },
-        {
             "Shahbag-Kakrail": 1824
+        },
+        {
+            "Kakrail-Fakirapul": 942.6
         },
         {
             "Fakirapul-Motijheel": 961.3
@@ -14719,6 +13893,9 @@
             "Mirpur 12-Kalshi": 2293
         },
         {
+            "Mirpur 10-Mirpur 13": 856.5
+        },
+        {
             "Mirpur 13-Police Staff College Bus stop": 256.7
         },
         {
@@ -14728,13 +13905,64 @@
             "Mirpur Police Line, Bus stop-Mirpur 14": 574.9
         },
         {
+            "Mirpur 14-Vashantek": 1920.6
+        },
+        {
+            "Sadarghat-Golap Shah Mazar": 2767.5
+        },
+        {
+            "Fakirapul-Arambagh": 532.4
+        },
+        {
+            "Arambagh-Motijheel": 267.3
+        },
+        {
+            "Ittefaq Moor-Tikatuli": 789.1
+        },
+        {
+            "Tikatuli-Dayaganj": 795.1
+        },
+        {
+            "Dayaganj-Gandaria": 390.9
+        },
+        {
+            "Gandaria-Jurain": 2811.8
+        },
+        {
+            "Jurain-Postagola": 267.6
+        },
+        {
+            "Gulistan-Janapath Moor": 2158.5
+        },
+        {
             "Bijoy Sarani-Farmgate Bijoy Sarani": 848.1
         },
         {
-            "Hemayetpur-Hemayetpur": 6.6
+            "Bakshi Bazar-Dhakeshwari": 724.6
+        },
+        {
+            "Dhakeshwari-Azimpur": 780.6
+        },
+        {
+            "Hemayetpur-Manikganj": 37823
+        },
+        {
+            "Banasree-Rampura Bridge": 1593.7
+        },
+        {
+            "Kamarpara-Dhour": 706.7
         },
         {
             "Dhour-Ashulia": 514.9
+        },
+        {
+            "Fantasy Kingdom-Jamgora": 169.7
+        },
+        {
+            "Jamgora-Shimultola": 480.2
+        },
+        {
+            "Shimultola-Baipayl": 1744.4
         },
         {
             "Mirpur 1-Rainkhola": 1077.9
@@ -14746,10 +13974,61 @@
             "Jatrabari-Gulistan": 2539.5
         },
         {
+            "Matsya Bhaban-Ramna Park Bus stop": 364.4
+        },
+        {
             "KhamarBari-Kallyanpur": 3596.6
         },
         {
+            "Victoria Park-Sadarghat": 635
+        },
+        {
+            "Ray Saheb Bazar-Golap Shah Mazar": 1646.2
+        },
+        {
+            "Naya Bazar-Ray Saheb Bazar": 338.8
+        },
+        {
+            "Ray Saheb Bazar-Sadarghat": 1112.7
+        },
+        {
+            "Sign Board-Sanarpar": 1011.7
+        },
+        {
+            "Sanarpar-Chittagong Road": 1966.9
+        },
+        {
+            "Banasree-South Banasree": 2079.5
+        },
+        {
+            "Japan Garden City-Adabor": 1367.7
+        },
+        {
+            "Rajendrapur-Hasnabad": 3545.3
+        },
+        {
+            "Hasnabad-Postagola": 1512.1
+        },
+        {
+            "High Court-Press Club Paltan": 404.4
+        },
+        {
+            "Press Club Paltan-Paltan": 259.1
+        },
+        {
+            "Motijheel-Sayedabad": 1739.2
+        },
+        {
+            "Kachukhet-Workshop": 1007.5
+        },
+        {
+            "Mirpur DOHS-Kalshi": 3834.1
+        },
+        {
             "ECB Square-CMH": 1334.3
+        },
+        {
+            "CMH-Garrison (Cantonment)": 1398.7
         },
         {
             "Garrison (Cantonment)-Post Office Bus Stop": 336
@@ -14767,13 +14046,37 @@
             "KhamarBari-Banani": 5033.2
         },
         {
-            "Panthapath-Bot tola": 3343.6
+            "Kalabagan-Panthapath": 991.6
+        },
+        {
+            "Panthapath-Hatirjheel Mor Bus stop": 2353.5
+        },
+        {
+            "Sat rasta-Bot tola": 1408.2
+        },
+        {
+            "Bot tola-Nabisco": 178.3
+        },
+        {
+            "Balughat-Signal": 1547
+        },
+        {
+            "Signal-CMH": 794.7
         },
         {
             "Post Office Bus Stop-Adamjee College": 702.6
         },
         {
-            "Mogbazar-Farmgate": 1851.6
+            "Adamjee College-Workshop": 744.5
+        },
+        {
+            "Mogbazar-Farmgate": 2350.8
+        },
+        {
+            "Golap Shah Mazar-Gulistan": 1.9
+        },
+        {
+            "Sayedabad-Motijheel": 1739.2
         },
         {
             "Mirpur 2-Proshika Moor": 521.4

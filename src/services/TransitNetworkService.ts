@@ -17,8 +17,10 @@ export interface RawBusData {
   english?: string;
   bangla?: string;
   routes?: string[];
-  service_type?: string;
+  serviceType?: string;
   time?: string;
+  fare_weight?: number;
+  min_fare?: number;
 }
 
 export interface RawStopData {
@@ -45,6 +47,9 @@ interface InternalBus {
   route: string[];
   cumDists: number[];
   stopIndices: Map<string, number[]>;
+  fareWeight: number;  // per-km fare rate (default 2.45)
+  minFare: number;     // minimum fare in BDT (default 10)
+  serviceType: string;
 }
 
 interface LegResult {
@@ -70,6 +75,7 @@ interface RouteLeg {
   endIdx: number;
   dist: number;
   cost: number;
+  serviceType: string;
 }
 
 // ─── Output Types ─────────────────────────────────────────────────────────────
@@ -98,6 +104,28 @@ export interface DetailedRoute {
 interface CacheEntry {
   results: DetailedRoute[];
   timestamp: number;
+}
+
+/**
+ * Capitalize each word in a string
+ */
+function toTitleCase(str: string | undefined): string {
+  if (!str) return '';
+  // Check if it's mostly Bangla - if so, don't title case
+  const hasLatin = /[a-zA-Z]/.test(str);
+  if (!hasLatin) return str;
+
+  return str
+    .toLowerCase()
+    .split(/\s+/)
+    .map((word) => {
+      if (word.length === 0) return '';
+      if (/^[a-zA-Z]/.test(word)) {
+        return word.charAt(0).toUpperCase() + word.slice(1);
+      }
+      return word;
+    })
+    .join(' ');
 }
 
 // ─── TransitNetwork Class (faithful port of algon.js) ─────────────────────────
@@ -164,6 +192,9 @@ class TransitNetwork {
         route: normRoute,
         cumDists: [],
         stopIndices: new Map(),
+        fareWeight: bus.fare_weight ?? 2.45,
+        minFare: bus.min_fare ?? 10,
+        serviceType: bus.serviceType || 'Regular',
       });
       normRoute.forEach((s) => this.allStops.add(s));
     });
@@ -222,6 +253,7 @@ class TransitNetwork {
 
     iA.forEach((a) => {
       iB.forEach((b) => {
+        if (a === b) return; // source and destination index must be different
         const d = Math.abs(bus.cumDists[a] - bus.cumDists[b]);
         if (d < minD) {
           minD = d;
@@ -230,7 +262,13 @@ class TransitNetwork {
         }
       });
     });
-    return { cost: Math.max(10.0, minD * 2.45), dist: minD, sIdx: bestStart, eIdx: bestEnd };
+
+    if (minD === 0 || bestStart === -1 || bestEnd === -1) {
+      return { cost: Infinity, dist: 0, sIdx: -1, eIdx: -1 };
+    }
+
+    const fare = Math.ceil(Math.max(bus.minFare, minD * bus.fareWeight));
+    return { cost: fare, dist: minD, sIdx: bestStart, eIdx: bestEnd };
   }
 
   private buildDetailedRoute(routeSummary: RouteSummary): DetailedRoute {
@@ -263,7 +301,7 @@ class TransitNetwork {
           }
 
           path.push({
-            stop_name: stopName,
+            stop_name: toTitleCase(stopName),
             bus_name: bus.name,
             coordinates: coord,
             distance_from_prev_km: parseFloat(distFromPrev.toFixed(3)),
@@ -281,7 +319,7 @@ class TransitNetwork {
       type: routeSummary.type,
       total_distance_km: parseFloat(routeSummary.totalDist.toFixed(3)),
       total_cost_tk: Math.ceil(routeSummary.totalCost),
-      transfer_points: routeSummary.transfers,
+      transfer_points: routeSummary.transfers.map(tp => toTitleCase(tp)),
       fare_breakdown_tk: routeSummary.legs.map((l) => Math.ceil(l.cost)),
       legs: routeSummary.legs,
       path: path,
@@ -317,6 +355,7 @@ class TransitNetwork {
                 endIdx: leg.eIdx,
                 dist: leg.dist,
                 cost: leg.cost,
+                serviceType: this.buses[bId].serviceType,
               },
             ],
             totalDist: leg.dist,
@@ -346,6 +385,7 @@ class TransitNetwork {
                   endIdx: l1.eIdx,
                   dist: l1.dist,
                   cost: l1.cost,
+                  serviceType: this.buses[b1].serviceType,
                 },
                 {
                   busName: this.buses[b2].name,
@@ -355,6 +395,7 @@ class TransitNetwork {
                   endIdx: l2.eIdx,
                   dist: l2.dist,
                   cost: l2.cost,
+                  serviceType: this.buses[b2].serviceType,
                 },
               ],
               totalDist: l1.dist + l2.dist,
@@ -397,6 +438,7 @@ class TransitNetwork {
                       endIdx: l1.eIdx,
                       dist: l1.dist,
                       cost: l1.cost,
+                      serviceType: this.buses[b1].serviceType,
                     },
                     {
                       busName: this.buses[b3].name,
@@ -406,6 +448,7 @@ class TransitNetwork {
                       endIdx: l2.eIdx,
                       dist: l2.dist,
                       cost: l2.cost,
+                      serviceType: this.buses[b3].serviceType,
                     },
                     {
                       busName: this.buses[b2].name,
@@ -415,6 +458,7 @@ class TransitNetwork {
                       endIdx: l3.eIdx,
                       dist: l3.dist,
                       cost: l3.cost,
+                      serviceType: this.buses[b2].serviceType,
                     },
                   ],
                   totalDist: l1.dist + l2.dist + l3.dist,
@@ -436,35 +480,38 @@ class TransitNetwork {
       allRoutes = allRoutes.filter((r) => r.transfers.includes(viaStop));
     }
 
-    const uniqueMap = new Map<string, RouteSummary>();
-    const filteredRoutes: RouteSummary[] = [];
+    // Deduplicate: direct routes are kept as-is.
+    // For transfer routes, keep only the best (lowest fare) route per unique ordered bus-pair.
+    // e.g. BusA→BusB via StopX and BusA→BusB via StopY → keep whichever is cheaper.
+    const directRoutes: RouteSummary[] = [];
+    const transferBestMap = new Map<string, RouteSummary>();
+
     allRoutes.forEach((r) => {
       if (r.type === 'Direct') {
-        filteredRoutes.push(r);
+        directRoutes.push(r);
       } else {
-        const sig = r.transfers.join('|');
-        if (!uniqueMap.has(sig)) {
-          uniqueMap.set(sig, r);
-        } else {
-          const existing = uniqueMap.get(sig)!;
-          if (
-            r.totalCost < existing.totalCost ||
-            (r.totalCost === existing.totalCost && r.totalDist < existing.totalDist)
-          ) {
-            uniqueMap.set(sig, r);
-          }
+        // Key = ordered bus names joined (not the transfer stops)
+        const pairKey = r.legs.map((l) => l.busName).join('|');
+        const existing = transferBestMap.get(pairKey);
+        if (!existing) {
+          transferBestMap.set(pairKey, r);
+        } else if (
+          r.totalCost < existing.totalCost ||
+          (r.totalCost === existing.totalCost && r.totalDist < existing.totalDist)
+        ) {
+          transferBestMap.set(pairKey, r);
         }
       }
     });
 
-    allRoutes = filteredRoutes.concat(Array.from(uniqueMap.values()));
+    allRoutes = directRoutes.concat(Array.from(transferBestMap.values()));
 
     allRoutes.sort((a, b) => {
       if (a.totalCost === b.totalCost) return a.totalDist - b.totalDist;
       return a.totalCost - b.totalCost;
     });
 
-    const topRoutes = allRoutes.slice(0, 100);
+    const topRoutes = allRoutes.slice(0, 50);
     return topRoutes.map((r) => this.buildDetailedRoute(r));
   }
 

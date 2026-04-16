@@ -1,4 +1,4 @@
-// Premium Theme System for Bus Bhara App
+// Premium Theme System for Local Bus App
 // Modern glassmorphic design with vibrant gradients
 
 export const Colors = {
