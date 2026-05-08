@@ -52,6 +52,7 @@ export default function RouteSearchScreen({ navigation, route }: any) {
   const [selectedMode, setSelectedMode] = useState<number>(-1); // -1 = Best
   const [searchDate, setSearchDate] = useState<string | null>(null);
   const [searchTime, setSearchTime] = useState<string | null>(null);
+  const [savedRoutes, setSavedRoutes] = useState<any[]>([]);
   const [recentHistory, setRecentHistory] = useState<any[]>([]);
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const safeArea = useDynamicSafeArea();
@@ -85,9 +86,12 @@ export default function RouteSearchScreen({ navigation, route }: any) {
       setAllStops(stops);
       
       const history = await StorageService.getSearchHistory();
-      setRecentHistory(history.slice(0, 10)); // Show top 10
+      setRecentHistory(history.slice(0, 5)); // Keep history smaller
+      
+      const bookmarks = await StorageService.getBookmarks();
+      setSavedRoutes(bookmarks.slice(0, 10));
     } catch (error) {
-      console.error('Error loading stops or history:', error);
+      console.error('Error loading stops, history or bookmarks:', error);
     }
   };
 
@@ -278,13 +282,17 @@ export default function RouteSearchScreen({ navigation, route }: any) {
             borderWidth: isDark ? 1 : 0,
           },
         ]}
-        onPress={() =>
+        onPress={() => {
+          const fromExact = findExactStop(fromStopName || '');
+          const toExact = findExactStop(toStopName || '');
           navigation.navigate('RouteDetails', {
             algorithmRoute: item,
             fromStopName: fromStopName,
             toStopName: toStopName,
-          })
-        }
+            fromStopId: fromExact?.id,
+            toStopId: toExact?.id,
+          });
+        }}
         activeOpacity={0.7}
       >
         {/* Top Row: Type badge + Fare */}
@@ -714,13 +722,74 @@ export default function RouteSearchScreen({ navigation, route }: any) {
           )
         ) : (
           <View style={{ flex: 1 }}>
-            {recentHistory.length > 0 ? (
+            {savedRoutes.length > 0 ? (
+              <View style={styles.recentSection}>
+                <View style={styles.recentHeader}>
+                  <Text style={[styles.recentTitle, { color: themeColors.textPrimary }]}>
+                    Saved Routes
+                  </Text>
+                  <TouchableOpacity onPress={() => navigation.navigate('Saved')}>
+                    <Text style={[styles.seeAllText, { color: themeColors.primary }]}>See All</Text>
+                  </TouchableOpacity>
+                </View>
+                <ScrollView 
+                  horizontal 
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={styles.recentScrollContent}
+                >
+                  {savedRoutes.map((item, idx) => (
+                    <TouchableOpacity
+                      key={item.routeId || idx}
+                      style={[
+                        styles.recentCard,
+                        { 
+                          backgroundColor: themeColors.surface,
+                          borderColor: isDark ? themeColors.border : 'rgba(0,0,0,0.05)',
+                          borderWidth: 1
+                        }
+                      ]}
+                      onPress={() => {
+                        if (item.busId && item.busId > 0) {
+                          navigation.navigate('RouteDetails', {
+                            busId: item.busId,
+                            busName: item.busName,
+                            busBn: item.busBn,
+                            fromStopName: item.fromStopName,
+                            toStopName: item.toStopName,
+                            fromStopId: item.fromStopId,
+                            toStopId: item.toStopId,
+                          });
+                        } else {
+                          // Algorithm route — re-trigger search
+                          setFrom(item.fromStopName);
+                          setTo(item.toStopName);
+                          setFromStopName(item.fromStopName);
+                          setToStopName(item.toStopName);
+                          setTimeout(() => {
+                            searchRoutes(item.fromStopName, item.toStopName, '', selectedMode);
+                          }, 100);
+                        }
+                      }}
+                    >
+                      <View style={styles.recentRouteRow}>
+                        <Text style={[styles.recentStopText, { color: themeColors.textPrimary }]} numberOfLines={1}>
+                          {item.busName}
+                        </Text>
+                      </View>
+                      <Text style={[styles.recentMetaText, { color: themeColors.textTertiary }]} numberOfLines={1}>
+                        {item.fromStopName} → {item.toStopName}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
+              </View>
+            ) : recentHistory.length > 0 ? (
               <View style={styles.recentSection}>
                 <View style={styles.recentHeader}>
                   <Text style={[styles.recentTitle, { color: themeColors.textPrimary }]}>
                     Recent Searches
                   </Text>
-                  <TouchableOpacity onPress={() => navigation.navigate('History')}>
+                  <TouchableOpacity onPress={() => navigation.navigate('Saved')}>
                     <Text style={[styles.seeAllText, { color: themeColors.primary }]}>See All</Text>
                   </TouchableOpacity>
                 </View>
@@ -731,7 +800,7 @@ export default function RouteSearchScreen({ navigation, route }: any) {
                 >
                   {recentHistory.map((item, idx) => (
                     <TouchableOpacity
-                      key={item.id}
+                      key={item.id || idx}
                       style={[
                         styles.recentCard,
                         { 
@@ -752,7 +821,7 @@ export default function RouteSearchScreen({ navigation, route }: any) {
                         <Text style={[styles.recentStopText, { color: themeColors.textPrimary }]} numberOfLines={1}>
                           {item.fromStopName}
                         </Text>
-                        <Ionicons name="arrow-forward" size={12} color={themeColors.textTertiary} style={{ marginHorizontal: 4 }} />
+                        <Ionicons name="arrow-forward" size={10} color={themeColors.textTertiary} style={{ marginHorizontal: 4 }} />
                         <Text style={[styles.recentStopText, { color: themeColors.textPrimary }]} numberOfLines={1}>
                           {item.toStopName}
                         </Text>
@@ -765,6 +834,7 @@ export default function RouteSearchScreen({ navigation, route }: any) {
                 </ScrollView>
               </View>
             ) : null}
+
 
             <View style={styles.emptyContainer}>
               <View
@@ -912,13 +982,14 @@ const styles = StyleSheet.create({
     marginBottom: 4,
     maxHeight: 200,
     overflow: 'hidden',
+    zIndex: 1000,
     ...Platform.select({
-      android: { elevation: 4 },
+      android: { elevation: 8 },
       ios: {
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 6,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.15,
+        shadowRadius: 10,
       },
     }),
   },

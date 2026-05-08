@@ -10,6 +10,7 @@ import {
   ActivityIndicator,
   Platform,
   ToastAndroid,
+  Linking,
 } from 'react-native';
 import RNRestart from 'react-native-restart';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -141,6 +142,19 @@ export default function SettingsScreen({ navigation }: any) {
       'Your data is stored locally on your device. We do not collect or share any personal information.',
       [{ text: 'OK' }],
     );
+  };
+
+  const handleOpenURL = async (url: string) => {
+    try {
+      const supported = await Linking.canOpenURL(url);
+      if (supported) {
+        await Linking.openURL(url);
+      } else {
+        showNotification("Can't open this URL");
+      }
+    } catch (error) {
+      showNotification("Error opening link");
+    }
   };
 
   const SettingItem = ({
@@ -300,6 +314,36 @@ export default function SettingsScreen({ navigation }: any) {
             label="Privacy Policy"
             description="Your data protection"
             onPress={handlePrivacy}
+          />
+        </View>
+
+        {/* Support & Contribution */}
+        <View style={[styles.section, { backgroundColor: themeColors.surface }]}>
+          <View style={[styles.sectionHeader, { borderBottomColor: themeColors.borderLight }]}>
+            <Text style={[styles.sectionTitle, { color: themeColors.textPrimary }]}>
+              Support & Feedback
+            </Text>
+          </View>
+
+          <SettingItem
+            icon="globe-outline"
+            label="Official Website"
+            description="localbusfare.sabbirs.dev"
+            onPress={() => handleOpenURL('https://localbusfare.sabbirs.dev/')}
+          />
+
+          <SettingItem
+            icon="chatbubble-ellipses-outline"
+            label="Send Feedback"
+            description="Share your thoughts or report mistakes"
+            onPress={() => handleOpenURL('https://localbusfare.sabbirs.dev/')}
+          />
+
+          <SettingItem
+            icon="add-circle-outline"
+            label="Report Missing Route"
+            description="Help us update the database"
+            onPress={() => handleOpenURL('https://localbusfare.sabbirs.dev/')}
           />
         </View>
 

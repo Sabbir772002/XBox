@@ -6,8 +6,8 @@ import { View, Text, ActivityIndicator } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import RouteSearchScreen from './screens/RouteSearchScreen';
 import RouteDetailsScreen from './screens/RouteDetailsScreen';
-import HistoryScreen from './screens/HistoryScreen';
-import BookmarkScreen from './screens/BookmarkScreen';
+import ActivityScreen from './screens/ActivityScreen';
+import VehicleSearchScreen from './screens/VehicleSearchScreen';
 import BusListScreen from './screens/BusListScreen';
 import SettingsScreen from './screens/SettingsScreen';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -49,12 +49,12 @@ function MainTabs() {
 
           if (route.name === 'Search') {
             iconName = focused ? 'search' : 'search-outline';
+          } else if (route.name === 'Others') {
+            iconName = focused ? 'navigate' : 'navigate-outline';
+          } else if (route.name === 'Saved') {
+            iconName = focused ? 'bookmark' : 'bookmark-outline';
           } else if (route.name === 'Buses') {
             iconName = focused ? 'bus' : 'bus-outline';
-          } else if (route.name === 'History') {
-            iconName = focused ? 'time' : 'time-outline';
-          } else if (route.name === 'Bookmark') {
-            iconName = focused ? 'bookmark' : 'bookmark-outline';
           } else if (route.name === 'Settings') {
             iconName = focused ? 'settings' : 'settings-outline';
           } else {
@@ -86,19 +86,19 @@ function MainTabs() {
         options={{ tabBarLabel: 'Search' }}
       />
       <Tab.Screen 
-        name="History" 
-        component={HistoryScreen}
-        options={{ tabBarLabel: 'History' }}
+        name="Others" 
+        component={VehicleSearchScreen}
+        options={{ tabBarLabel: 'Others' }}
+      />
+      <Tab.Screen 
+        name="Saved" 
+        component={ActivityScreen}
+        options={{ tabBarLabel: 'Saved' }}
       />
       <Tab.Screen 
         name="Buses" 
         component={BusListScreen}
         options={{ tabBarLabel: 'Buses' }}
-      />
-      <Tab.Screen 
-        name="Bookmark" 
-        component={BookmarkScreen}
-        options={{ tabBarLabel: 'Bookmarks' }}
       />
       <Tab.Screen 
         name="Settings" 

@@ -201,6 +201,8 @@ class TransitNetwork {
   }
 
   private getDistance(u: string, v: string): number {
+    u = this.normalize(u);
+    v = this.normalize(v);
     const key = `${u}-${v}`;
     if (this.precalcDists.has(key)) return this.precalcDists.get(key)! / 1000.0;
     const cU = this.stopCoords.get(u) || [];
@@ -274,6 +276,7 @@ class TransitNetwork {
   private buildDetailedRoute(routeSummary: RouteSummary): DetailedRoute {
     const path: RoutePathStop[] = [];
     let cumDist = 0.0;
+    let lastStopNormalized = '';
 
     for (let i = 0; i < routeSummary.legs.length; i++) {
       const leg = routeSummary.legs[i];
@@ -286,17 +289,21 @@ class TransitNetwork {
 
       let currentIdx = sIdx;
       while (true) {
-        const stopName = bus.route[currentIdx];
+        const stopName = bus.route[currentIdx]; // This is already normalized
         const coordsList = this.stopCoords.get(stopName) || [];
         const coord = coordsList.length > 0 ? coordsList[0] : null;
 
-        if (path.length > 0 && path[path.length - 1].stop_name === stopName) {
-          path[path.length - 1].bus_name += ` -> ${bus.name}`;
-          path[path.length - 1].is_transfer_point = true;
+        if (path.length > 0 && lastStopNormalized === stopName) {
+          // It's a transfer point, merge bus name if not already present
+          if (!path[path.length - 1].bus_name.includes(bus.name)) {
+            path[path.length - 1].bus_name += ` -> ${bus.name}`;
+            path[path.length - 1].is_transfer_point = true;
+          }
         } else {
           let distFromPrev = 0.0;
           if (path.length > 0) {
-            distFromPrev = this.getDistance(path[path.length - 1].stop_name, stopName);
+            // Both are normalized, ensuring correct distance lookup
+            distFromPrev = this.getDistance(lastStopNormalized, stopName);
             cumDist += distFromPrev;
           }
 
@@ -308,6 +315,7 @@ class TransitNetwork {
             cumulative_distance_km: parseFloat(cumDist.toFixed(3)),
             is_transfer_point: false,
           });
+          lastStopNormalized = stopName;
         }
 
         if (currentIdx === eIdx) break;

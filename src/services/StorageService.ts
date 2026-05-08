@@ -176,11 +176,18 @@ class StorageService {
     }
   }
 
-  async isBookmarked(routeId: string, fromStopId: number, toStopId: number): Promise<boolean> {
+  async isBookmarked(routeId: string, fromStopId?: number, toStopId?: number): Promise<boolean> {
     try {
       const bookmarks = await this.getBookmarks();
       return bookmarks.some(
-        b => b.routeId === routeId && b.fromStopId === fromStopId && b.toStopId === toStopId
+        b => {
+          // If it's a general bus bookmark, only match the ID
+          if (routeId.startsWith('bus_')) {
+            return b.routeId === routeId;
+          }
+          // For specific routes, match ID and stops
+          return b.routeId === routeId && b.fromStopId === fromStopId && b.toStopId === toStopId;
+        }
       );
     } catch (error) {
       console.error('Error checking bookmark:', error);

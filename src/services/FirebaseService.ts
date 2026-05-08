@@ -1,5 +1,15 @@
 import { initializeApp, getApp, getApps } from 'firebase/app';
 import { getDatabase, ref, get, query, DatabaseReference, DataSnapshot } from 'firebase/database';
+import { 
+  getFirestore, 
+  collection, 
+  addDoc, 
+  query as firestoreQuery, 
+  where, 
+  getDocs, 
+  serverTimestamp,
+  orderBy
+} from 'firebase/firestore';
 
 /**
  * FirebaseService - Handles all Firebase Realtime Database operations
@@ -28,6 +38,7 @@ interface StopsData {
 class FirebaseService {
   private app: any = null;
   private db: any = null;
+  private firestore: any = null;
   private initialized = false;
   private readonly TIMEOUT_MS = 5000; // 5 second timeout for Firebase calls
 
@@ -76,8 +87,9 @@ class FirebaseService {
       // Reuse existing default app if one is already present.
       this.app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
       this.db = getDatabase(this.app);
+      this.firestore = getFirestore(this.app);
       this.initialized = true;
-      console.log('✓ Firebase initialized successfully');
+      console.log('✓ Firebase initialized successfully with Firestore');
     } catch (error) {
       console.error('✗ Firebase initialization failed:', error);
       this.initialized = false;
@@ -88,7 +100,7 @@ class FirebaseService {
    * Check if Firebase is initialized
    */
   isInitialized(): boolean {
-    return this.initialized && this.db !== null;
+    return this.initialized && this.db !== null && this.firestore !== null;
   }
 
   /**
@@ -367,11 +379,110 @@ class FirebaseService {
   }
 
   /**
+   * Add a new route to Firestore (CNG, Car, Bike, Others)
+   */
+  async addOtherRoute(routeData: {
+    from: string;
+    to: string;
+    fare: string;
+    distance?: string;
+    carType: string;
+  }): Promise<string | null> {
+    if (!this.isInitialized()) {
+      console.error('Firebase not initialized');
+      return null;
+    }
+
+    try {
+      const fromTrimmed = routeData.from.trim();
+      const toTrimmed = routeData.to.trim();
+
+      // Canonical sorted key: always store as "alphabetically_first,alphabetically_second"
+      // This makes bidirectional search trivial — one key covers both directions.
+      const canonicalKey = [fromTrimmed, toTrimmed]
+        .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))
+        .join(',');
+
+      const docRef = await addDoc(collection(this.firestore, 'other_routes'), {
+        stoppages: canonicalKey,   // canonical sorted — used for querying
+        from: fromTrimmed,          // user-input order — used for display
+        to: toTrimmed,              // user-input order — used for display
+        fare: parseInt(routeData.fare, 10) || 0,
+        distance: parseFloat(routeData.distance || '0') || 0,
+        carType: routeData.carType,
+        createdAt: serverTimestamp(),
+      });
+      console.log('✓ Route added to Firestore with ID:', docRef.id);
+      return docRef.id;
+    } catch (error: any) {
+      console.error('✗ Error adding route to Firestore:', error);
+      if (error.code) console.error('Error Code:', error.code);
+      if (error.message) console.error('Error Message:', error.message);
+      return null;
+    }
+  }
+
+  /**
+   * Search for other routes in Firestore
+   */
+  async searchOtherRoutes(from: string, to: string, carType?: string): Promise<any[]> {
+    if (!this.isInitialized()) {
+      console.error('Firebase not initialized');
+      return [];
+    }
+
+    try {
+      // Build the same canonical key the writer uses
+      const canonicalKey = [from.trim(), to.trim()]
+        .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))
+        .join(',');
+
+      // Normalise helper for fuzzy fallback
+      const normalize = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, '');
+      const normKey = normalize(canonicalKey);
+
+      let q = firestoreQuery(collection(this.firestore, 'other_routes'));
+
+      if (carType && carType !== 'All') {
+        q = firestoreQuery(q, where('carType', '==', carType));
+      }
+
+      q = firestoreQuery(q, orderBy('createdAt', 'desc'));
+
+      const querySnapshot = await getDocs(q);
+      const results: any[] = [];
+
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        const storedKey = normalize(data.stoppages || '');
+
+        // Primary match: canonical key equals stored key
+        // Fallback: both stop names appear anywhere in stored string
+        const normFrom = normalize(from.trim());
+        const normTo = normalize(to.trim());
+        const matches =
+          storedKey === normKey ||
+          (storedKey.includes(normFrom) && storedKey.includes(normTo));
+
+        if (matches) {
+          results.push({ id: doc.id, ...data });
+        }
+      });
+
+      return results;
+    } catch (error) {
+      console.error('✗ Error searching Firestore routes:', error);
+      return [];
+    }
+  }
+
+  /**
    * Reset Firebase connection
    */
   reset(): void {
     this.app = null;
     this.db = null;
+    this.firestore = null;
     this.initialized = false;
     console.log('✓ Firebase service reset');
   }

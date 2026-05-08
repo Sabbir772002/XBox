@@ -242,9 +242,9 @@ class DatabaseService {
 
     // Simple matching - trim and exact comparison, case-insensitive
     const isStopMatch = (candidate: string, target: string): boolean => {
-      const c = candidate.trim().toLowerCase();
-      const t = target.trim().toLowerCase();
-      return c === t; // Exact match, case-insensitive
+      const c = candidate.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+      const t = target.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+      return c === t || c.includes(t) || t.includes(c);
     };
 
     let orderedStoppages: BusStoppage[] = [...bus.stoppages];

@@ -14,7 +14,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useDynamicSafeArea } from '../hooks/useDynamicSafeArea';
-import DatabaseService, { BusStoppage } from '../services/DatabaseService';
+import DatabaseService, { BusStoppage, Stop } from '../services/DatabaseService';
 import StorageService from '../services/StorageService';
 import { useTheme } from '../theme/ThemeContext';
 import { Colors, Spacing, BorderRadius, FontSize } from '../theme/colors';
@@ -36,6 +36,8 @@ export default function RouteDetailsScreen({ route, navigation }: any) {
     busBn,
     fromStopName,
     toStopName,
+    fromStopId: passedFromStopId,
+    toStopId: passedToStopId,
     showFullRoute,
     transferRoute: passedTransferRoute,
   } = route.params || {};
@@ -56,32 +58,61 @@ export default function RouteDetailsScreen({ route, navigation }: any) {
   const [minFare, setMinFare] = useState(10);
   const [estimatedFare, setEstimatedFare] = useState(0);
 
+  const [allStops, setAllStops] = useState<Stop[]>([]);
+
   const isAlgorithmRoute = !!algorithmRoute;
 
-  // Map coordinates from algorithm route
+  // Map coordinates from algorithm OR legacy route
   const mapPoints: MapCoordinate[] = useMemo(() => {
-    if (!detailedRoute) return [];
-    return detailedRoute.path
-      .filter((p) => p.coordinates && p.coordinates.length >= 2)
-      .map((p) => ({
-        lat: p.coordinates![0],
-        lng: p.coordinates![1],
-        stopName: p.stop_name,
-      }));
-  }, [detailedRoute]);
+    if (detailedRoute) {
+      return detailedRoute.path
+        .filter((p) => p.coordinates && p.coordinates.length >= 2)
+        .map((p) => ({
+          lat: p.coordinates![0],
+          lng: p.coordinates![1],
+          stopName: p.stop_name,
+        }));
+    }
+
+    if (legacyStoppages.length > 0 && allStops.length > 0) {
+      return legacyStoppages
+        .map((stop) => {
+          const stopData = allStops.find(
+            (s) => s.id === stop.stopId || s.stopageEn === stop.stopageEn
+          );
+          if (stopData && stopData.latitude && stopData.longitude) {
+            return {
+              lat: stopData.latitude,
+              lng: stopData.longitude,
+              stopName: stop.stopageEn,
+            };
+          }
+          return null;
+        })
+        .filter((p) => p !== null) as MapCoordinate[];
+    }
+
+    return [];
+  }, [detailedRoute, legacyStoppages, allStops]);
 
   useEffect(() => {
-    if (isAlgorithmRoute) {
-      setDetailedRoute(algorithmRoute);
-      setLoading(false);
-    } else if (passedTransferRoute) {
-      loadTransferBusStoppages();
-    } else if (busId) {
-      loadBusStoppages();
-    } else {
-      setLoading(false);
-    }
-    if (busId) checkBookmarkStatus();
+    const init = async () => {
+      const stops = await DatabaseService.getAllStops();
+      setAllStops(stops);
+
+      if (isAlgorithmRoute) {
+        setDetailedRoute(algorithmRoute);
+        setLoading(false);
+      } else if (passedTransferRoute) {
+        loadTransferBusStoppages();
+      } else if (busId) {
+        loadBusStoppages();
+      } else {
+        setLoading(false);
+      }
+      if (busId) checkBookmarkStatus();
+    };
+    init();
   }, []);
 
   const loadBusStoppages = async () => {
@@ -163,8 +194,18 @@ export default function RouteDetailsScreen({ route, navigation }: any) {
   };
 
   const checkBookmarkStatus = async () => {
-    if (busId) {
-      const bookmarked = await StorageService.isBookmarked(`bus_${busId}`, 1, 1);
+    const fId = passedFromStopId || 0;
+    const tId = passedToStopId || 0;
+    
+    let bookmarkId = '';
+    if (isAlgorithmRoute) {
+      bookmarkId = `route_${fromStopName}_${toStopName}`;
+    } else if (busId) {
+      bookmarkId = `bus_${busId}`;
+    }
+
+    if (bookmarkId) {
+      const bookmarked = await StorageService.isBookmarked(bookmarkId, fId, tId);
       setIsBookmarked(bookmarked);
     }
   };
@@ -181,22 +222,32 @@ export default function RouteDetailsScreen({ route, navigation }: any) {
     const name = isAlgorithmRoute ? detailedRoute?.legs[0]?.busName : busName;
     if (!name) return;
 
-    const id = isAlgorithmRoute ? `algo_route` : `bus_${busId}`;
+    const fId = passedFromStopId || 0;
+    const tId = passedToStopId || 0;
+
+    let bookmarkId = '';
+    if (isAlgorithmRoute) {
+      bookmarkId = `route_${fromStopName}_${toStopName}`;
+    } else if (busId) {
+      bookmarkId = `bus_${busId}`;
+    }
+
+    if (!bookmarkId) return;
 
     if (isBookmarked) {
-      await StorageService.removeBookmark(id, 1, 1);
+      await StorageService.removeBookmark(bookmarkId, fId, tId);
       setIsBookmarked(false);
       showToast('Bookmark removed');
     } else {
       const success = await StorageService.addBookmark(
-        id,
+        bookmarkId,
         busId || 0,
         name,
         busBn || '',
-        1,
-        1,
-        fromStopName,
-        toStopName,
+        fId,
+        tId,
+        fromStopName || '',
+        toStopName || '',
         isAlgorithmRoute ? detailedRoute!.total_distance_km : journeyDistanceKm,
         isAlgorithmRoute ? detailedRoute!.path.length : legacyStoppages.length,
       );

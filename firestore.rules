@@ -1,0 +1,20 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Original rule for user_bus_routes
+    match /user_bus_routes/{routeId} {
+      allow read: if true;
+      allow create: if request.resource.data.source is string 
+                    && request.resource.data.destination is string
+                    && request.resource.data.fare is int;
+      allow update, delete: if false;
+    }
+    
+    // New rule for other_routes (CNG, Car, Bike)
+    match /other_routes/{routeId} {
+      allow read: if true;
+      allow create: if true; 
+      allow update, delete: if false;
+    }
+  }
+}
