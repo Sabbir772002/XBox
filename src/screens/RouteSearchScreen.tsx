@@ -12,6 +12,8 @@ import {
   Platform,
   Dimensions,
   useColorScheme,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -104,7 +106,7 @@ export default function RouteSearchScreen({ navigation, route }: any) {
           (stop.stopageEn && stop.stopageEn.toLowerCase().includes(lowerText)) ||
           (stop.stopageBn && stop.stopageBn.toLowerCase().includes(lowerText)),
       )
-      .slice(0, 8);
+      .slice(0, 4);
   };
 
   const findExactStop = (text: string): Stop | null => {
@@ -415,12 +417,20 @@ export default function RouteSearchScreen({ navigation, route }: any) {
     </TouchableOpacity>
   );
 
+  const dismissSuggestions = () => {
+    Keyboard.dismiss();
+    setFromSuggestions([]);
+    setToSuggestions([]);
+    setViaSuggestions([]);
+  };
+
   return (
-    <SafeAreaView
-      style={[styles.safe, { backgroundColor: themeColors.background }]}
-      edges={['top', 'left', 'right']}
-    >
-      <LinearGradient
+    <TouchableWithoutFeedback onPress={dismissSuggestions}>
+      <SafeAreaView
+        style={[styles.safe, { backgroundColor: themeColors.background }]}
+        edges={['top', 'left', 'right']}
+      >
+        <LinearGradient
         colors={[themeColors.gradientStart, themeColors.gradientEnd]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
@@ -453,6 +463,7 @@ export default function RouteSearchScreen({ navigation, route }: any) {
               onChangeText={handleFromSearch}
               style={[styles.input, { color: themeColors.textPrimary }]}
               returnKeyType="next"
+              onSubmitEditing={() => setFromSuggestions([])}
             />
             {from.length > 0 && (
               <TouchableOpacity
@@ -469,14 +480,14 @@ export default function RouteSearchScreen({ navigation, route }: any) {
 
           {fromSuggestions.length > 0 && (
             <View
-              style={[styles.suggestionsDropdown, { backgroundColor: themeColors.background }]}
+              style={[styles.suggestionsDropdown, { backgroundColor: themeColors.background, top: 65 }]}
             >
               <ScrollView
                 style={styles.suggestionsScroll}
                 keyboardShouldPersistTaps="handled"
                 nestedScrollEnabled={true}
               >
-                {fromSuggestions.map((stop) => renderSuggestion(stop, selectFromStop))}
+                {fromSuggestions.slice(0, 4).map((stop) => renderSuggestion(stop, selectFromStop))}
               </ScrollView>
             </View>
           )}
@@ -508,7 +519,10 @@ export default function RouteSearchScreen({ navigation, route }: any) {
               onChangeText={handleToSearch}
               style={[styles.input, { color: themeColors.textPrimary }]}
               returnKeyType="search"
-              onSubmitEditing={handleSearch}
+              onSubmitEditing={() => {
+                setToSuggestions([]);
+                handleSearch();
+              }}
             />
             {to.length > 0 && (
               <TouchableOpacity
@@ -525,14 +539,14 @@ export default function RouteSearchScreen({ navigation, route }: any) {
 
           {toSuggestions.length > 0 && (
             <View
-              style={[styles.suggestionsDropdown, { backgroundColor: themeColors.background }]}
+              style={[styles.suggestionsDropdown, { backgroundColor: themeColors.background, top: 120 }]}
             >
               <ScrollView
                 style={styles.suggestionsScroll}
                 keyboardShouldPersistTaps="handled"
                 nestedScrollEnabled={true}
               >
-                {toSuggestions.map((stop) => renderSuggestion(stop, selectToStop))}
+                {toSuggestions.slice(0, 4).map((stop) => renderSuggestion(stop, selectToStop))}
               </ScrollView>
             </View>
           )}
@@ -558,7 +572,10 @@ export default function RouteSearchScreen({ navigation, route }: any) {
                   onChangeText={handleViaSearch}
                   style={[styles.input, { color: themeColors.textPrimary }]}
                   returnKeyType="search"
-                  onSubmitEditing={handleSearch}
+                  onSubmitEditing={() => {
+                    setViaSuggestions([]);
+                    handleSearch();
+                  }}
                 />
                 {viaStop.length > 0 && (
                   <TouchableOpacity
@@ -576,7 +593,7 @@ export default function RouteSearchScreen({ navigation, route }: any) {
                 <View
                   style={[
                     styles.suggestionsDropdown,
-                    { backgroundColor: themeColors.background },
+                    { backgroundColor: themeColors.background, top: 175 },
                   ]}
                 >
                   <ScrollView
@@ -584,7 +601,7 @@ export default function RouteSearchScreen({ navigation, route }: any) {
                     keyboardShouldPersistTaps="handled"
                     nestedScrollEnabled={true}
                   >
-                    {viaSuggestions.map((stop) => renderSuggestion(stop, selectViaStop))}
+                    {viaSuggestions.slice(0, 4).map((stop) => renderSuggestion(stop, selectViaStop))}
                   </ScrollView>
                 </View>
               )}
@@ -758,6 +775,7 @@ export default function RouteSearchScreen({ navigation, route }: any) {
                             toStopName: item.toStopName,
                             fromStopId: item.fromStopId,
                             toStopId: item.toStopId,
+                            showFullRoute: true,
                           });
                         } else {
                           // Algorithm route — re-trigger search
@@ -853,6 +871,7 @@ export default function RouteSearchScreen({ navigation, route }: any) {
         )}
       </View>
     </SafeAreaView>
+    </TouchableWithoutFeedback>
   );
 }
 
@@ -977,12 +996,15 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   suggestionsDropdown: {
+    position: 'absolute',
+    left: 12,
+    right: 12,
     borderRadius: BorderRadius.md,
     marginTop: 4,
     marginBottom: 4,
     maxHeight: 200,
     overflow: 'hidden',
-    zIndex: 1000,
+    zIndex: 5000,
     ...Platform.select({
       android: { elevation: 8 },
       ios: {

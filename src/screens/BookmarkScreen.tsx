@@ -13,42 +13,38 @@ import LinearGradient from 'react-native-linear-gradient';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
-import StorageService, { BookmarkedRoute } from '../services/StorageService';
+import StorageService, { BookmarkedRoute, SearchHistory } from '../services/StorageService';
 import { useTheme } from '../theme/ThemeContext';
 import { Colors, Spacing, BorderRadius, FontSize } from '../theme/colors';
 import { DarkColors } from '../theme/darkColors';
 
 export default function BookmarkScreen({ navigation }: any) {
   const [bookmarks, setBookmarks] = useState<BookmarkedRoute[]>([]);
+  const [history, setHistory] = useState<SearchHistory[]>([]);
   const [loading, setLoading] = useState(true);
   const { isDark } = useTheme();
   const themeColors = isDark ? DarkColors : Colors;
 
   useFocusEffect(
     useCallback(() => {
-      loadBookmarks();
+      loadData();
     }, []),
   );
 
-  const loadBookmarks = async () => {
+  const loadData = async () => {
     try {
-      const data = await StorageService.getBookmarks();
-      setBookmarks(data);
+      setLoading(true);
+      const [bookmarkData, historyData] = await Promise.all([
+        StorageService.getBookmarks(),
+        StorageService.getSearchHistory(),
+      ]);
+      setBookmarks(bookmarkData);
+      setHistory(historyData.slice(0, 5));
     } catch (error) {
-      console.error('Error loading bookmarks:', error);
+      console.error('Error loading data:', error);
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleBookmarkClick = (item: BookmarkedRoute) => {
-    navigation.navigate('RouteDetails', {
-      busId: item.busId,
-      busName: item.busName,
-      busBn: item.busBn,
-      fromStopName: item.fromStopName,
-      toStopName: item.toStopName,
-    });
   };
 
   const handleRemoveBookmark = async (routeId: string) => {
@@ -59,7 +55,7 @@ export default function BookmarkScreen({ navigation }: any) {
         style: 'destructive',
         onPress: async () => {
           await StorageService.removeBookmark(routeId);
-          loadBookmarks();
+          loadData();
         },
       },
     ]);
@@ -75,7 +71,24 @@ export default function BookmarkScreen({ navigation }: any) {
           borderWidth: isDark ? 1 : 0,
         },
       ]}
-      onPress={() => handleBookmarkClick(item)}
+      onPress={() => {
+        if (item.busId && item.busId > 0) {
+          navigation.navigate('RouteDetails', {
+            busId: item.busId,
+            busName: item.busName,
+            busBn: item.busBn,
+            fromStopName: item.fromStopName,
+            toStopName: item.toStopName,
+            fromStopId: item.fromStopId,
+            toStopId: item.toStopId,
+          });
+        } else {
+          navigation.navigate('Search', {
+            fromStopName: item.fromStopName,
+            toStopName: item.toStopName,
+          });
+        }
+      }}
       activeOpacity={0.7}
     >
       <View style={styles.cardTop}>
@@ -93,22 +106,21 @@ export default function BookmarkScreen({ navigation }: any) {
           ) : null}
         </View>
         <TouchableOpacity
-          style={[styles.removeBtn, { backgroundColor: themeColors.errorLight || 'rgba(239,68,68,0.12)' }]}
+          style={[styles.removeBtn, { backgroundColor: isDark ? 'rgba(239,68,68,0.2)' : 'rgba(239,68,68,0.1)' }]}
           onPress={() => handleRemoveBookmark(item.routeId)}
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
-          <Ionicons name="trash-outline" size={15} color={themeColors.error} />
+          <Ionicons name="trash-outline" size={16} color={themeColors.error} />
         </TouchableOpacity>
       </View>
 
-      <View style={[styles.routeRow, { borderTopColor: themeColors.borderLight }]}>
+      <View style={[styles.routeRow, { borderTopColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)' }]}>
         <View style={styles.routePoint}>
           <View style={[styles.routeDot, { backgroundColor: themeColors.success }]} />
           <Text style={[styles.routeStopName, { color: themeColors.textSecondary }]} numberOfLines={1}>
             {item.fromStopName}
           </Text>
         </View>
-        <Ionicons name="arrow-forward" size={14} color={themeColors.textMuted} />
+        <Ionicons name="arrow-forward" size={14} color={themeColors.textTertiary} />
         <View style={styles.routePoint}>
           <View style={[styles.routeDot, { backgroundColor: themeColors.error }]} />
           <Text style={[styles.routeStopName, { color: themeColors.textSecondary }]} numberOfLines={1}>
@@ -118,22 +130,54 @@ export default function BookmarkScreen({ navigation }: any) {
       </View>
 
       <View style={styles.statsRow}>
-        <View style={[styles.statChip, { backgroundColor: themeColors.pill }]}>
-          <Ionicons name="navigate-outline" size={12} color={themeColors.primary} />
-          <Text style={[styles.statText, { color: themeColors.primary }]}>
-            {item.distance.toFixed(1)} km
-          </Text>
-        </View>
-        <View style={[styles.statChip, { backgroundColor: themeColors.pill }]}>
-          <Ionicons name="cash-outline" size={12} color={themeColors.primary} />
+        <View style={[styles.statChip, { backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)' }]}>
           <Text style={[styles.statText, { color: themeColors.primary }]}>
             ৳ {item.fare.toFixed(0)}
           </Text>
         </View>
-        <View style={[styles.statChip, { backgroundColor: themeColors.pill }]}>
-          <Ionicons name="ellipsis-horizontal" size={12} color={themeColors.primary} />
+        <View style={[styles.statChip, { backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)' }]}>
           <Text style={[styles.statText, { color: themeColors.primary }]}>
-            {item.stopsCount || 0} stops
+            {item.distance.toFixed(1)} km
+          </Text>
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+
+  const renderHistoryItem = ({ item }: { item: SearchHistory }) => (
+    <TouchableOpacity
+      style={[
+        styles.card,
+        {
+          backgroundColor: themeColors.surface,
+          borderColor: isDark ? themeColors.border : 'transparent',
+          borderWidth: isDark ? 1 : 0,
+        },
+      ]}
+      onPress={() => {
+        navigation.navigate('Search', {
+          fromStopName: item.fromStopName,
+          toStopName: item.toStopName,
+        });
+      }}
+      activeOpacity={0.7}
+    >
+      <View style={styles.cardTop}>
+        <View style={[styles.cardIcon, { backgroundColor: themeColors.primaryMuted }]}>
+          <Ionicons name="search-outline" size={18} color={themeColors.primary} />
+        </View>
+        <View style={styles.cardContent}>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Text style={[styles.busName, { color: themeColors.textPrimary }]} numberOfLines={1}>
+              {item.fromStopName}
+            </Text>
+            <Ionicons name="arrow-forward" size={12} color={themeColors.textTertiary} style={{ marginHorizontal: 6 }} />
+            <Text style={[styles.busName, { color: themeColors.textPrimary }]} numberOfLines={1}>
+              {item.toStopName}
+            </Text>
+          </View>
+          <Text style={[styles.busBn, { color: themeColors.textTertiary }]}>
+            {item.routesFound} routes found
           </Text>
         </View>
       </View>
@@ -151,8 +195,10 @@ export default function BookmarkScreen({ navigation }: any) {
         end={{ x: 1, y: 1 }}
         style={styles.header}
       >
-        <Text style={styles.headerTitle}>Bookmarks</Text>
-        <Text style={styles.headerSubtitle}>{bookmarks.length} saved routes</Text>
+        <Text style={styles.headerTitle}>Saved & Recent</Text>
+        <Text style={styles.headerSubtitle}>
+          {bookmarks.length} bookmarks · {history.length} recent
+        </Text>
       </LinearGradient>
 
       <View style={styles.body}>
@@ -163,23 +209,36 @@ export default function BookmarkScreen({ navigation }: any) {
               Loading...
             </Text>
           </View>
-        ) : bookmarks.length === 0 ? (
+        ) : bookmarks.length === 0 && history.length === 0 ? (
           <View style={styles.emptyContainer}>
             <View style={[styles.emptyIcon, { backgroundColor: themeColors.primaryMuted }]}>
               <Ionicons name="bookmark-outline" size={36} color={themeColors.primary} />
             </View>
             <Text style={[styles.emptyTitle, { color: themeColors.textPrimary }]}>
-              No Bookmarks
+              Nothing Saved
             </Text>
             <Text style={[styles.emptyText, { color: themeColors.textSecondary }]}>
-              Save your favorite routes{'\n'}for quick access
+              Search and save routes to see them here
             </Text>
           </View>
         ) : (
           <FlatList
             data={bookmarks}
-            keyExtractor={(item) => item.id}
+            keyExtractor={(item) => `bookmark_${item.id}`}
             renderItem={renderBookmarkItem}
+            ListHeaderComponent={
+              history.length > 0 ? (
+                <View style={{ marginBottom: Spacing.md }}>
+                  <Text style={[styles.sectionTitle, { color: themeColors.textPrimary }]}>Recent Searches</Text>
+                  {history.map((item) => (
+                    <View key={`history_${item.id}`}>
+                      {renderHistoryItem({ item })}
+                    </View>
+                  ))}
+                  <Text style={[styles.sectionTitle, { color: themeColors.textPrimary, marginTop: Spacing.md }]}>Saved Routes</Text>
+                </View>
+              ) : null
+            }
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.listContent}
           />
@@ -226,9 +285,14 @@ const styles = StyleSheet.create({
     padding: Spacing.lg,
     paddingTop: Spacing.md,
   },
+  sectionTitle: {
+    fontSize: FontSize.lg,
+    fontWeight: '800',
+    marginBottom: Spacing.md,
+  },
   card: {
     borderRadius: BorderRadius.lg,
-    padding: Spacing.lg,
+    padding: Spacing.md,
     marginBottom: Spacing.md,
     ...Platform.select({
       android: { elevation: 2 },
@@ -243,12 +307,11 @@ const styles = StyleSheet.create({
   cardTop: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: Spacing.sm,
   },
   cardIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: Spacing.md,
@@ -265,12 +328,11 @@ const styles = StyleSheet.create({
     marginTop: 1,
   },
   removeBtn: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
+    width: 30,
+    height: 30,
+    borderRadius: 15,
     alignItems: 'center',
     justifyContent: 'center',
-    marginLeft: Spacing.sm,
   },
   routeRow: {
     flexDirection: 'row',
@@ -287,9 +349,9 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   routeDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
+    width: 6,
+    height: 6,
+    borderRadius: 3,
   },
   routeStopName: {
     fontSize: FontSize.sm,
@@ -298,16 +360,12 @@ const styles = StyleSheet.create({
   statsRow: {
     flexDirection: 'row',
     gap: Spacing.sm,
-    marginTop: Spacing.md,
+    marginTop: Spacing.sm,
   },
   statChip: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 6,
-    borderRadius: BorderRadius.md,
-    gap: 4,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: BorderRadius.sm,
   },
   statText: {
     fontSize: FontSize.xs,

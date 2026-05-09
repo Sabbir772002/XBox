@@ -9,6 +9,7 @@ import {
   ToastAndroid,
   Platform,
   Alert,
+  Keyboard,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -200,14 +201,12 @@ export default function RouteDetailsScreen({ route, navigation }: any) {
     let bookmarkId = '';
     if (isAlgorithmRoute) {
       bookmarkId = `route_${fromStopName}_${toStopName}`;
-    } else if (busId) {
-      bookmarkId = `bus_${busId}`;
+    } else {
+      bookmarkId = `bus_${busId}_${fromStopName}_${toStopName}`;
     }
-
-    if (bookmarkId) {
-      const bookmarked = await StorageService.isBookmarked(bookmarkId, fId, tId);
-      setIsBookmarked(bookmarked);
-    }
+    
+    const bookmarked = await StorageService.isBookmarked(bookmarkId, fId, tId);
+    setIsBookmarked(bookmarked);
   };
 
   const showToast = (message: string) => {
@@ -219,6 +218,7 @@ export default function RouteDetailsScreen({ route, navigation }: any) {
   };
 
   const handleBookmarkToggle = async () => {
+    Keyboard.dismiss();
     const name = isAlgorithmRoute ? detailedRoute?.legs[0]?.busName : busName;
     if (!name) return;
 
@@ -228,8 +228,8 @@ export default function RouteDetailsScreen({ route, navigation }: any) {
     let bookmarkId = '';
     if (isAlgorithmRoute) {
       bookmarkId = `route_${fromStopName}_${toStopName}`;
-    } else if (busId) {
-      bookmarkId = `bus_${busId}`;
+    } else {
+      bookmarkId = `bus_${busId}_${fromStopName}_${toStopName}`;
     }
 
     if (!bookmarkId) return;

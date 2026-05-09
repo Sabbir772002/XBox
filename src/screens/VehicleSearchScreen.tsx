@@ -39,8 +39,9 @@ export default function VehicleSearchScreen() {
   const [newTo, setNewTo] = useState('');
   const [newFare, setNewFare] = useState('');
   const [newDistance, setNewDistance] = useState('');
-  const [newCarType, setNewCarType] = useState('CNG');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [newCarType, setNewCarType] = useState('CNG');
+  const [customCarType, setCustomCarType] = useState('');
 
   // Suggestions
   const [fromSuggestions, setFromSuggestions] = useState<string[]>([]);
@@ -88,7 +89,7 @@ export default function VehicleSearchScreen() {
       const filtered = stops
         .filter(s => s.stopageEn.toLowerCase().includes(text.toLowerCase()))
         .map(s => s.stopageEn)
-        .slice(0, 5);
+        .slice(0, 4);
       setFromSuggestions(filtered);
       setShowFromSuggestions(true);
     } else {
@@ -103,7 +104,7 @@ export default function VehicleSearchScreen() {
       const filtered = stops
         .filter(s => s.stopageEn.toLowerCase().includes(text.toLowerCase()))
         .map(s => s.stopageEn)
-        .slice(0, 5);
+        .slice(0, 4);
       setToSuggestions(filtered);
       setShowToSuggestions(true);
     } else {
@@ -122,7 +123,9 @@ export default function VehicleSearchScreen() {
   };
 
   const handleAddRoute = async () => {
-    if (!newFrom.trim() || !newTo.trim() || !newFare.trim() || !newCarType) {
+    const finalCarType = newCarType === 'Others' ? (customCarType.trim() || 'Others') : newCarType;
+    
+    if (!newFrom.trim() || !newTo.trim() || !newFare.trim() || !finalCarType) {
       Alert.alert('Required', 'From, To, Fare, and Vehicle Type are mandatory.');
       return;
     }
@@ -134,7 +137,7 @@ export default function VehicleSearchScreen() {
         to: newTo,
         fare: newFare,
         distance: newDistance,
-        carType: newCarType,
+        carType: finalCarType,
       });
 
       if (success) {
@@ -160,21 +163,35 @@ export default function VehicleSearchScreen() {
     setNewFare('');
     setNewDistance('');
     setNewCarType('CNG');
+    setCustomCarType('');
     setFromSuggestions([]);
     setToSuggestions([]);
     setShowFromSuggestions(false);
     setShowToSuggestions(false);
   };
 
+  const formatDate = (timestamp: any) => {
+    if (!timestamp) return 'Jan 1, 2024'; // Default fallback
+    try {
+      const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+      return date.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+      });
+    } catch (e) {
+      return 'Jan 1, 2024';
+    }
+  };
+
   const renderResultItem = ({ item }: { item: any }) => {
-    // Display from/to in user-input order.
-    // New docs have separate `from` and `to` fields.
-    // Old docs only have `stoppages` ("stop1,stop2") — parse as fallback.
     const displayFrom = item.from || (item.stoppages || '').split(',')[0] || '';
     const displayTo = item.to || (item.stoppages || '').split(',')[1] || '';
 
     return (
-      <View style={[styles.card, { backgroundColor: themeColors.surface, borderColor: themeColors.border, borderWidth: isDark ? 1 : 0 }]}>
+      <View 
+        style={[styles.card, { backgroundColor: themeColors.surface, borderColor: themeColors.border, borderWidth: isDark ? 1 : 0 }]}
+      >
         <View style={styles.cardHeader}>
           <View style={[styles.typeBadge, { backgroundColor: themeColors.primaryMuted }]}>
             <Ionicons 
@@ -187,7 +204,6 @@ export default function VehicleSearchScreen() {
           <Text style={[styles.fareText, { color: themeColors.success }]}>৳{item.fare}</Text>
         </View>
 
-        {/* Route: From → To in user-input order */}
         <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 6, gap: 6 }}>
           <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: themeColors.success }} />
           <Text style={[styles.stoppagesText, { color: themeColors.textPrimary, flex: 1 }]} numberOfLines={1}>
@@ -201,12 +217,21 @@ export default function VehicleSearchScreen() {
           </Text>
         </View>
 
-        {item.distance ? (
-          <View style={styles.distanceRow}>
-            <Ionicons name="navigate-outline" size={12} color={themeColors.textTertiary} />
-            <Text style={[styles.distanceText, { color: themeColors.textTertiary }]}>{item.distance} km</Text>
+        <View style={styles.cardFooter}>
+          {item.distance ? (
+            <View style={styles.distanceRow}>
+              <Ionicons name="navigate-outline" size={12} color={themeColors.textTertiary} />
+              <Text style={[styles.distanceText, { color: themeColors.textTertiary }]}>{item.distance} km</Text>
+            </View>
+          ) : <View />}
+          
+          <View style={styles.dateBadge}>
+            <Ionicons name="calendar-outline" size={10} color={themeColors.textTertiary} />
+            <Text style={[styles.dateText, { color: themeColors.textTertiary }]}>
+              {formatDate(item.createdAt)}
+            </Text>
           </View>
-        ) : null}
+        </View>
       </View>
     );
   };
@@ -248,13 +273,14 @@ export default function VehicleSearchScreen() {
                       const filtered = stops
                         .filter(s => s.stopageEn.toLowerCase().includes(text.toLowerCase()))
                         .map(s => s.stopageEn)
-                        .slice(0, 5);
+                        .slice(0, 4);
                       setFromSuggestions(filtered);
                       setShowFromSuggestions(true);
                     } else {
                       setShowFromSuggestions(false);
                     }
                   }}
+                  onSubmitEditing={() => setShowFromSuggestions(false)}
                 />
               </View>
               {showFromSuggestions && fromSuggestions.length > 0 && !isModalVisible && (
@@ -292,13 +318,14 @@ export default function VehicleSearchScreen() {
                       const filtered = stops
                         .filter(s => s.stopageEn.toLowerCase().includes(text.toLowerCase()))
                         .map(s => s.stopageEn)
-                        .slice(0, 5);
+                        .slice(0, 4);
                       setToSuggestions(filtered);
                       setShowToSuggestions(true);
                     } else {
                       setShowToSuggestions(false);
                     }
                   }}
+                  onSubmitEditing={() => setShowToSuggestions(false)}
                 />
               </View>
               {showToSuggestions && toSuggestions.length > 0 && !isModalVisible && (
@@ -382,6 +409,8 @@ export default function VehicleSearchScreen() {
         />
       </View>
 
+
+
       {/* Add Route Modal */}
       <Modal
         visible={isModalVisible}
@@ -400,7 +429,11 @@ export default function VehicleSearchScreen() {
           >
             <TouchableOpacity 
               activeOpacity={1} 
-              onPress={() => {}} // Prevent closing when clicking inside
+              onPress={() => {
+                Keyboard.dismiss();
+                setShowFromSuggestions(false);
+                setShowToSuggestions(false);
+              }}
               style={[styles.modalContent, { backgroundColor: themeColors.surface }]}
             >
               <View style={styles.modalHeader}>
@@ -418,8 +451,8 @@ export default function VehicleSearchScreen() {
                 keyboardShouldPersistTaps="handled"
                 showsVerticalScrollIndicator={false}
               >
-                <View style={styles.modalRow}>
-                  <View style={{ flex: 1, marginRight: 10, zIndex: 20 }}>
+                <View style={[styles.modalRow, { zIndex: 30 }]}>
+                  <View style={{ flex: 1, marginRight: 10, zIndex: 30 }}>
                     <Text style={[styles.label, { color: themeColors.textSecondary }]}>From Stop *</Text>
                     <View style={[styles.modalInputWrapper, { backgroundColor: themeColors.background, borderColor: themeColors.border }]}>
                       <Ionicons name="location-outline" size={18} color={themeColors.primary} style={{ marginRight: 8 }} />
@@ -429,11 +462,12 @@ export default function VehicleSearchScreen() {
                         placeholderTextColor={themeColors.textTertiary}
                         value={newFrom}
                         onChangeText={handleFromChange}
+                        onSubmitEditing={() => setShowFromSuggestions(false)}
                       />
                     </View>
                     {showFromSuggestions && fromSuggestions.length > 0 && (
                       <View style={[styles.suggestionsList, { backgroundColor: themeColors.surface, borderColor: themeColors.border }]}>
-                        {fromSuggestions.map((stop, i) => (
+                        {fromSuggestions.slice(0, 4).map((stop, i) => (
                           <TouchableOpacity 
                             key={i} 
                             style={[styles.suggestionItem, { borderBottomColor: themeColors.borderLight }]}
@@ -446,7 +480,7 @@ export default function VehicleSearchScreen() {
                     )}
                   </View>
                   
-                  <View style={{ flex: 1, zIndex: 10 }}>
+                  <View style={{ flex: 1, zIndex: 20 }}>
                     <Text style={[styles.label, { color: themeColors.textSecondary }]}>To Stop *</Text>
                     <View style={[styles.modalInputWrapper, { backgroundColor: themeColors.background, borderColor: themeColors.border }]}>
                       <Ionicons name="flag-outline" size={18} color={themeColors.accent} style={{ marginRight: 8 }} />
@@ -456,11 +490,12 @@ export default function VehicleSearchScreen() {
                         placeholderTextColor={themeColors.textTertiary}
                         value={newTo}
                         onChangeText={handleToChange}
+                        onSubmitEditing={() => setShowToSuggestions(false)}
                       />
                     </View>
                     {showToSuggestions && toSuggestions.length > 0 && (
                       <View style={[styles.suggestionsList, { backgroundColor: themeColors.surface, borderColor: themeColors.border }]}>
-                        {toSuggestions.map((stop, i) => (
+                        {toSuggestions.slice(0, 4).map((stop, i) => (
                           <TouchableOpacity 
                             key={i} 
                             style={[styles.suggestionItem, { borderBottomColor: themeColors.borderLight }]}
@@ -474,7 +509,7 @@ export default function VehicleSearchScreen() {
                   </View>
                 </View>
 
-                <View style={styles.modalRow}>
+                <View style={[styles.modalRow, { zIndex: 10 }]}>
                   <View style={{ flex: 1, marginRight: 10 }}>
                     <Text style={[styles.label, { color: themeColors.textSecondary }]}>Fare (৳) *</Text>
                     <View style={[styles.modalInputWrapper, { backgroundColor: themeColors.background, borderColor: themeColors.border }]}>
@@ -506,7 +541,7 @@ export default function VehicleSearchScreen() {
                 </View>
 
                 <Text style={[styles.label, { color: themeColors.textSecondary }]}>Vehicle Type *</Text>
-                <View style={styles.modalTypeSelector}>
+                <View style={[styles.modalTypeSelector, { zIndex: 1 }]}>
                   {VEHICLE_TYPES.map(type => (
                     <TouchableOpacity
                       key={type}
@@ -531,6 +566,22 @@ export default function VehicleSearchScreen() {
                     </TouchableOpacity>
                   ))}
                 </View>
+
+                {newCarType === 'Others' && (
+                  <View style={{ marginBottom: Spacing.xl }}>
+                    <Text style={[styles.label, { color: themeColors.textSecondary }]}>Specify Vehicle Type *</Text>
+                    <View style={[styles.modalInputWrapper, { backgroundColor: themeColors.background, borderColor: themeColors.border }]}>
+                      <Ionicons name="car-sport-outline" size={18} color={themeColors.textTertiary} style={{ marginRight: 8 }} />
+                      <TextInput
+                        style={[styles.modalInput, { color: themeColors.textPrimary }]}
+                        placeholder="e.g. Leguna, Rickshaw"
+                        placeholderTextColor={themeColors.textTertiary}
+                        value={customCarType}
+                        onChangeText={setCustomCarType}
+                      />
+                    </View>
+                  </View>
+                )}
 
               </ScrollView>
 
@@ -738,6 +789,24 @@ const styles = StyleSheet.create({
   distanceText: {
     fontSize: FontSize.xs,
   },
+  cardFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: Spacing.sm,
+    paddingTop: Spacing.sm,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(0,0,0,0.05)',
+  },
+  dateBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  dateText: {
+    fontSize: 10,
+    fontWeight: '500',
+  },
   emptyContainer: {
     paddingTop: 100,
     alignItems: 'center',
@@ -816,12 +885,26 @@ const styles = StyleSheet.create({
   },
   mainSuggestionsList: {
     position: 'absolute',
-    top: 68,
+    top: 52,
     left: 0,
     right: 0,
     borderRadius: BorderRadius.md,
     borderWidth: 1,
-    zIndex: 3000,
+    zIndex: 5000,
+    elevation: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+  },
+  suggestionsList: {
+    position: 'absolute',
+    top: 75,
+    left: 0,
+    right: 0,
+    borderRadius: BorderRadius.md,
+    borderWidth: 1,
+    zIndex: 5000,
     elevation: 10,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
@@ -867,5 +950,61 @@ const styles = StyleSheet.create({
     color: '#FFF',
     fontSize: FontSize.md,
     fontWeight: '800',
+  },
+  detailsModalContainer: {
+    width: '90%',
+    borderRadius: BorderRadius.xxl,
+    padding: Spacing.xl,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.3,
+    shadowRadius: 20,
+    elevation: 20,
+  },
+  detailRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
+    gap: 16,
+  },
+  detailIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  detailLabel: {
+    fontSize: FontSize.xs,
+    fontWeight: '700',
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+  },
+  detailValue: {
+    fontSize: FontSize.lg,
+    fontWeight: '700',
+    marginTop: 2,
+  },
+  detailMetaGrid: {
+    flexDirection: 'row',
+    gap: 12,
+    marginTop: 8,
+  },
+  detailMetaItem: {
+    flex: 1,
+    padding: 12,
+    borderRadius: BorderRadius.lg,
+  },
+  detailCloseBtn: {
+    height: 50,
+    borderRadius: BorderRadius.lg,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 24,
+  },
+  closeBtnText: {
+    color: '#FFF',
+    fontSize: FontSize.md,
+    fontWeight: '700',
   },
 });

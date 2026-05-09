@@ -18,6 +18,7 @@ import StorageService, { SearchHistory, BookmarkedRoute } from '../services/Stor
 import { useTheme } from '../theme/ThemeContext';
 import { Colors, Spacing, BorderRadius, FontSize } from '../theme/colors';
 import { DarkColors } from '../theme/darkColors';
+import TransitNetworkService from '../services/TransitNetworkService';
 
 const { width } = Dimensions.get('window');
 
@@ -72,7 +73,6 @@ export default function ActivityScreen({ navigation }: any) {
 
   const handleBookmarkClick = (item: BookmarkedRoute) => {
     if (item.busId && item.busId > 0) {
-      // Proper bus route bookmark — navigate directly to details
       navigation.navigate('RouteDetails', {
         busId: item.busId,
         busName: item.busName,
@@ -81,9 +81,30 @@ export default function ActivityScreen({ navigation }: any) {
         toStopName: item.toStopName,
         fromStopId: item.fromStopId,
         toStopId: item.toStopId,
+        showFullRoute: true,
       });
     } else {
-      // Algorithm / algo route bookmark — re-run the search
+      if (item.fromStopName && item.toStopName) {
+        try {
+          const routes = TransitNetworkService.findRoutes(item.fromStopName, item.toStopName, '', -1);
+          const exactRoute = routes.find(r => r.legs[0]?.busName === item.busName) || routes[0];
+          
+          if (exactRoute) {
+            navigation.navigate('RouteDetails', {
+              algorithmRoute: exactRoute,
+              fromStopName: item.fromStopName,
+              toStopName: item.toStopName,
+              fromStopId: item.fromStopId,
+              toStopId: item.toStopId,
+            });
+            return;
+          }
+        } catch (e) {
+          console.error("Error finding route for bookmark", e);
+        }
+      }
+      
+      // Fallback
       navigation.navigate('Search', {
         fromStopName: item.fromStopName,
         toStopName: item.toStopName,
@@ -191,9 +212,8 @@ export default function ActivityScreen({ navigation }: any) {
         </View>
       </View>
       <TouchableOpacity
-        style={[styles.deleteBtn, { backgroundColor: themeColors.errorLight }]}
+        style={[styles.deleteBtn, { backgroundColor: isDark ? 'rgba(239,68,68,0.2)' : 'rgba(239,68,68,0.1)' }]}
         onPress={() => handleDeleteHistory(item.id)}
-        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
       >
         <Ionicons name="trash-outline" size={15} color={themeColors.error} />
       </TouchableOpacity>
@@ -224,7 +244,7 @@ export default function ActivityScreen({ navigation }: any) {
             <Text style={[styles.busName, { color: themeColors.textPrimary }]} numberOfLines={1}>
               {item.busName}
             </Text>
-            <View style={[styles.typeBadge, { backgroundColor: item.busId > 0 ? themeColors.primaryMuted : themeColors.success + '15' }]}>
+            <View style={[styles.typeBadge, { backgroundColor: item.busId > 0 ? themeColors.primaryMuted : 'rgba(16,185,129,0.15)' }]}>
               <Text style={[styles.typeBadgeText, { color: item.busId > 0 ? themeColors.primary : themeColors.success }]}>
                 {item.busId > 0 ? 'Bus' : 'Route'}
               </Text>
@@ -237,22 +257,21 @@ export default function ActivityScreen({ navigation }: any) {
           ) : null}
         </View>
         <TouchableOpacity
-          style={[styles.deleteBtn, { backgroundColor: themeColors.errorLight }]}
+          style={[styles.deleteBtn, { backgroundColor: isDark ? 'rgba(239,68,68,0.2)' : 'rgba(239,68,68,0.1)' }]}
           onPress={() => handleRemoveBookmark(item.routeId)}
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
           <Ionicons name="trash-outline" size={15} color={themeColors.error} />
         </TouchableOpacity>
       </View>
 
-      <View style={[styles.routeRow, { borderTopColor: themeColors.borderLight, borderTopWidth: 1, paddingTop: Spacing.sm, marginTop: Spacing.sm }]}>
+      <View style={[styles.routeRow, { borderTopColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)', borderTopWidth: 1, paddingTop: Spacing.sm, marginTop: Spacing.sm }]}>
         <View style={styles.routePoint}>
           <View style={[styles.routeDot, { backgroundColor: themeColors.success }]} />
           <Text style={[styles.routeStopName, { color: themeColors.textSecondary }]} numberOfLines={1}>
             {item.fromStopName}
           </Text>
         </View>
-        <Ionicons name="arrow-forward" size={14} color={themeColors.textMuted} />
+        <Ionicons name="arrow-forward" size={14} color={themeColors.textTertiary} />
         <View style={styles.routePoint}>
           <View style={[styles.routeDot, { backgroundColor: themeColors.error }]} />
           <Text style={[styles.routeStopName, { color: themeColors.textSecondary }]} numberOfLines={1}>
@@ -262,16 +281,14 @@ export default function ActivityScreen({ navigation }: any) {
       </View>
 
       <View style={styles.statsRow}>
-        <View style={[styles.statChip, { backgroundColor: themeColors.pill }]}>
-          <Ionicons name="navigate-outline" size={12} color={themeColors.primary} />
-          <Text style={[styles.statText, { color: themeColors.primary }]}>
-            {item.distance.toFixed(1)} km
-          </Text>
-        </View>
-        <View style={[styles.statChip, { backgroundColor: themeColors.pill }]}>
-          <Ionicons name="cash-outline" size={12} color={themeColors.primary} />
+        <View style={[styles.statChip, { backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)' }]}>
           <Text style={[styles.statText, { color: themeColors.primary }]}>
             ৳ {item.fare.toFixed(0)}
+          </Text>
+        </View>
+        <View style={[styles.statChip, { backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)' }]}>
+          <Text style={[styles.statText, { color: themeColors.primary }]}>
+            {item.distance.toFixed(1)} km
           </Text>
         </View>
       </View>
@@ -353,11 +370,11 @@ export default function ActivityScreen({ navigation }: any) {
           <View style={styles.emptyContainer}>
             <ActivityIndicator size="large" color={themeColors.primary} />
           </View>
-        ) : (
+        ) : activeTab === 'history' ? (
           <FlatList
-            data={activeTab === 'history' ? history : bookmarks}
-            keyExtractor={(item) => item.id}
-            renderItem={activeTab === 'history' ? renderHistoryItem : renderBookmarkItem}
+            data={history}
+            keyExtractor={(item) => `history_${item.id}`}
+            renderItem={renderHistoryItem}
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.listContent}
             onRefresh={onRefresh}
@@ -365,20 +382,29 @@ export default function ActivityScreen({ navigation }: any) {
             ListEmptyComponent={
               <View style={styles.emptyContainer}>
                 <View style={[styles.emptyIcon, { backgroundColor: themeColors.primaryMuted }]}>
-                  <Ionicons 
-                    name={activeTab === 'history' ? 'time-outline' : 'bookmark-outline'} 
-                    size={36} 
-                    color={themeColors.primary} 
-                  />
+                  <Ionicons name="time-outline" size={36} color={themeColors.primary} />
                 </View>
-                <Text style={[styles.emptyTitle, { color: themeColors.textPrimary }]}>
-                  {activeTab === 'history' ? 'No History' : 'No Bookmarks'}
-                </Text>
-                <Text style={[styles.emptyText, { color: themeColors.textSecondary }]}>
-                  {activeTab === 'history' 
-                    ? 'Your search history will appear here' 
-                    : 'Save your favorite routes for quick access'}
-                </Text>
+                <Text style={[styles.emptyTitle, { color: themeColors.textPrimary }]}>No History</Text>
+                <Text style={[styles.emptyText, { color: themeColors.textSecondary }]}>Your search history will appear here</Text>
+              </View>
+            }
+          />
+        ) : (
+          <FlatList
+            data={bookmarks}
+            keyExtractor={(item) => `bookmark_${item.routeId}`}
+            renderItem={renderBookmarkItem}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.listContent}
+            onRefresh={onRefresh}
+            refreshing={refreshing}
+            ListEmptyComponent={
+              <View style={styles.emptyContainer}>
+                <View style={[styles.emptyIcon, { backgroundColor: themeColors.primaryMuted }]}>
+                  <Ionicons name="bookmark-outline" size={36} color={themeColors.primary} />
+                </View>
+                <Text style={[styles.emptyTitle, { color: themeColors.textPrimary }]}>No Bookmarks</Text>
+                <Text style={[styles.emptyText, { color: themeColors.textSecondary }]}>Save your favorite routes for quick access</Text>
               </View>
             }
           />
