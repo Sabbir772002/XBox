@@ -2,6 +2,8 @@ import { Bus, Stop } from './DatabaseService';
 import FirebaseService from './FirebaseService';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import TransitNetworkService, { RawFirebaseData } from './TransitNetworkService';
+import { fuzzyFilterStopsList } from '../utils/FuzzyMatcher';
+
 
 // Firebase config
 const FIREBASE_CONFIG = {
@@ -171,7 +173,8 @@ export class DataMigrationService {
           this.initializeTransitNetwork();
 
           // Trigger Firebase update in background (don't wait)
-          this.updateFromFirebaseBackground();
+          // Disabled as requested: Firebase sync only occurs on cache miss or manually from settings
+          // this.updateFromFirebaseBackground();
           return;
         }
       }
@@ -940,21 +943,8 @@ export class DataMigrationService {
    * Search stops by name
    */
   static searchStops(query: string): Stop[] {
-    const lowerQuery = query.trim().toLowerCase();
-    const results: Stop[] = [];
-    const seen = new Set<number>();
-
-    this.stopsByName.forEach((stop) => {
-      if (!seen.has(stop.id)) {
-        if (stop.stopageEn.toLowerCase().includes(lowerQuery) ||
-          stop.stopageBn.includes(lowerQuery)) {
-          results.push(stop);
-          seen.add(stop.id);
-        }
-      }
-    });
-
-    return results.slice(0, 20);
+    const stops = this.getAllStops();
+    return fuzzyFilterStopsList(stops, query, 20);
   }
 
   /**

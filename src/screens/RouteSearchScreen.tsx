@@ -99,14 +99,7 @@ export default function RouteSearchScreen({ navigation, route }: any) {
 
   const filterStops = (text: string): Stop[] => {
     if (text.length === 0) return [];
-    const lowerText = text.toLowerCase();
-    return allStops
-      .filter(
-        (stop) =>
-          (stop.stopageEn && stop.stopageEn.toLowerCase().includes(lowerText)) ||
-          (stop.stopageBn && stop.stopageBn.toLowerCase().includes(lowerText)),
-      )
-      .slice(0, 4);
+    return DatabaseService.fuzzyFilterStopsList(allStops, text, 4);
   };
 
   const findExactStop = (text: string): Stop | null => {

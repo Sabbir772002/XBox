@@ -1,4 +1,5 @@
 import DataMigrationService from './DataMigrationService';
+import { fuzzyFilterStopsList } from '../utils/FuzzyMatcher';
 
 export interface Stop {
   id: number;
@@ -104,9 +105,8 @@ class DatabaseService {
       console.log('✓ DatabaseService initialized with all data types');
     } catch (error) {
       console.error('✗ Error initializing DatabaseService:', error);
-      // Still mark as initialized to prevent blocking the app
-      this.initialized = true;
-      console.warn('⚠ DatabaseService initialized with minimal data');
+      // Propagate the error so that the app displays the ErrorScreen
+      throw error;
     }
   }
 
@@ -193,6 +193,16 @@ class DatabaseService {
   async searchStops(query: string): Promise<Stop[]> {
     await this.ensureInitialized();
     return DataMigrationService.searchStops(query);
+  }
+
+  async fuzzySearchStops(query: string, limit: number = 10): Promise<Stop[]> {
+    await this.ensureInitialized();
+    const stops = DataMigrationService.getAllStops();
+    return fuzzyFilterStopsList(stops, query, limit);
+  }
+
+  fuzzyFilterStopsList(stops: Stop[], query: string, limit: number = 10): Stop[] {
+    return fuzzyFilterStopsList(stops, query, limit);
   }
 
   /**

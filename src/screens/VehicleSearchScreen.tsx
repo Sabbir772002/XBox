@@ -12,6 +12,7 @@ import {
   Modal,
   ScrollView,
   KeyboardAvoidingView,
+  Keyboard,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -19,6 +20,7 @@ import NetInfo from '@react-native-community/netinfo';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import FirebaseService from '../services/FirebaseService';
 import DataMigrationService from '../services/DataMigrationService';
+import DatabaseService from '../services/DatabaseService';
 import { useTheme } from '../theme/ThemeContext';
 import { Colors, Spacing, BorderRadius, FontSize } from '../theme/colors';
 import { DarkColors } from '../theme/darkColors';
@@ -86,10 +88,8 @@ export default function VehicleSearchScreen() {
     setNewFrom(text);
     if (text.length > 1) {
       const stops = DataMigrationService.getAllStops();
-      const filtered = stops
-        .filter(s => s.stopageEn.toLowerCase().includes(text.toLowerCase()))
-        .map(s => s.stopageEn)
-        .slice(0, 4);
+      const filtered = DatabaseService.fuzzyFilterStopsList(stops, text, 4)
+        .map(s => s.stopageEn);
       setFromSuggestions(filtered);
       setShowFromSuggestions(true);
     } else {
@@ -101,10 +101,8 @@ export default function VehicleSearchScreen() {
     setNewTo(text);
     if (text.length > 1) {
       const stops = DataMigrationService.getAllStops();
-      const filtered = stops
-        .filter(s => s.stopageEn.toLowerCase().includes(text.toLowerCase()))
-        .map(s => s.stopageEn)
-        .slice(0, 4);
+      const filtered = DatabaseService.fuzzyFilterStopsList(stops, text, 4)
+        .map(s => s.stopageEn);
       setToSuggestions(filtered);
       setShowToSuggestions(true);
     } else {
@@ -270,10 +268,8 @@ export default function VehicleSearchScreen() {
                     setFrom(text);
                     if (text.length > 1) {
                       const stops = DataMigrationService.getAllStops();
-                      const filtered = stops
-                        .filter(s => s.stopageEn.toLowerCase().includes(text.toLowerCase()))
-                        .map(s => s.stopageEn)
-                        .slice(0, 10);
+                      const filtered = DatabaseService.fuzzyFilterStopsList(stops, text, 10)
+                        .map(s => s.stopageEn);
                       setFromSuggestions(filtered);
                       setShowFromSuggestions(true);
                     } else {
@@ -315,10 +311,8 @@ export default function VehicleSearchScreen() {
                     setTo(text);
                     if (text.length > 1) {
                       const stops = DataMigrationService.getAllStops();
-                      const filtered = stops
-                        .filter(s => s.stopageEn.toLowerCase().includes(text.toLowerCase()))
-                        .map(s => s.stopageEn)
-                        .slice(0, 10);
+                      const filtered = DatabaseService.fuzzyFilterStopsList(stops, text, 10)
+                        .map(s => s.stopageEn);
                       setToSuggestions(filtered);
                       setShowToSuggestions(true);
                     } else {

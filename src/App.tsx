@@ -2,8 +2,9 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { View, Text, ActivityIndicator } from 'react-native';
+import { View, Text, ActivityIndicator, TouchableOpacity, StatusBar, Platform } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import LinearGradient from 'react-native-linear-gradient';
 import RouteSearchScreen from './screens/RouteSearchScreen';
 import RouteDetailsScreen from './screens/RouteDetailsScreen';
 import ActivityScreen from './screens/ActivityScreen';
@@ -20,18 +21,106 @@ import { ThemeProvider, useTheme } from './theme/ThemeContext';
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
-function ErrorScreen({ error }: { error: string }) {
+interface ErrorScreenProps {
+  error: string;
+  onRetry: () => void;
+}
+
+function ErrorScreen({ error, onRetry }: ErrorScreenProps) {
+  const { isDark } = useTheme();
+  const themeColors = isDark ? DarkColors : Colors;
+
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20, backgroundColor: Colors.background }}>
-      <Text style={{ fontSize: 18, fontWeight: 'bold', color: 'red', marginBottom: 10 }}>
-        Failed to Initialize App
-      </Text>
-      <Text style={{ fontSize: 14, color: '#666', marginBottom: 20, textAlign: 'center' }}>
-        {error}
-      </Text>
-      <Text style={{ fontSize: 12, color: '#999', textAlign: 'center' }}>
-        Please restart the application.
-      </Text>
+    <View style={{ flex: 1, backgroundColor: themeColors.background, justifyContent: 'center', alignItems: 'center', padding: 24 }}>
+      <StatusBar 
+        backgroundColor={themeColors.background} 
+        barStyle={isDark ? 'light-content' : 'dark-content'} 
+      />
+      
+      <View style={{
+        alignItems: 'center',
+        padding: 32,
+        borderRadius: 24,
+        backgroundColor: themeColors.surface,
+        width: '100%',
+        maxWidth: 340,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 10 },
+        shadowOpacity: 0.1,
+        shadowRadius: 20,
+        elevation: 8,
+        borderWidth: 1,
+        borderColor: themeColors.borderLight,
+      }}>
+        {/* Glow / Icon container */}
+        <View style={{
+          width: 80,
+          height: 80,
+          borderRadius: 40,
+          backgroundColor: isDark ? 'rgba(239, 68, 68, 0.15)' : 'rgba(239, 68, 68, 0.1)',
+          justifyContent: 'center',
+          alignItems: 'center',
+          marginBottom: 24,
+        }}>
+          <Ionicons name="alert-circle" size={48} color="#ef4444" />
+        </View>
+
+        <Text style={{
+          fontSize: 22,
+          fontWeight: 'bold',
+          color: themeColors.textPrimary,
+          marginBottom: 12,
+          textAlign: 'center',
+          fontFamily: Platform.OS === 'ios' ? 'System' : 'sans-serif-medium',
+        }}>
+          Initialization Failed
+        </Text>
+
+        <Text style={{
+          fontSize: 14,
+          color: themeColors.textSecondary,
+          textAlign: 'center',
+          marginBottom: 24,
+          lineHeight: 20,
+        }}>
+          {error || 'An unexpected error occurred during database setup.'}
+        </Text>
+
+        <TouchableOpacity
+          activeOpacity={0.8}
+          onPress={onRetry}
+          style={{ width: '100%' }}
+        >
+          <LinearGradient
+            colors={isDark ? ['#4f46e5', '#3730a3'] : ['#6366f1', '#4f46e5']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={{
+              paddingVertical: 14,
+              borderRadius: 16,
+              alignItems: 'center',
+              justifyContent: 'center',
+              shadowColor: '#6366f1',
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: 0.2,
+              shadowRadius: 8,
+              elevation: 4,
+            }}
+          >
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Ionicons name="refresh-outline" size={20} color="#fff" style={{ marginRight: 8 }} />
+              <Text style={{
+                color: '#fff',
+                fontSize: 16,
+                fontWeight: 'bold',
+                fontFamily: Platform.OS === 'ios' ? 'System' : 'sans-serif-medium',
+              }}>
+                Try Again
+              </Text>
+            </View>
+          </LinearGradient>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -115,29 +204,31 @@ function AppContent() {
   const { isDark } = useTheme();
   const themeColors = isDark ? DarkColors : Colors;
 
-  React.useEffect(() => {
-    const initializeApp = async () => {
-      try {
-        console.log('🔄 Initializing application...');
-        
-        // Initialize services in order
-        await NetworkService.initialize();
-        await DatabaseService.initialize();
-        
-        setInitialized(true);
-        console.log('✅ Application initialized successfully');
-      } catch (error) {
-        const errorMsg = error instanceof Error ? error.message : 'Unknown error occurred';
-        console.error('❌ Application initialization failed:', errorMsg);
-        setInitError(errorMsg);
-      }
-    };
+  const initializeApp = async () => {
+    try {
+      setInitError(null);
+      setInitialized(false);
+      console.log('🔄 Initializing application...');
+      
+      // Initialize services in order
+      await NetworkService.initialize();
+      await DatabaseService.initialize();
+      
+      setInitialized(true);
+      console.log('✅ Application initialized successfully');
+    } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : 'Unknown error occurred';
+      console.error('❌ Application initialization failed:', errorMsg);
+      setInitError(errorMsg);
+    }
+  };
 
+  React.useEffect(() => {
     initializeApp();
   }, []);
 
   if (initError) {
-    return <ErrorScreen error={initError} />;
+    return <ErrorScreen error={initError} onRetry={initializeApp} />;
   }
 
   if (!initialized) {
