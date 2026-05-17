@@ -273,7 +273,7 @@ export default function VehicleSearchScreen() {
                       const filtered = stops
                         .filter(s => s.stopageEn.toLowerCase().includes(text.toLowerCase()))
                         .map(s => s.stopageEn)
-                        .slice(0, 4);
+                        .slice(0, 10);
                       setFromSuggestions(filtered);
                       setShowFromSuggestions(true);
                     } else {
@@ -318,7 +318,7 @@ export default function VehicleSearchScreen() {
                       const filtered = stops
                         .filter(s => s.stopageEn.toLowerCase().includes(text.toLowerCase()))
                         .map(s => s.stopageEn)
-                        .slice(0, 4);
+                        .slice(0, 10);
                       setToSuggestions(filtered);
                       setShowToSuggestions(true);
                     } else {
@@ -467,7 +467,7 @@ export default function VehicleSearchScreen() {
                     </View>
                     {showFromSuggestions && fromSuggestions.length > 0 && (
                       <View style={[styles.suggestionsList, { backgroundColor: themeColors.surface, borderColor: themeColors.border }]}>
-                        {fromSuggestions.slice(0, 4).map((stop, i) => (
+                        {fromSuggestions.slice(0, 10).map((stop, i) => (
                           <TouchableOpacity 
                             key={i} 
                             style={[styles.suggestionItem, { borderBottomColor: themeColors.borderLight }]}
@@ -495,7 +495,7 @@ export default function VehicleSearchScreen() {
                     </View>
                     {showToSuggestions && toSuggestions.length > 0 && (
                       <View style={[styles.suggestionsList, { backgroundColor: themeColors.surface, borderColor: themeColors.border }]}>
-                        {toSuggestions.slice(0, 4).map((stop, i) => (
+                        {toSuggestions.slice(0, 10).map((stop, i) => (
                           <TouchableOpacity 
                             key={i} 
                             style={[styles.suggestionItem, { borderBottomColor: themeColors.borderLight }]}

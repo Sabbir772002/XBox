@@ -487,7 +487,7 @@ export default function RouteSearchScreen({ navigation, route }: any) {
                 keyboardShouldPersistTaps="handled"
                 nestedScrollEnabled={true}
               >
-                {fromSuggestions.slice(0, 4).map((stop) => renderSuggestion(stop, selectFromStop))}
+                {fromSuggestions.slice(0, 10).map((stop) => renderSuggestion(stop, selectFromStop))}
               </ScrollView>
             </View>
           )}
@@ -546,7 +546,7 @@ export default function RouteSearchScreen({ navigation, route }: any) {
                 keyboardShouldPersistTaps="handled"
                 nestedScrollEnabled={true}
               >
-                {toSuggestions.slice(0, 4).map((stop) => renderSuggestion(stop, selectToStop))}
+                {toSuggestions.slice(0, 10).map((stop) => renderSuggestion(stop, selectToStop))}
               </ScrollView>
             </View>
           )}
@@ -601,7 +601,7 @@ export default function RouteSearchScreen({ navigation, route }: any) {
                     keyboardShouldPersistTaps="handled"
                     nestedScrollEnabled={true}
                   >
-                    {viaSuggestions.slice(0, 4).map((stop) => renderSuggestion(stop, selectViaStop))}
+                    {viaSuggestions.slice(0, 10).map((stop) => renderSuggestion(stop, selectViaStop))}
                   </ScrollView>
                 </View>
               )}
@@ -885,13 +885,15 @@ const styles = StyleSheet.create({
     paddingBottom: Spacing.lg,
     borderBottomLeftRadius: BorderRadius.xxl,
     borderBottomRightRadius: BorderRadius.xxl,
+    zIndex: 999,
     ...Platform.select({
-      android: { elevation: 8 },
+      android: { elevation: 15 },
       ios: {
         shadowColor: '#4F46E5',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.25,
         shadowRadius: 12,
+        zIndex: 999,
       },
     }),
   },
@@ -1002,7 +1004,7 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.md,
     marginTop: 4,
     marginBottom: 4,
-    maxHeight: 200,
+    maxHeight: 400,
     overflow: 'hidden',
     zIndex: 5000,
     ...Platform.select({
@@ -1016,7 +1018,7 @@ const styles = StyleSheet.create({
     }),
   },
   suggestionsScroll: {
-    maxHeight: 200,
+    maxHeight: 400,
   },
   suggestionItem: {
     flexDirection: 'row',
@@ -1044,6 +1046,7 @@ const styles = StyleSheet.create({
   body: {
     flex: 1,
     paddingHorizontal: Spacing.lg,
+    zIndex: 1,
   },
   loadingContainer: {
     flex: 1,
