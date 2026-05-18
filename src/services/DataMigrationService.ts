@@ -3,6 +3,8 @@ import FirebaseService from './FirebaseService';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import TransitNetworkService, { RawFirebaseData } from './TransitNetworkService';
 import { fuzzyFilterStopsList } from '../utils/FuzzyMatcher';
+import { Alert } from 'react-native';
+import NetInfo from '@react-native-community/netinfo';
 
 
 // Firebase config
@@ -170,8 +172,9 @@ export class DataMigrationService {
       const startTime = Date.now();
 
       // PRIORITY 1: Load from cache immediately (unless forceFresh)
+      let cacheSuccess = false;
       if (!forceFresh) {
-        const cacheSuccess = await this.loadFromCache();
+        cacheSuccess = await this.loadFromCache();
         if (cacheSuccess) {
           this.isLoaded = true;
           const duration = Date.now() - startTime;
@@ -180,15 +183,25 @@ export class DataMigrationService {
 
           // Ensure engine is initialized even from cache
           this.initializeTransitNetwork();
-
-          // Trigger Firebase update in background (don't wait)
-          // Disabled as requested: Firebase sync only occurs on cache miss or manually from settings
-          // this.updateFromFirebaseBackground();
           return;
         }
       }
 
-      console.log('💾 No cache found, loading from Firebase/JSON...');
+      console.log('💾 No cache found, checking network connection...');
+
+      // Check internet connection
+      const netState = await NetInfo.fetch();
+      const isOnline = netState.isConnected && netState.isInternetReachable !== false;
+
+      if (!isOnline) {
+        console.warn('⚠ Offline and no local cache found!');
+        Alert.alert(
+          'Internet Connection Required',
+          'Please connect to the internet first time to get data.',
+          [{ text: 'OK' }]
+        );
+        throw new Error('No internet connection on first startup');
+      }
 
       // PRIORITY 2: Initialize and try Firebase
       let firebaseSuccess = false;
@@ -208,13 +221,8 @@ export class DataMigrationService {
         firebaseSuccess = false;
       }
 
-      // PRIORITY 3: Load from bundled JSON as final fallback
       if (!firebaseSuccess) {
-        console.log('📦 Loading from bundled JSON...');
-        await this.loadFromJSON();
-        console.log(`✓ JSON loaded: ${this.busData.length} buses, ${this.stopData.size} stops`);
-        // Cache the JSON data too
-        await this.cacheData();
+        throw new Error('Failed to load data from Firebase server');
       }
 
       this.isLoaded = true;
@@ -226,10 +234,6 @@ export class DataMigrationService {
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : String(error);
       console.error('✗ Critical error loading data:', errorMsg);
-      // Still mark as loaded to prevent infinite retry loops
-      this.isLoaded = true;
-      // Try to initialize TransitNetwork anyway if we have any data
-      this.initializeTransitNetwork();
       throw new Error(`Failed to load data: ${errorMsg}`);
     }
   }
@@ -485,35 +489,7 @@ export class DataMigrationService {
     }
   }
 
-  /**
-   * Load data from bundled JSON files (fallback)
-   */
-  private static async loadFromJSON(): Promise<void> {
-    try {
-      console.log('📦 Loading data from bundled JSON files...');
 
-      // Load stop data first
-      await this.loadStopData();
-
-      // Load distance data BEFORE buses so they're available for segment calculation
-      await this.loadDistanceData();
-
-      // Load bus data
-      await this.loadBusData();
-
-      // Build raw Firebase data for TransitNetwork from loaded JSON data
-      this.buildRawFirebaseData();
-
-      // Cache for future use
-      await this.cacheData();
-
-      console.log('✓ All data successfully loaded from JSON files');
-    } catch (error) {
-      const errorMsg = error instanceof Error ? error.message : String(error);
-      console.error('✗ JSON load failed:', errorMsg);
-      throw new Error(`Fallback JSON load failed: ${errorMsg}`);
-    }
-  }
 
   /**
    * Process stops data from Firebase
@@ -713,199 +689,7 @@ export class DataMigrationService {
     }
   }
 
-  /**
-   * Load bus data from final_buss.json
-   */
-  private static async loadBusData(): Promise<void> {
-    try {
-      console.log('📦 Loading bus data...');
-      // Load raw JSON data - unified final.json contains all data
-      const finalData: any = require('../assets/final.json');
-      const busDataArray = finalData['Bus Data'];
 
-      if (!busDataArray || !Array.isArray(busDataArray)) {
-        throw new Error('Invalid bus data format: missing or malformed data array');
-      }
-
-      this.busData = busDataArray.map((bus: any, index: number) => {
-        const busId = index + 1;
-        let cumulativeDistanceKm = 0;
-        const routes = bus.routes || [];
-
-        const stoppages = routes.map((stopName: string, order: number) => {
-          const resolvedStop = this.resolveStopByName(stopName || '');
-          const currentCoord = resolvedStop ? this.stopCoordinatesById.get(resolvedStop.id) : undefined;
-
-          let segmentDistanceKm = 0;
-          if (order > 0) {
-            const prevStop = this.resolveStopByName(routes[order - 1] || '');
-            const prevCoord = prevStop ? this.stopCoordinatesById.get(prevStop.id) : undefined;
-
-            if (prevStop && resolvedStop) {
-              // Check both directions in loaded data and take minimum
-              const directKey = `${prevStop.stopageEn}-${resolvedStop.stopageEn}`;
-              const reverseKey = `${resolvedStop.stopageEn}-${prevStop.stopageEn}`;
-
-              const directDistance = this.distanceData.get(directKey) ?? this.firebaseDistanceData.get(directKey);
-              const reverseDistance = this.distanceData.get(reverseKey) ?? this.firebaseDistanceData.get(reverseKey);
-
-              // Use loaded distance if available, preferring minimum
-              if (directDistance !== undefined && directDistance !== null && reverseDistance !== undefined && reverseDistance !== null) {
-                segmentDistanceKm = Math.min(directDistance, reverseDistance);
-              } else if (directDistance !== undefined && directDistance !== null) {
-                segmentDistanceKm = directDistance;
-              } else if (reverseDistance !== undefined && reverseDistance !== null) {
-                segmentDistanceKm = reverseDistance;
-              } else if (prevCoord && currentCoord) {
-                // Only use Haversine if no distance data found
-                segmentDistanceKm = this.calculateDistanceKm(prevCoord, currentCoord);
-              }
-            }
-          }
-
-          cumulativeDistanceKm += segmentDistanceKm;
-
-          return {
-            stopOrder: order,
-            stopId: resolvedStop?.id ?? 0,
-            stopageEn: this.toTitleCase(stopName) || '',
-            stopageBn: stopName || '',
-            segmentDistanceKm: Number(segmentDistanceKm.toFixed(2)),
-            cumulativeDistanceKm: Number(cumulativeDistanceKm.toFixed(2)),
-            isStart: order === 0,
-            isEnd: order === routes.length - 1,
-          };
-        });
-
-        return {
-          id: index + 1,
-          nameEnglish: bus.english || `Bus ${index + 1}`,
-          nameBangla: bus.bangla || '',
-          serviceType: bus.serviceType || 'Regular',
-          totalStops: routes.length,
-          stoppages,
-          fare_weight: bus.fare_weight ?? 2.45,
-          min_fare: bus.min_fare ?? 10,
-        };
-      });
-
-      console.log(`✓ Loaded ${this.busData.length} buses`);
-    } catch (error) {
-      const errorMsg = error instanceof Error ? error.message : String(error);
-      console.error('✗ Error loading bus data:', errorMsg);
-      throw new Error(`Bus data load failed: ${errorMsg}`);
-    }
-  }
-
-  /**
-   * Load stop data from final_safe.json
-   */
-  private static async loadStopData(): Promise<void> {
-    try {
-      console.log('📍 Loading stop data...');
-      // Load raw JSON data - unified final.json contains all data
-      const finalData: any = require('../assets/final.json');
-      const stopDataArray = finalData['Stop Data'];
-
-      if (!Array.isArray(stopDataArray)) {
-        throw new Error('Invalid stop data format: expected array');
-      }
-
-      stopDataArray.forEach((item) => {
-        try {
-          if (!item.id || !item.names || !Array.isArray(item.names) || item.names.length === 0) {
-            console.warn(`⚠️ Skipping invalid stop item:`, item);
-            return;
-          }
-
-          const stopName = item.names[0]; // Use first name as primary
-          const stop: Stop = {
-            id: item.id,
-            stopageEn: this.toTitleCase(stopName),
-            stopageBn: stopName,
-          };
-
-          this.stopData.set(String(item.id), stop);
-
-          item.names.forEach((name: string) => {
-            const key = this.normalizeStopName(name);
-            if (key) {
-              this.stopsByName.set(key, stop);
-            }
-          });
-
-          const coord = this.extractPrimaryCoordinate(item.coordinates);
-          if (coord) {
-            this.stopCoordinatesById.set(item.id, coord);
-          }
-        } catch (itemError) {
-          console.warn(`⚠️ Error processing stop item:`, itemError);
-        }
-      });
-
-      console.log(`✓ Loaded ${this.stopData.size} stops`);
-    } catch (error) {
-      const errorMsg = error instanceof Error ? error.message : String(error);
-      console.error('✗ Error loading stop data:', errorMsg);
-      throw new Error(`Stop data load failed: ${errorMsg}`);
-    }
-  }
-
-  /**
-   * Load distance data from bundled mem_lvl2.json
-   */
-  private static async loadDistanceData(): Promise<void> {
-    try {
-      console.log('📏 Loading distance data...');
-      const finalData: any = require('../assets/final.json');
-      const distanceDataFile = finalData['Dist Data'];
-
-      if (!distanceDataFile || (!Array.isArray(distanceDataFile) && typeof distanceDataFile !== 'object')) {
-        console.warn('⚠️ Distance data file is empty or invalid');
-        return;
-      }
-
-      let loadedCount = 0;
-
-      // Handle array format: [{ "A-B": 123 }, { "C-D": 456 }, ...]
-      if (Array.isArray(distanceDataFile)) {
-        distanceDataFile.forEach((item: any) => {
-          if (item && typeof item === 'object') {
-            Object.entries(item).forEach(([key, value]: [string, any]) => {
-              try {
-                const before = this.distanceData.size;
-                this.addDistanceEntry(this.distanceData, key, value);
-                if (this.distanceData.size > before) {
-                  loadedCount++;
-                }
-              } catch (err) {
-                // Silently skip invalid entries
-              }
-            });
-          }
-        });
-      } else {
-        // Handle object format: { "A-B": 123, "C-D": 456 }
-        Object.entries(distanceDataFile).forEach(([key, value]: [string, any]) => {
-          try {
-            const before = this.distanceData.size;
-            this.addDistanceEntry(this.distanceData, key, value);
-            if (this.distanceData.size > before) {
-              loadedCount++;
-            }
-          } catch (err) {
-            // Silently skip invalid entries
-          }
-        });
-      }
-
-      console.log(`✓ Loaded ${loadedCount} distance routes from bundled JSON`);
-    } catch (error) {
-      const errorMsg = error instanceof Error ? error.message : String(error);
-      console.warn(`⚠️ Distance data load warning (non-critical): ${errorMsg}`);
-      // Don't throw - distances are optional, app works without them
-    }
-  }
 
   /**
    * Find buses that connect two stops
