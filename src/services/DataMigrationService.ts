@@ -151,6 +151,15 @@ export class DataMigrationService {
    * PRIORITY: 1) Cache (immediate), 2) Firebase (background), 3) JSON (fallback)
    */
   static async loadDataFromJSON(forceFresh: boolean = false): Promise<void> {
+    // ALWAYS initialize Firebase Service on app startup so that other transport route contributors/viewers
+    // (Firestore operations) work immediately, even when loading from the local cache.
+    try {
+      FirebaseService.initialize(FIREBASE_CONFIG);
+      console.log('✓ FirebaseService initialized on startup');
+    } catch (err) {
+      console.warn('⚠ Failed to initialize FirebaseService on startup:', err);
+    }
+
     if (this.isLoaded && !forceFresh) {
       console.log('✓ Data already loaded');
       return;

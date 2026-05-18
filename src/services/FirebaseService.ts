@@ -440,26 +440,28 @@ class FirebaseService {
       // Normalise helper for fuzzy fallback
       const normalize = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, '');
       const normKey = normalize(canonicalKey);
+      const normFrom = normalize(from.trim());
+      const normTo = normalize(to.trim());
 
-      let q = firestoreQuery(collection(this.firestore, 'other_routes'));
-
-      if (carType && carType !== 'All') {
-        q = firestoreQuery(q, where('carType', '==', carType));
-      }
-
-      q = firestoreQuery(q, orderBy('createdAt', 'desc'));
-
-      const querySnapshot = await getDocs(q);
+      // Fetch all other routes directly from the collection
+      // This client-side approach ensures maximum offline/online robustness and completely avoids 
+      // Firestore index limitations or "missing index" query errors.
+      const routesCol = collection(this.firestore, 'other_routes');
+      const querySnapshot = await getDocs(routesCol);
       const results: any[] = [];
 
       querySnapshot.forEach((doc) => {
         const data = doc.data();
         const storedKey = normalize(data.stoppages || '');
+        const storedCarType = data.carType;
+
+        // Filter by carType if a specific filter is set
+        if (carType && carType !== 'All' && storedCarType !== carType) {
+          return;
+        }
 
         // Primary match: canonical key equals stored key
         // Fallback: both stop names appear anywhere in stored string
-        const normFrom = normalize(from.trim());
-        const normTo = normalize(to.trim());
         const matches =
           storedKey === normKey ||
           (storedKey.includes(normFrom) && storedKey.includes(normTo));
@@ -467,6 +469,13 @@ class FirebaseService {
         if (matches) {
           results.push({ id: doc.id, ...data });
         }
+      });
+
+      // Sort client-side by createdAt descending (newest first)
+      results.sort((a, b) => {
+        const timeA = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : (a.createdAt ? new Date(a.createdAt).getTime() : 0);
+        const timeB = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : (b.createdAt ? new Date(b.createdAt).getTime() : 0);
+        return timeB - timeA;
       });
 
       return results;
